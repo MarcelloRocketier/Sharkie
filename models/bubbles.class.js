@@ -1,5 +1,5 @@
 class Bubble extends MovableObject {
-    y = -25;
+    y = -60;
     width = 150; // Set a width for the bubble
     hight = 175; // Set a height for the bubble
 

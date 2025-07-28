@@ -11,9 +11,12 @@ class World {
     ];
 
     backgroundObjects = [
-        new BackgrundObject('assets/img/3. Background/Layers/3.Fondo 1/D.png', 0),
-    ];
-
+    new BackgroundObject('assets/img/3. Background/Layers/5. Water/D.png', 0),
+    new BackgroundObject('assets/img/3. Background/Layers/3.Fondo 1/D.png', 0),
+    new BackgroundObject('assets/img/3. Background/Dark/completo.png', -1.1),
+    new BackgroundObject('assets/img/3. Background/Layers/4.Fondo 2/D.png', 0),
+    new BackgroundObject('assets/img/3. Background/Layers/2. Floor/D.png', 0),
+];
     ctx;
     canvas;
 
@@ -26,10 +29,11 @@ class World {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas
 
+        this.addObjectsToMap(this.backgroundObjects);
         this.addToMap(this.character);
         this.addObjectsToMap(this.bubbles);
         this.addObjectsToMap(this.enemies);
-        this.addObjectsToMap(this.backgroundObjects);
+        
         
 
 
