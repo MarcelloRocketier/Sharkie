@@ -2,7 +2,7 @@ class Character extends MovableObject {
 
     x = 50;
     y = 100;
-    speed = 5; 
+    speed = 6; 
     img;
     hight = 250;
     width = 200;
@@ -41,11 +41,14 @@ animate() {
     setInterval(() => {
         if (this.world.keyboard.RIGHT) {
             this.x += this.speed;
+            this.otherDirection = false;
         }
 
         if (this.world.keyboard.LEFT) {
             this.x -= this.speed;
+            this.otherDirection = true;
         }
+        this.world.camara_x = -this.x; // Update camera position based on character's x position
 
     }, 1000 / 60);
 
@@ -59,7 +62,7 @@ animate() {
     this.img = this.imageCache[path];
     this.currentImage++;
     }
-    }, 50); 
+    }, 100); 
 }
 
 jump() {
