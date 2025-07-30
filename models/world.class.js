@@ -11,13 +11,14 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.draw();
         this.setWorld();
+        this.draw();
+       
     }
 
     setWorld() {
-        this.character.world = this;
-    }
+    this.character.setWorld(this);
+}
 
     draw() {
 
@@ -28,14 +29,12 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.bubbles);
+        if (this.level.poisonObjects) this.addObjectsToMap(this.level.poisonObjects);
         this.addObjectsToMap(this.level.enemies);
+        if (this.level.coins) this.addObjectsToMap(this.level.coins);
         
         this.ctx.translate(-this.camara_x, 0); 
         
-
-
-
-
         // Draw() wird immer wieder aufgerufen, um die Animation zu aktualisieren
         let self = this;
         requestAnimationFrame(function() {

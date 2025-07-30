@@ -58,9 +58,13 @@ constructor() {
     this.loadImages(this.IMAGES_SWIM);
     this.loadImages(this.IMAGES_IDLE);
     this.loadImages(this.IMAGES_LONG_IDLE);
-    this.animate();
+    
 }
 
+setWorld(world) {
+    this.world = world;
+    this.animate();  // ✅ hier starten, wenn world verfügbar
+}
 animate() {
     setInterval(() => {
         if (this.world.keyboard.RIGHT  && this.x < this.world.level.level_end_x) {

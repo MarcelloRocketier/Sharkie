@@ -1,18 +1,13 @@
-const coins = [];
+const coinsLevel2 = [];
 
-// Kompaktere Welle im 1. Drittel (x: 400–1100)
-for (let i = 0; i < 6; i++) {
-    let x = 400 + i * 120;
-    let y = 200 + Math.sin(i * 0.7) * 40;
-    coins.push(new Coin(x, y));
+// Zweite Welle im 2. Drittel (x: 1600–2600)
+for (let i = 0; i < 10; i++) {
+    let x = 1600 + i * 70;
+    let y = 180 + Math.sin(i * 0.5) * 60;
+    coinsLevel2.push(new Coin(x, y));
 }
 
-const poisons = [
-    new Poison(600, 340),
-    new Poison(900, 360)
-];
-
-const level1 = new Level(
+const level2 = new Level(
     [], // enemies
     [], // bubbles
     [
@@ -39,63 +34,5 @@ const level1 = new Level(
         new BackgroundObject('assets/img/3. Background/Layers/4.Fondo 2/D2.png', 719*3),
         new BackgroundObject('assets/img/3. Background/Layers/2. Floor/D2.png', 719*3),
     ],
-    coins
+    coinsLevel2
 );
-
-level1.poisonObjects = poisons;
-
-// Dynamisches Spawning:
-let fishCount = 0;
-let jellyfishCount = 0;
-let bubbleCount = 0;
-
-const maxFishes = 6;
-const maxJellyfish = 4;
-const maxBubbles = 3;
-
-setInterval(() => {
-    if (fishCount < maxFishes) {
-        level1.enemies.push(new fish());
-        fishCount++;
-    }
-}, 3200);
-
-setInterval(() => {
-    if (bubbleCount < maxBubbles) {
-        level1.enemies.push(new Bubble());
-        bubbleCount++;
-    }
-}, 10000);
-
-setInterval(() => {
-    if (jellyfishCount < maxJellyfish) {
-        level1.enemies.push(new Jellyfish());
-        jellyfishCount++;
-    }
-}, 6000);
-
-// Endboss nach kurzer Zeit initial erzeugen
-
-setTimeout(() => {
-    level1.enemies.push(new Endboss());
-}, 2000);
-
-// Entferne Gegner, die das Spielfeld verlassen haben, und aktualisiere die Zähler
-
-setInterval(() => {
-    level1.enemies = level1.enemies.filter(enemy => {
-        if (enemy instanceof fish && enemy.x + enemy.width < 0) {
-            fishCount--;
-            return false;
-        }
-        if (enemy instanceof Jellyfish && enemy.y + enemy.height < 0) {
-            jellyfishCount--;
-            return false;
-        }
-        if (enemy instanceof Bubble && enemy.y + enemy.height < 0) {
-            bubbleCount--;
-            return false;
-        }
-        return true;
-    });
-}, 2000);

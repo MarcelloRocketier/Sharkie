@@ -37,7 +37,7 @@ class fish extends MovableObject {
         this.loadImage(this.IMAGES_SWIM[0]);
         this.loadImages(this.IMAGES_SWIM);
 
-        this.x = 200 + Math.random() * 500;
+        this.x = 200 + Math.random() * 800;
         this.speed = 0.15 + Math.random() * 0.25;
         this.width = 50 + Math.random() * 30;
         this.height = this.width;
