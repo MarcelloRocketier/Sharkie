@@ -36,6 +36,10 @@ setInterval(() => {
     level1.enemies.push(new Bubble());
 }, 10000);
 
+setInterval(() => {
+    level1.enemies.push(new Jellyfish());
+}, 6000);
+
 // Endboss nach kurzer Zeit initial erzeugen
 setTimeout(() => {
     level1.enemies.push(new Endboss());

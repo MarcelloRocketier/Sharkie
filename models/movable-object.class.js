@@ -38,9 +38,9 @@ class MovableObject {
     }
 
     playAnimation(images) {
-       let i = this.currentImage % this.IMAGES_SWIM.length;
+    let i = this.currentImage % images.length;
     let path = images[i];
     this.img = this.imageCache[path];
     this.currentImage++;
-    }
+}
 }
