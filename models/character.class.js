@@ -2,6 +2,7 @@ class Character extends MovableObject {
 
     x = 50;
     y = 100;
+    speed = 5; 
     img;
     hight = 250;
     width = 200;
@@ -25,7 +26,7 @@ class Character extends MovableObject {
         'assets/img/1.Sharkie/1.IDLE/17.png',
         'assets/img/1.Sharkie/1.IDLE/18.png',
     ];
-  
+world;
     
 
 constructor() { 
@@ -38,11 +39,27 @@ constructor() {
 animate() {
 
     setInterval(() => {
+        if (this.world.keyboard.RIGHT) {
+            this.x += this.speed;
+        }
+
+        if (this.world.keyboard.LEFT) {
+            this.x -= this.speed;
+        }
+
+    }, 1000 / 60);
+
+    setInterval(() => {
+    
+    if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+        this.x += this.speed;
+    
     let i = this.currentImage % this.IMAGES_SWIM.length;
     let path = this.IMAGES_SWIM[i];
     this.img = this.imageCache[path];
     this.currentImage++;
-    }, 280); 
+    }
+    }, 50); 
 }
 
 jump() {
