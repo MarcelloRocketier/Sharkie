@@ -2,7 +2,7 @@ class MovableObject {
     x = 120;
     y = 180;
     img;
-    hight = 150;
+    height = 150;
     width = 100;
     imageCache = {};
     currentImage = 0;
@@ -35,5 +35,12 @@ class MovableObject {
         setInterval(() => {
             this.x -= this.speed; // Move left
         }, 1000 / 60); // Move left at 60 FPS
+    }
+
+    playAnimation(images) {
+       let i = this.currentImage % this.IMAGES_SWIM.length;
+    let path = images[i];
+    this.img = this.imageCache[path];
+    this.currentImage++;
     }
 }

@@ -4,7 +4,7 @@ class Character extends MovableObject {
     y = 100;
     speed = 6; 
     img;
-    hight = 250;
+    height = 250;
     width = 200;
     IMAGES_SWIM = [
         'assets/img/1.Sharkie/1.IDLE/1.png',
@@ -39,28 +39,24 @@ constructor() {
 animate() {
 
     setInterval(() => {
-        if (this.world.keyboard.RIGHT) {
+        if (this.world.keyboard.RIGHT  && this.x < this.world.level.level_end_x) {
             this.x += this.speed;
             this.otherDirection = false;
         }
 
-        if (this.world.keyboard.LEFT) {
+        if (this.world.keyboard.LEFT && this.x > 0) {
             this.x -= this.speed;
             this.otherDirection = true;
         }
-        this.world.camara_x = -this.x; // Update camera position based on character's x position
+        this.world.camara_x = -this.x + 100; // Update camera position based on character's x position
 
     }, 1000 / 60);
 
     setInterval(() => {
     
     if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-        this.x += this.speed;
-    
-    let i = this.currentImage % this.IMAGES_SWIM.length;
-    let path = this.IMAGES_SWIM[i];
-    this.img = this.imageCache[path];
-    this.currentImage++;
+        
+    this.playAnimation(this.IMAGES_SWIM);
     }
     }, 100); 
 }

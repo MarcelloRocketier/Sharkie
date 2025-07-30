@@ -1,25 +1,7 @@
 class World { 
 
     character = new Character();
-    enemies = [
-        new fish(),
-        new fish(),
-        new fish(),
-    ];
-    bubbles = [
-        new Bubble(),
-    ];
-
-    backgroundObjects = [
-    new BackgroundObject('assets/img/3. Background/Layers/5. Water/D1.png', 0),
-    new BackgroundObject('assets/img/3. Background/Layers/3.Fondo 1/D1.png', 0),
-    new BackgroundObject('assets/img/3. Background/Layers/4.Fondo 2/D1.png', 0),
-    new BackgroundObject('assets/img/3. Background/Layers/2. Floor/D1.png', 0),
-    new BackgroundObject('assets/img/3. Background/Layers/5. Water/D2.png', 720),
-    new BackgroundObject('assets/img/3. Background/Layers/3.Fondo 1/D2.png', 720),
-    new BackgroundObject('assets/img/3. Background/Layers/4.Fondo 2/D2.png', 720),
-    new BackgroundObject('assets/img/3. Background/Layers/2. Floor/D2.png', 720),
-];
+    level = level1; 
     ctx;
     canvas;
     keyboard;
@@ -43,10 +25,10 @@ class World {
 
         this.ctx.translate(this.camara_x, 0); // Move the camera
 
-        this.addObjectsToMap(this.backgroundObjects);
+        this.addObjectsToMap(this.level.backgroundObjects);
         this.addToMap(this.character);
-        this.addObjectsToMap(this.bubbles);
-        this.addObjectsToMap(this.enemies);
+        this.addObjectsToMap(this.level.bubbles);
+        this.addObjectsToMap(this.level.enemies);
         
         this.ctx.translate(-this.camara_x, 0); 
         
@@ -76,7 +58,7 @@ class World {
             this.ctx.scale(-1, 1); // Flip horizontally
             mo.x = mo.x* -1; // Adjust x position for flipped image
         }
-        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.hight);
+        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
         if(mo.otherDirection) {
             mo.x = mo.x* -1; // Reset x position after flipping
             this.ctx.restore();
