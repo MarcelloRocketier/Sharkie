@@ -7,24 +7,12 @@ class Character extends MovableObject {
     height = 250;
     width = 200;
     IMAGES_SWIM = [
-        'assets/img/1.Sharkie/1.IDLE/1.png',
-        'assets/img/1.Sharkie/1.IDLE/2.png',
-        'assets/img/1.Sharkie/1.IDLE/3.png',
-        'assets/img/1.Sharkie/1.IDLE/4.png',
-        'assets/img/1.Sharkie/1.IDLE/5.png',
-        'assets/img/1.Sharkie/1.IDLE/6.png',
-        'assets/img/1.Sharkie/1.IDLE/7.png',
-        'assets/img/1.Sharkie/1.IDLE/8.png',
-        'assets/img/1.Sharkie/1.IDLE/9.png',
-        'assets/img/1.Sharkie/1.IDLE/10.png',
-        'assets/img/1.Sharkie/1.IDLE/11.png',
-        'assets/img/1.Sharkie/1.IDLE/12.png',
-        'assets/img/1.Sharkie/1.IDLE/13.png',       
-        'assets/img/1.Sharkie/1.IDLE/14.png',
-        'assets/img/1.Sharkie/1.IDLE/15.png',
-        'assets/img/1.Sharkie/1.IDLE/16.png',
-        'assets/img/1.Sharkie/1.IDLE/17.png',
-        'assets/img/1.Sharkie/1.IDLE/18.png',
+        'assets/img/1.Sharkie/3.Swim/1.png',
+        'assets/img/1.Sharkie/3.Swim/2.png',
+        'assets/img/1.Sharkie/3.Swim/3.png',
+        'assets/img/1.Sharkie/3.Swim/4.png',
+        'assets/img/1.Sharkie/3.Swim/5.png',
+        'assets/img/1.Sharkie/3.Swim/6.png',
     ];
 world;
     
@@ -48,17 +36,32 @@ animate() {
             this.x -= this.speed;
             this.otherDirection = true;
         }
+
+        if (this.world.keyboard.UP && this.y > -30) {
+        this.y -= this.speed;
+        }
+
+        if (this.world.keyboard.DOWN && this.y < 480 - this.height) {
+    this.y += this.speed;
+        }
+
         this.world.camara_x = -this.x + 100; // Update camera position based on character's x position
 
     }, 1000 / 60);
 
     setInterval(() => {
     
-    if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+    if (
+    this.world.keyboard.RIGHT ||
+    this.world.keyboard.LEFT ||
+    this.world.keyboard.UP ||
+    this.world.keyboard.DOWN
+    ) 
+    {
         
     this.playAnimation(this.IMAGES_SWIM);
     }
-    }, 100); 
+    }, 120); 
 }
 
 jump() {
