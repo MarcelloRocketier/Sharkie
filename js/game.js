@@ -1,15 +1,15 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+const level1 = createLevel1();
+const level2 = createLevel2();
+let currentLevel = level1;
 
 function init() {
     canvas = document.getElementById('canvas');
-    world = new World(canvas, keyboard);    
-  
-
-    console.log('My Character is', world.character);
+    world = new World(canvas, keyboard, createLevel1());    
 }
-
+ 
 window.addEventListener("keydown", (e) => {
     if (e.keyCode == 39) keyboard.RIGHT = true;  // →
     if (e.keyCode == 37) keyboard.LEFT = true;   // ←

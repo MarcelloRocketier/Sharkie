@@ -1,16 +1,17 @@
 class World { 
 
     character = new Character();
-    level = level1; 
+    level = currentLevel;; 
     ctx;
     canvas;
     keyboard;
     camara_x = 0; 
 
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, level) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
+        this.level = level;
         this.setWorld();
         this.draw();
        
@@ -21,26 +22,27 @@ class World {
 }
 
     draw() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas
-
-        this.ctx.translate(this.camara_x, 0); // Move the camera
-
-        this.addObjectsToMap(this.level.backgroundObjects);
-        this.addToMap(this.character);
-        this.addObjectsToMap(this.level.bubbles);
-        if (this.level.poisonObjects) this.addObjectsToMap(this.level.poisonObjects);
-        this.addObjectsToMap(this.level.enemies);
-        if (this.level.coins) this.addObjectsToMap(this.level.coins);
-        
-        this.ctx.translate(-this.camara_x, 0); 
-        
-        // Draw() wird immer wieder aufgerufen, um die Animation zu aktualisieren
-        let self = this;
-        requestAnimationFrame(function() {
-            self.draw();
-        });
+    // 📍 Automatischer Levelwechsel
+    if (this.camara_x >= 1438 && currentLevel !== level2) {
+        currentLevel = level2;
+        this.level = currentLevel;
     }
+
+    this.ctx.translate(this.camara_x, 0);
+    
+    this.addObjectsToMap(this.level.backgroundObjects);
+    this.addToMap(this.character);
+    this.addObjectsToMap(this.level.bubbles);
+    if (this.level.poisons) this.addObjectsToMap(this.level.poisons);
+    this.addObjectsToMap(this.level.enemies);
+    if (this.level.coins) this.addObjectsToMap(this.level.coins);
+
+    this.ctx.translate(-this.camara_x, 0);
+
+    requestAnimationFrame(() => this.draw());
+}
 
 
     addObjectsToMap(objects) {
