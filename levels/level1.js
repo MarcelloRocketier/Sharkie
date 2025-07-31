@@ -1,4 +1,6 @@
 function createLevel1() {
+    const obstacles = [
+];
     const coins = [];
 
     // Kompaktere Welle im 1. Drittel (x: 400–1100)
@@ -68,6 +70,6 @@ function createLevel1() {
             new BackgroundObject('assets/img/3. Background/Layers/2. Floor/D1.png', 4314)
         ],
         coins,
-        poisons
+        poisons,
     );
 }

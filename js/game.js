@@ -7,7 +7,7 @@ let currentLevel = level1;
 
 function init() {
     canvas = document.getElementById('canvas');
-    world = new World(canvas, keyboard, createLevel1());    
+    world = new World(canvas, keyboard, currentLevel);    
 }
  
 window.addEventListener("keydown", (e) => {
