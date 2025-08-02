@@ -3,6 +3,7 @@ let world;
 let keyboard = new Keyboard();
 const level1 = createLevel1();
 const level2 = createLevel2();
+// const level3 = createLevel3(); 
 let currentLevel = level1;
 
 function init() {

@@ -32,10 +32,8 @@ class MovableObject {
     }
 
     moveLeft() {
-        setInterval(() => {
-            this.x -= this.speed; // Move left
-        }, 1000 / 60); // Move left at 60 FPS
-    }
+    this.x -= this.speed;
+}
 
     playAnimation(images) {
     let i = this.currentImage % images.length;

@@ -11,8 +11,8 @@ function createLevel1() {
     }
 
     const poisons = [
-        new Poison(600, 340),
-        new Poison(900, 360)
+        new Poison(600, 326),
+        new Poison(1400, 354)
     ];
 
     const enemies = [
@@ -23,6 +23,7 @@ function createLevel1() {
 
     const bubbles = [
         new Bubble(500, 300)
+        
     ];
 
     return new Level(
