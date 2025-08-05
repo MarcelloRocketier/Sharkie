@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * Startbildschirm (Levelauswahl)
- * @returns {string} HTML-String
+ * Generates the HTML for the game's start screen
+ * @returns {string} HTML markup for the start screen
  */
 function generateStartScreenHTML() {
     return `
@@ -12,21 +12,21 @@ function generateStartScreenHTML() {
                 <h1 class="start-screen-title">Level ${currentLevel + 1}</h1>
             </div>
             <div class="start-screen-body">
-                <button class="start-game-btn btn" onclick="startGame()">SPIEL STARTEN</button>
+                <button class="start-game-btn btn" onclick="startGame()">START GAME</button>
             </div>
         </div>
     `;
 }
 
 /**
- * Hauptspielansicht mit Canvas und Mobile-Steuerung
- * @returns {string} HTML-String
+ * Generates the main game HTML container with canvas and controls
+ * @returns {string} HTML markup for the game view
  */
 function generateGameHTML() {
     return `
         <h1 id="game-title" class="game-title">Sharkie</h1>
         <div id="canvas-wrapper" class="canvas-wrapper">
-            <img src="./assets/img/background/water_frame.png" id="canvas-frame-img" class="canvas-frame-img">
+            <img src="./assets/img/background/water_frame.png" id="canvas-frame-img" class="canvas-frame-img" alt="Canvas Frame">
             <div id="fullscreen-message" class="screen-message d-none">
                 Please switch to fullscreen mode
             </div>
@@ -35,7 +35,6 @@ function generateGameHTML() {
                     Please turn your device to landscape mode
                 </div>
                 <canvas id="canvas" width="720" height="480"></canvas>
-
                 <div id="mobile-ctrl-left" class="mobile-controller-container-left d-none">
                     <button id="ctrl-btn-up" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_up.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
                     <div class="mobile-controller-x-control">
@@ -43,69 +42,60 @@ function generateGameHTML() {
                         <button id="ctrl-btn-right" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_right.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
                     </div>
                     <button id="ctrl-btn-down" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_down.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
-                </div>
-
+                </div>  
                 <div id="mobile-ctrl-right" class="mobile-controller-container-right d-none">
                     <button id="ctrl-btn-fin-slap" class="mobile-ctrl-btn">Fin Slap</button>
                     <button id="ctrl-btn-bubble-trap" class="mobile-ctrl-btn">Bubble</button>
-                    <button id="ctrl-btn-poison-bubble-trap" class="mobile-ctrl-btn">Poison</button>
+                    <button id="ctrl-btn-poison-bubble-trap" class="mobile-ctrl-btn">Poison Bubble</button>
                 </div>
-
-                <button id="mobile-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Vollbild">
-                    <img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen" class="nav-icon">
-                </button>
-                <button id="mobile-mute-btn" class="nav-btn d-none" onclick="toggleSound()" title="Mute">
-                    <img src="./assets/img/icons/speaker.svg" alt="Mute" class="nav-icon" id="sound-img-mobile">
-                </button>
-                <button id="mobile-close-btn" class="nav-btn d-none" onclick="restartLevel()" title="Spiel verlassen">
-                    <img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon">
-                </button>
+                <button id="mobile-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Fullscreen On/Off"><img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen On/Off" class="nav-icon"></button>
+                <button id="mobile-mute-btn" class="nav-btn d-none" onclick="toggleSound()" title="Mute/Unmute"><img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img-mobile"></button>
+                <button id="mobile-close-btn" class="nav-btn d-none" onclick="restartLevel()" title="Exit Game"><img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon"></button>
             </div>
         </div>
     `;
 }
-
 /**
- * Gewonnen-Bildschirm (nicht letztes Level)
- * @returns {string} HTML-String
+ * Generates the HTML for the end-of-level screen when player wins
+ * @returns {string} HTML markup for the end screen
  */
 function generateEndScreenHTML() {
     return `
         <div class="end-screen-container">
             <div class="end-screen-header">
-                <img src="./assets/img/6._Buttons/Titles/You_Win/Work_Table.png" class="end-screen-img" alt="End Screen">
+                <img src="./assets/img/6._Buttons/Titles/You_Win/Work_Table.png" class="end-screen-img" alt="Victory Screen">
             </div>
             <div class="end-screen-body">
-                <button class="restart-lvl-btn btn" onclick="restartLevel()">LEVEL WIEDERHOLEN</button>
-                <button class="next-lvl-btn btn" onclick="nextLevel()">NÄCHSTES LEVEL</button>
+                <button class="restart-lvl-btn btn" onclick="restartLevel()">RESTART LEVEL</button>
+                <button class="next-lvl-btn btn" onclick="nextLevel()">NEXT LEVEL</button>
             </div>
         </div>
     `;
 }
 
 /**
- * Gewonnen-Bildschirm (letztes Level abgeschlossen)
- * @returns {string} HTML-String
+ * Generates the HTML for the final level completion screen
+ * @returns {string} HTML markup for max level completion
  */
 function generateMaxEndScreenHTML() {
     return `
         <div class="end-screen-container">
             <div class="end-screen-header">
-                <img src="./assets/img/6._Buttons/Titles/You_Win/Work_Table.png" class="end-screen-img" alt="End Screen">
+                <img src="./assets/img/6._Buttons/Titles/You_Win/Work_Table.png" class="end-screen-img" alt="Victory Screen">
             </div>
-            <h2 class="max-level-heading">Geschafft!</h2>
-            <h2 class="max-level-heading">Du hast alle Level beendet!</h2>
+            <h2 class="max-level-heading">Congratulations!</h2>
+            <h2 class="max-level-heading">You finished the last level!</h2>
             <div class="end-screen-body">
-                <button class="restart-lvl-btn btn" onclick="restartLevel()">LEVEL NOCHMAL</button>
-                <button class="restart-lvl-btn btn" onclick="restartGame()">NEUES SPIEL</button>
+                <button class="restart-lvl-btn btn" onclick="restartLevel()">RESTART LEVEL</button>
+                <button class="restart-lvl-btn btn" onclick="restartGame()">RESTART GAME</button>
             </div>
         </div>
     `;
 }
 
 /**
- * Game Over Bildschirm
- * @returns {string} HTML-String
+ * Generates the HTML shown when the player loses the game
+ * @returns {string} HTML markup for game over screen
  */
 function generateGameOverScreenHTML() {
     return `
@@ -114,7 +104,7 @@ function generateGameOverScreenHTML() {
                 <h2 class="game-over-screen-title">GAME OVER</h2>
             </div>
             <div class="end-screen-body">
-                <button class="restart-lvl-btn btn" onclick="restartLevel()">NOCHMAL VERSUCHEN</button>
+                <button class="restart-lvl-btn btn" onclick="restartLevel()">TRY AGAIN</button>
             </div>
         </div>
     `;
