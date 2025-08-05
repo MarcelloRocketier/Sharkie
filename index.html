@@ -1,45 +1,82 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sharkie</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sharkie Game</title>
+    <link rel="icon" type="image/x-icon" href="./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Yellow_1.png">
+    <link rel="stylesheet" href="style.css">
 
-  <!-- Models -->
-  <script src="models/movable-object.class.js"></script>
-  <script src="models/character.class.js"></script>
-  <script src="models/fish.class.js"></script>
-  <script src="models/jellyfish.class.js"></script>
-  <script src="models/pufferfish.class.js"></script>
-  <script src="models/endboss.class.js"></script>
-  <script src="models/barrier.class.js"></script>
-  <script src="models/barrier-rock.class.js"></script>
-  <script src="models/barrier-tunnel-above.class.js"></script>
-  <script src="models/barrier-tunnel-below.class.js"></script>
-  <script src="models/barrier-wall.class.js"></script>
-  <script src="models/coin.class.js"></script>
-  <script src="models/life.class.js"></script>
-  <script src="models/poison.class.js"></script>
-  <script src="models/bubbles.class.js"></script>
-  <script src="models/background-object.class.js"></script>
-  <script src="models/keyboard.class.js"></script>
-  <script src="models/world.class.js"></script>
-  <script src="models/level.class.js"></script>
+    <!-- Ressourcen & Modelle -->
+    <script src="js/images.js"></script>
 
-  <!-- Levels -->
-  <script src="levels/level1.js"></script>
-  <script src="levels/level2.js"></script>
-  <script src="levels/level3.js"></script>
+    <!-- Spielfiguren und Gegner -->
+    <script src="js/models/drawable-object.class.js"></script>
+    <script src="js/models/movable-object.class.js"></script>
+    <script src="js/models/character.class.js"></script>
+    <script src="js/models/level-design-helper.js"></script>
+    <script src="js/models/enemies/puffer-fish.class.js"></script>
+    <script src="js/models/enemies/jellyfish-regular.class.js"></script>
+    <script src="js/models/enemies/jellyfish-dangerous.class.js"></script>
+    <script src="js/models/enemies/endboss.class.js"></script>
 
-  <!-- Logic -->
-  <script src="js/images.js"></script>
-  <script src="js/templates.js"></script>
-  <script src="js/game.js"></script>
+    <!-- Umgebung & Hindernisse -->
+    <script src="js/models/background-object.class.js"></script>
+    <script src="js/models/barriers/barrier.class.js"></script>
+    <script src="js/models/barriers/barrier-tunnel-above.class.js"></script>
+    <script src="js/models/barriers/barrier-tunnel-below.class.js"></script>
+    <script src="js/models/barriers/barrier-rock.class.js"></script>
+    <script src="js/models/barriers/barrier-wall.class.js"></script>
+
+    <!-- Steuerung & HUD -->
+    <script src="js/models/keyboard.class.js"></script>
+    <script src="js/models/level.class.js"></script>
+    <script src="js/models/bubble.class.js"></script>
+    <script src="js/models/poison-bubble.class.js"></script>
+    <script src="js/models/collectables/coin.class.js"></script>
+    <script src="js/models/collectables/life.class.js"></script>
+    <script src="js/models/collectables/poison.class.js"></script>
+    <script src="js/models/status-bar.class.js"></script>
+    <script src="js/models/world.class.js"></script>
+
+    <!-- Levels & Spiel-Logik -->
+    <script src="js/levels/level_1.js"></script>
+    <script src="js/levels/level_2.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/templates.js"></script>
 </head>
 
 <body onload="init()">
-  <h1 id="game-title">Sharkie</h1>
-  <canvas id="canvas" width="720" height="480"></canvas>
+    <div id="loading-screen" class="loading-screen">
+        <h2 class="loading-text">Wird geladen...</h2>
+        <img src="./assets/img/jellyfish_loader.gif" alt="Loader">
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-btn" onclick="toggleSettingsMenu()" title="Einstellungen">
+            <img src="./assets/img/icons/settings.svg" alt="Settings" class="nav-icon">
+        </button>
+        <button class="nav-btn" onclick="toggleSound()" title="Sound">
+            <img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img">
+        </button>
+        <button id="toggle-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Vollbild">
+            <img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen" class="nav-icon">
+        </button>
+        <button class="nav-btn" onclick="toggleHelpSite()" title="Hilfe">
+            <img src="./assets/img/icons/help.svg" alt="Help" class="nav-icon">
+        </button>
+    </nav>
+
+    <!-- Einstellungen, Hilfe, Spielbereich -->
+    <div class="settings-menu-container d-none" id="settings-menu-container"></div>
+    <div class="help-container d-none" id="help-container"></div>
+    <main id="content" class="content"></main>
+
+    <span id="img-attribution" class="img-attribution">
+        <a href="https://www.freepik.com/free-vector/ocean-sea-underwater-background-empty-bottom_7058927.htm#&position=5&from_view=collections" target="_blank">
+            Image by upklyak
+        </a> on Freepik
+    </span>
 </body>
 </html>
