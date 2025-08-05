@@ -2,6 +2,7 @@ class Endboss extends MovableObject {
     
     introDone = false;
     introAnimationInterval = null;
+    isFloatingStarted = false;
 
     IMAGES_INTRODUCE = [
         'assets/img/2.Enemy/3 Final Enemy/1.Introduce/1.png',
@@ -33,42 +34,49 @@ class Endboss extends MovableObject {
     ];
 
     constructor(x, y) {
-    super();
-    this.x = x;
-    this.y = y;
-    this.width = 300;
-    this.height = 300;
-    this.speed = 1.5;
-    this.loadImage(this.IMAGES_INTRODUCE[0]);
-    this.loadImages(this.IMAGES_INTRODUCE);
-    this.initIntroAnimation();
-}
-
-initIntroAnimation() {
-    this.frameCount = 0;
-    this.updateBound = this.update.bind(this);
-    requestAnimationFrame(this.updateBound);
-}
-
-update() {
-    this.frameCount++;
-
-    if (!this.introDone) {
-        this.x -= this.speed;
-        this.playAnimation(this.IMAGES_INTRODUCE);
-
-        if (this.x <= 2200) {
-            this.introDone = true;
-            this.speed = 0;
-            this.loadImages(this.IMAGES_FLOATING);
-            this.currentImage = 0;
-        }
-    } else {
-        this.playAnimation(this.IMAGES_FLOATING);
+        super();
+        this.x = x;
+        this.y = y;
+        this.width = 300;
+        this.height = 300;
+        this.speed = 1.5;
+        this.currentImage = 0;
+        this.frameCounter = 0;
+        this.loadImage(this.IMAGES_INTRODUCE[0]);
+        this.loadImages(this.IMAGES_INTRODUCE);
+        this.loadImages(this.IMAGES_FLOATING);
     }
 
-    requestAnimationFrame(this.updateBound);
-}
+    update() {
+        this.frameCounter++;
 
+        if (!this.introDone) {
+            this.x -= this.speed;
+
+            if (this.frameCounter % 5 === 0) {
+                this.playAnimation(this.IMAGES_INTRODUCE);
+            }
+
+            if (this.x <= 2200) {
+                this.introDone = true;
+                this.speed = 0;
+                this.currentImage = 0;
+            }
+        } 
+
+        if (this.introDone && !this.isFloatingStarted) {
+            this.isFloatingStarted = true;
+            this.frameCounter = 0;
+        }
+
+        if (this.introDone && this.isFloatingStarted && this.frameCounter % 6 === 0) {
+            this.playAnimation(this.IMAGES_FLOATING);
+        }
+    }
     
+    draw(ctx) {
+        if (!this.img || !this.img.complete) return;
+
+        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    }
 }

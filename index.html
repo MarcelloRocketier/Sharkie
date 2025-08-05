@@ -1,41 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <title>Document</title>
-    <script src="models/movable-object.class.js"></script>
-    <script src="models/character.class.js"></script>
-    <script src="models/fish.class.js"></script>
-    <script src="models/jellyfish.class.js"></script>
-    <script src="models/pufferfish.class.js"></script>
-    <script src="models/bubbles.class.js"></script>
-    <script src="models/coin.class.js"></script>
-    <script src="models/poison.class.js"></script>
-    
-    <script src="models/background-object.class.js"></script>
-    <script src="models/keyboard.class.js"></script>
-    <script src="models/level.class.js"></script>
-    <script src="levels/level1.js"></script>
-    <script src="models/obstacle.class.js"></script>
-    <script src="levels/level2.js"></script>
-    <script src="levels/level3.js"></script>
-    <script src="models/endboss.class.js"></script>
-    <script src="models/world.class.js"></script>
-   
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sharkie</title>
+  <link rel="stylesheet" href="style.css" />
 
-    <script src="js/game.js"></script>
-  </head>
+  <!-- Models -->
+  <script src="models/movable-object.class.js"></script>
+  <script src="models/character.class.js"></script>
+  <script src="models/fish.class.js"></script>
+  <script src="models/jellyfish.class.js"></script>
+  <script src="models/pufferfish.class.js"></script>
+  <script src="models/endboss.class.js"></script>
+  <script src="models/barrier.class.js"></script>
+  <script src="models/barrier-rock.class.js"></script>
+  <script src="models/barrier-tunnel-above.class.js"></script>
+  <script src="models/barrier-tunnel-below.class.js"></script>
+  <script src="models/barrier-wall.class.js"></script>
+  <script src="models/coin.class.js"></script>
+  <script src="models/life.class.js"></script>
+  <script src="models/poison.class.js"></script>
+  <script src="models/bubbles.class.js"></script>
+  <script src="models/background-object.class.js"></script>
+  <script src="models/keyboard.class.js"></script>
+  <script src="models/world.class.js"></script>
+  <script src="models/level.class.js"></script>
 
-  <body onload="init()">
+  <!-- Levels -->
+  <script src="levels/level1.js"></script>
+  <script src="levels/level2.js"></script>
+  <script src="levels/level3.js"></script>
 
-    
+  <!-- Logic -->
+  <script src="js/images.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/game.js"></script>
+</head>
 
-    <h1 id="game-title">Sharkie</h1>
-    <canvas id="canvas" width="720" height="480">
-
-    </canvas>
-
-  </body>
+<body onload="init()">
+  <h1 id="game-title">Sharkie</h1>
+  <canvas id="canvas" width="720" height="480"></canvas>
+</body>
 </html>
