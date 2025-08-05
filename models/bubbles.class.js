@@ -1,32 +1,28 @@
 class Bubble extends MovableObject {
-    constructor() {
-        super().loadImage('assets/img/4. Marcadores/bubbles.png');
+    width = 50;
+    height = 50;
+    speed = 1.02;
+    attack = 10;
 
-        // zufällige Größe
-        this.width = 60 + Math.random() * 50;
-        this.height = this.width * 1.1;
-
-        // Startposition rechts außerhalb
-        this.x = 720 + Math.random() * 300;
-        this.y = 50 + Math.random() * 300;
-
-        // zufällige Geschwindigkeit
-        this.speedX = 0.2 + Math.random() * 0.2;
-        this.speedY = 0.1 + Math.random() * 0.3;
-
-        // individuelle Wackelphase
-        this.phase = Math.random() * 100;
-
-        this.animate();
+    constructor(startX, startY, otherDirection) {
+        super().loadImage('assets/img/1._Sharkie/4._Attack/Bubble_Trap/Bubble.png');
+        this.x = startX;
+        this.y = startY;
+        this.otherDirection = otherDirection;
+        this.float();
     }
 
-    animate() {
-        setInterval(() => {
-            this.x -= this.speedX;
-            this.y -= this.speedY;
+    /**
+     * Moves the bubble diagonally upward depending on the direction
+     */
+    float() {
+        if (this.otherDirection) {
+            this.x -= 200; // Shift bubble to start from character's correct side
+        }
 
-            // sanftes Wackeln nach oben/unten
-            this.y += Math.sin(Date.now() / 300 + this.phase) * 0.4;
+        setInterval(() => {
+            this.x += this.otherDirection ? -this.speed : this.speed;
+            this.y -= this.speed;
         }, 1000 / 60);
     }
-}
+} 
