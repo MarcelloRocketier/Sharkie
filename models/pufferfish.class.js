@@ -1,41 +1,53 @@
-class Pufferfish extends MovableObject {
-    constructor(x, y) {
-        super();
-
-        this.loadImage('assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/1.bubbleswim1.png');
-        this.IMAGES = [
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/1.bubbleswim1.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/1.bubbleswim2.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/1.bubbleswim3.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/1.bubbleswim4.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/1.bubbleswim5.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/2.bubbleswim1.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/2.bubbleswim2.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/2.bubbleswim3.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/2.bubbleswim4.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/2.bubbleswim5.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/3.bubbleswim1.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/3.bubbleswim2.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/3.bubbleswim3.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/3.bubbleswim4.png',
-            'assets/img/2.Enemy/1.Puffer fish (3 color options)/3.Bubbleeswim/3.bubbleswim5.png'        
-        ];
-
-        this.loadImages(this.IMAGES);
-
-        this.x = x;
-        this.y = y;
-        this.width = 70;
-        this.height = 70;
-        this.speed = 0.2;
-
-        this.animate();
+/**
+ * Puffer fish enemy object
+ */
+class PufferFish extends MovableObject {
+    width = 100;
+    height = 100;
+    energy = 5;
+    attack = 5;
+    speed = 2;
+    offset = {
+        x: 0,
+        y: 3,
+        width: 5,
+        height: 24
     }
 
-    animate() {
-    setInterval(() => {
-        this.x -= this.speed; // ❗ Bewegung
-        this.playAnimation(this.IMAGES);
-    }, 1000 / 60);
-}
+    constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
+        super().loadImage('assets/img/2.Enemy/1.Puffer_Fish_(3_Color_Options)/1.Swim/1.Swim_1.png');
+        this.loadImages(PUFFER_FISH_IMAGES.SWIM[color]);
+        this.loadImages(PUFFER_FISH_IMAGES.DEAD[color]);
+        this.x = x;
+        this.y = y;
+
+        if (imgInitiallyMirrored == 1) {
+            this.imgMirrored = true;
+        } else {
+            this.imgMirrored = false;
+        }
+
+        this.animate(color, direction, startPoint, endPoint, speed);
+    }
+
+    /**
+     * Animate puffer-fish
+     * @param {string} color The color of the enemy
+     * @param {string} direction 'horizontal' or 'vertical'
+     * @param {integer} startPoint The start point of the movement
+     * @param {integer} endPoint The end point of the movement
+     * @param {float} speed The speed of the enemy
+     * @param {integer} imgInitiallyMirrored 1 = mirrored, 0 = not mirrored (Necessary for horizontal movement)
+     */
+    animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
+        this.move(direction, startPoint, endPoint, speed, imgInitiallyMirrored);
+
+        setInterval(() => {
+            if (this.isDead()) {
+                this.playAnimation(PUFFER_FISH_IMAGES.DEAD[color], 0);
+            } else {
+                this.playAnimation(PUFFER_FISH_IMAGES.SWIM[color], 1);
+            }
+        }, 250);
+    }
 }
