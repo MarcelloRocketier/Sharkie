@@ -1,98 +1,244 @@
+/**
+ * Spielwelt-Klasse
+ * Hier werden alle Objekte des Spiels erstellt (Hintergründe, Charakter, Gegner, ...)
+ * Zugriff auf Objekte über Konsole: world.<objekt>.<eigenschaft()/methode()>
+ */
 class World {
-    character = new Character();
-    level = currentLevel;
-    ctx;
     canvas;
+    ctx;
+    camera_x = 0;
     keyboard;
-    camara_x = 0;
-    reachedLevel2 = false;
-    reachedLevel3 = false;
+    bubble;
+    MAIN_SOUND = new Audio('./assets/audio/main_theme.mp3');
 
-    constructor(canvas, keyboard, level) {
-        this.ctx = canvas.getContext('2d');
+    character = new Character();
+    levelDesignHelper = new LevelDesignHelper();
+    level = levels[currentLevel];
+
+    statusBarLife = new StatusBar('life', 'green', 100, 20, 0);
+    statusBarCoins = new StatusBar('coins', 'green', 0, 20, 40);
+    statusBarPoison = new StatusBar('poison', 'green', 0, 20, 80);
+    statusBarEndBoss = new StatusBar('life', 'orange', 100, 460, 400);
+
+    constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.level = level;
+        this.ctx = canvas.getContext('2d');
+
         this.setWorld();
         this.draw();
+        this.checkCollisions();
+
+        if (mobileAndTabletCheck()) {
+            this.setupMobileUI();
+        }
+
+        this.handleFullscreenCanvas();
+        this.handleThemeSound();
     }
 
     setWorld() {
-        this.character.setWorld(this);
+        this.character.world = this;
+        this.levelDesignHelper.world = this;
+        this.level.getEndBoss().world = this;
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.clearCanvas();
+        this.ctx.translate(this.camera_x, 0);
 
-        // LEVEL-WECHSEL LOGIK
-        if (this.character.x >= 1438 && !this.reachedLevel2) {
-            this.reachedLevel2 = true;
-            currentLevel = createLevel2();
-            this.level = currentLevel;
-            this.setWorld();
-            this.character.x = 1200;
-            this.camara_x = -this.character.x + 100;
+        this.addObjectsToWorld(this.level.backgroundObjects);
+        this.addObjectsToWorld(this.level.coins);
+        this.addObjectsToWorld(this.level.life);
+        this.addObjectsToWorld(this.level.poison);
+        this.addObjectsToWorld(this.level.enemies);
+        this.addObjectsToWorld(this.level.barriers);
+
+        if (debugLevelDesignHelper) {
+            this.addToWorld(this.levelDesignHelper);
+        } else {
+            this.addToWorld(this.character);
         }
 
-        if (this.character.x >= 2800 && !this.reachedLevel3) {
-            this.reachedLevel3 = true;
-            currentLevel = createLevel3();
-            this.level = currentLevel;
-            this.setWorld();
-            this.character.x = 2800;
-            this.camara_x = -this.character.x + 100;
+        if (this.bubble) {
+            this.addToWorld(this.bubble);
         }
 
-        this.ctx.translate(this.camara_x, 0);
+        this.ctx.translate(-this.camera_x, 0);
 
-        this.addObjectsToMap(this.level.backgroundObjects);
-        if (this.level.obstacles?.length) this.addObjectsToMap(this.level.obstacles);
-        this.addToMap(this.character);
-        if (this.level.bubbles) this.addObjectsToMap(this.level.bubbles);
-        if (this.level.poisons) this.addObjectsToMap(this.level.poisons);
-        if (this.level.coins) this.addObjectsToMap(this.level.coins);
+        this.addToWorld(this.statusBarLife);
+        this.addToWorld(this.statusBarCoins);
+        this.addToWorld(this.statusBarPoison);
 
-        // Gegner-Update & Zeichnen
-        if (this.level.enemies?.length) {
-            this.level.enemies.forEach(enemy => {
-                if (enemy.constructor.name === 'Endboss') {
-                    if (typeof enemy.update === 'function') {
-                        enemy.update();
-                    }
-                    if (typeof enemy.draw === 'function') {
-                        enemy.draw(this.ctx);
-                    } else {
-                        this.addToMap(enemy);
-                    }
-                } else {
-                    this.addToMap(enemy);
-                }
-            });
+        if (this.level.getEndBoss().endBossIntroduced) {
+            this.addToWorld(this.statusBarEndBoss);
         }
 
-        this.ctx.translate(-this.camara_x, 0);
+        this.ctx.translate(this.camera_x, 0);
+        this.ctx.translate(-this.camera_x, 0);
+
         requestAnimationFrame(() => this.draw());
     }
 
-    addObjectsToMap(objects) {
-        objects.forEach(o => this.addToMap(o));
+    addToWorld(obj) {
+        if (obj.imgMirrored) this.flipImage(obj);
+        obj.draw(this.ctx);
+        if (debugMode) obj.drawCollisionDetectionFrame(this.ctx);
+        if (obj.imgMirrored) this.undoFlipImage(obj);
     }
 
-    addToMap(mo) {
-        if (!mo.img || !mo.img.complete) return;
+    addObjectsToWorld(arr) {
+        arr.forEach(obj => this.addToWorld(obj));
+    }
 
-        if (mo.otherDirection) {
-            this.ctx.save();
-            this.ctx.translate(mo.width, 0);
-            this.ctx.scale(-1, 1);
-            mo.x = mo.x * -1;
-        }
+    clearCanvas() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
 
-        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
+    flipImage(obj) {
+        this.ctx.save();
+        this.ctx.translate(obj.width, 0);
+        this.ctx.scale(-1, 1);
+        obj.x = obj.x * -1;
+    }
 
-        if (mo.otherDirection) {
-            mo.x = mo.x * -1;
-            this.ctx.restore();
-        }
+    undoFlipImage(obj) {
+        obj.x = obj.x * -1;
+        this.ctx.restore();
+    }
+
+    setupMobileUI() {
+        const hide = id => document.getElementById(id)?.classList.add('d-none');
+        const show = id => document.getElementById(id)?.classList.remove('d-none');
+
+        ['game-title', 'canvas-frame-img', 'img-attribution'].forEach(hide);
+        ['mobile-fullscreen-btn', 'mobile-mute-btn', 'mobile-close-btn', 'mobile-ctrl-left', 'mobile-ctrl-right'].forEach(show);
+
+        document.getElementById('canvas-wrapper')?.classList.add('fullscreen');
+        document.getElementById('fullscreen-container')?.classList.add('fullscreen');
+        document.getElementById('canvas').style = 'width: 100%; height: 100%';
+
+        toggleFullscreen();
+    }
+
+    handleFullscreenCanvas() {
+        setInterval(() => {
+            const canvas = document.getElementById('canvas');
+            const fullMsg = document.getElementById('fullscreen-message');
+            const landscapeMsg = document.getElementById('landscape-message');
+
+            if (fullscreen && canvas) canvas.classList.add('fullscreen');
+            else if (canvas) canvas.classList.remove('fullscreen');
+
+            if (!mobileAndTabletCheck() && window.innerWidth <= 992) {
+                fullMsg?.classList.remove('d-none');
+                if (landscapeMsg) landscapeMsg.style = "opacity: 0";
+            } else {
+                fullMsg?.classList.add('d-none');
+                if (landscapeMsg) landscapeMsg.style = "opacity: 1";
+            }
+        }, 1000 / 60);
+    }
+
+    handleThemeSound() {
+        setInterval(() => {
+            if (soundOn && !this.level.getEndBoss().endBossAlreadyTriggered && !levelEnded) {
+                this.MAIN_SOUND.play();
+                this.MAIN_SOUND.addEventListener('ended', function () {
+                    this.currentTime = 0;
+                    this.play();
+                }, false);
+            } else {
+                this.MAIN_SOUND.pause();
+                this.MAIN_SOUND.currentTime = 0;
+            }
+        }, 1000 / 60);
+    }
+
+    checkCollisions() {
+        setInterval(() => {
+            this.handleEnemyCollisions();
+            this.handleBubbleCollisions();
+            this.handleEndBossCollisions();
+            this.handleCollectableCollisions();
+        }, 200);
+    }
+
+    handleEnemyCollisions() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && !enemy.isDead() && !this.character.isFinSlapping) {
+                this.character.hit(enemy.attack);
+                this.statusBarLife.setPercentage(this.character.energy, 'life', 'green');
+                this.character.hitBy = enemy.constructor.name;
+                if (enemy instanceof EndBoss) this.level.getEndBoss().isCollidingWithCharacter = true;
+                if (debugLogStatements) console.log('Colliding with:', enemy);
+            }
+
+            if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof PufferFish) {
+                enemy.hit(this.character.attack);
+                enemy.stopMovement = true;
+                enemy.floatAway(this.character.imgMirrored);
+                if (debugLogStatements) console.log('Fin slap:', enemy);
+            }
+        });
+    }
+
+    handleBubbleCollisions() {
+        this.level.enemies.forEach(enemy => {
+            if (this.bubble instanceof Bubble && this.bubble.isColliding(enemy) && (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous)) {
+                enemy.hit(this.bubble.attack);
+                enemy.stopMovement = true;
+                enemy.speed = 1;
+                enemy.floatAwayUp();
+                this.bubble = undefined;
+            }
+        });
+    }
+
+    handleEndBossCollisions() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof EndBoss) {
+                enemy.hit(this.character.attack);
+                this.statusBarEndBoss.setPercentage((enemy.energy / 200) * 100, 'life', 'orange');
+            }
+
+            if (this.bubble && this.bubble.isColliding(enemy) && enemy instanceof EndBoss) {
+                enemy.hit(this.bubble.attack);
+                this.statusBarEndBoss.setPercentage((enemy.energy / 200) * 100, 'life', 'orange');
+                this.bubble = undefined;
+            }
+        });
+    }
+
+    handleCollectableCollisions() {
+        this.level.coins.forEach(coin => {
+            if (this.character.isColliding(coin)) {
+                const index = this.level.coins.indexOf(coin);
+                const total = this.level.coins.length + this.character.coins;
+                this.character.coins++;
+                this.statusBarCoins.setPercentage((this.character.coins / total) * 100, 'coins', 'green');
+                this.level.coins.splice(index, 1);
+            }
+        });
+
+        this.level.life.forEach(life => {
+            if (this.character.isColliding(life)) {
+                const index = this.level.life.indexOf(life);
+                this.character.energy = Math.min(this.character.energy + (this.character.energy > 90 ? 5 : 10), 100);
+                this.statusBarLife.setPercentage(this.character.energy, 'life', 'green');
+                this.level.life.splice(index, 1);
+            }
+        });
+
+        this.level.poison.forEach(poison => {
+            if (this.character.isColliding(poison)) {
+                const index = this.level.poison.indexOf(poison);
+                this.level.totalPoison = this.level.poison.length + this.level.collectedPoison;
+                this.character.poison++;
+                this.statusBarPoison.setPercentage((this.character.poison / this.level.totalPoison) * 100, 'poison', 'green');
+                this.level.poison.splice(index, 1);
+                this.level.collectedPoison++;
+            }
+        });
     }
 }
