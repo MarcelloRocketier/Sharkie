@@ -14,7 +14,7 @@ class Character extends MovableObject {
         height: 65,
         bubbleX: 220,
         bubbleY: 165
-    };
+    }
     speed = 4;
     energy = 100;
     attack = 10;
@@ -59,7 +59,7 @@ class Character extends MovableObject {
 
     constructor() {
         super();
-        if ((debugMode && !debugLevelDesignHelper) || (!debugMode && !debugLevelDesignHelper)) {
+        if (debugMode && !debugLevelDesignHelper || !debugMode && !debugLevelDesignHelper) { // Is required because in debugMode Character and DebugCharacter are created and otherwise collisions are triggered
             this.loadImage('./assets/img/1._Sharkie/1._Idle/1.png');
             this.loadImages(SHARKIE_IMAGES.IDLE);
             this.loadImages(SHARKIE_IMAGES.LONG_IDLE);
