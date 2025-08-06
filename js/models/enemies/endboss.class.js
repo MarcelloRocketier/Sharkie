@@ -82,63 +82,42 @@ class EndBoss extends MovableObject {
 
             if (this.x <= this.startX - this.wanderDistance) {
                 this.waypoint1 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint1');
-                }
             }
         } else if (this.waypoint1 && !this.waypoint2) { // Move back
             this.x += this.speed;
 
             if (this.x > this.startX) {
                 this.waypoint2 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint2');
-                }
             }
         } else if (this.waypoint2 && !this.waypoint3) { // Move down
             this.y += this.speed;
 
             if (this.y >= 150) {
                 this.waypoint3 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint3');
-                }
             }
         } else if (this.waypoint3 && !this.waypoint4) { // Move forward
             this.x -= this.speed * this.getRandomSpeedFactor(2.5, 3.5);
 
             if (this.x <= this.startX - this.wanderDistance) {
                 this.waypoint4 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint4');
-                }
             }
         } else if (this.waypoint4 && !this.waypoint5) { // Move back
             this.x += this.speed * this.getRandomSpeedFactor(2, 3.5);
 
             if (this.x > this.startX) {
                 this.waypoint5 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint5');
-                }
             }
         } else if (this.waypoint5 && !this.waypoint6) { // Move up
             this.y -= this.speed;
 
             if (this.y < 0) {
                 this.waypoint6 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint6');
-                }
             }
         } else if (this.waypoint6 && !this.waypoint7) { // Move forward
             this.x -= this.speed * this.getRandomSpeedFactor(2.5, 4.5);
 
             if (this.x <= this.startX - this.wanderDistance) {
                 this.waypoint7 = true;
-                if (debugLogStatements) {
-                    console.log('EndBoss reached waypoint7');
-                }
             }
         } else if (this.waypoint7) { // Move back
             this.x += this.speed;
@@ -152,9 +131,6 @@ class EndBoss extends MovableObject {
                 this.waypoint6 = false;
                 this.waypoint7 = false;
 
-                if (debugLogStatements) {
-                    console.log('EndBoss reached last waypoint');
-                }
             }
         }
     }

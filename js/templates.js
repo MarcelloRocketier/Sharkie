@@ -26,7 +26,6 @@ function generateGameHTML() {
     return `
         <h1 id="game-title" class="game-title">Sharkie</h1>
         <div id="canvas-wrapper" class="canvas-wrapper">
-            <img src="./assets/img/background/water_frame.png" id="canvas-frame-img" class="canvas-frame-img" alt="Canvas Frame">
             <div id="fullscreen-message" class="screen-message d-none">
                 Please switch to fullscreen mode
             </div>

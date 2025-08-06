@@ -4,12 +4,12 @@
 class BarrierWall extends Barrier {
     width = 200;
     height = 480;
-    offset = {
-        x: 50,
-        y: 0,
-        width: 40,
-        height: 0
-    }
+   offset = {
+    x: 50,
+    y: 0,
+    width: 40,
+    height: 480
+}
 
     constructor(x, y) {
         super();

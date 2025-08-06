@@ -43,21 +43,13 @@
 <body onload="init()">
     <div id="loading-screen" class="loading-screen">
         <h2 class="loading-text">Loading...</h2>
-        <img src="./assets/img/jellyfish_loader.gif" alt="Loader" />
+        <img src="assets/img/6._Buttons/circle-1700_128.gif" alt="Loader" />
     </div>
     <nav class="nav">
-        <button class="nav-btn" onclick="toggleSettingsMenu()" title="Settings">
-            <img src="./assets/img/icons/settings.svg" alt="Settings" class="nav-icon" />
-        </button>
-        <button class="nav-btn" onclick="toggleSound()" title="Mute/Unmute">
-            <img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img" />
-        </button>
-        <button id="toggle-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Fullscreen On/OFf">
-            <img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen On/Off" class="nav-icon" />
-        </button>
-        <button class="nav-btn" onclick="toggleHelpSite()" title="Help">
-            <img src="./assets/img/icons/help.svg" alt="Help" class="nav-icon" />
-        </button>
+        <button class="nav-btn" onclick="toggleSettingsMenu()" title="Settings"><img src="./assets/img/icons/settings.svg" alt="Settings" class="nav-icon"></button>
+        <button class="nav-btn" onclick="toggleSound()" title="Mute/Unmute"><img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img"></button>
+        <button id="toggle-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Fullscreen On/OFf"><img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen On/Off" class="nav-icon"></button>
+        <button class="nav-btn" onclick="toggleHelpSite()" title="Help"><img src="./assets/img/icons/help.svg" alt="Help" class="nav-icon"></button>
     </nav>
     <div class="settings-menu-container d-none" id="settings-menu-container">
         <button class="nav-btn close-btn" onclick="toggleSettingsMenu()">
@@ -77,65 +69,59 @@
             </div>
         </div>
     </div><div class="help-container d-none" id="help-container">
-    <button class="nav-btn close-btn" onclick="toggleHelpSite()">
-        <img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon" />
-    </button>
-    <div class="help-header">
-        <h2 class="settings-menu-title">HOW TO PLAY</h2>
-    </div>
-    <div class="help-body">
-        <div class="help-row">
-            <div class="help-sub-row">
-                <img src="./assets/img/6._Buttons/Keys/Arrow_Keys.png" alt="Movement Keys" class="help-img" />
-                <h2 class="help-instruction">MOVE SHARKIE AROUND</h2>
-            </div>
-            <div class="help-sub-row">
-                <img src="./assets/img/1._Sharkie/1._Idle/1.png" alt="Sharkie" class="help-img-sharkie" />
-            </div>
+        <button class="nav-btn close-btn" onclick="toggleHelpSite()"><img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon"></button>
+        <div class="help-header">
+            <h2 class="settings-menu-title">HELP</h2>
         </div>
-        <div class="help-row">
-            <div class="help-sub-row">
-                <img src="./assets/img/6._Buttons/Keys/Space_Bar_Key.png" alt="Space Bar Key" class="help-img" />
-                <h2 class="help-instruction">USE FIN-SLAP TO ATTACK</h2>
+        <div class="help-body">
+            <div class="help-row">
+                <div class="help-sub-row">
+                    <img src="./assets/img/6._Buttons/Keys/Arrow_Keys.png" alt="Movement Keys" class="help-img">
+                    <h2 class="help-instruction">MOVE SHARKIE</h2>
+                </div>
+                <div class="help-sub-row">
+                    <img src="./assets/img/1._Sharkie/1._Idle/1.png" alt="Sharkie" class="help-img-sharkie">
+                </div>
             </div>
-            <div class="help-sub-row">
-                <img src="./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/3._Swim_1.png" alt="Puffer-Fish" class="help-img-puffer-fish" />
-                <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss" />
+            <div class="help-row">
+                <div class="help-sub-row">
+                    <img src="./assets/img/6._Buttons/Keys/Space_Bar_Key.png" alt="Space Bar Key" class="help-img">
+                    <h2 class="help-instruction">FIN-SLAP ATTACK</h2>
+                </div>
+                <div class="help-sub-row">
+                    <img src="./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/3._Swim_1.png" alt="Puffer-Fish" class="help-img-puffer-fish">
+                    <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss">
+                </div>
             </div>
-        </div>
-        <div class="help-row">
-            <div class="help-sub-row">
-                <img src="./assets/img/6._Buttons/Keys/D_Key.png" alt="D Key" class="help-img-key" />
-                <h2 class="help-instruction">TRAP ENEMIES WITH BUBBLES</h2>
+            <div class="help-row">
+                <div class="help-sub-row">
+                    <img src="./assets/img/6._Buttons/Keys/D_Key.png" alt="D Key" class="help-img-key">
+                    <h2 class="help-instruction">BUBBLE TRAP ATTACK</h2>
+                </div>
+                <div class="help-sub-row">
+                    <img src="./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Yellow_1.png" alt="Jellyfish" class="help-img-jellyfish">
+                    <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss">
+                </div>
             </div>
-            <div class="help-sub-row">
-                <img src="./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Yellow_1.png" alt="Jellyfish" class="help-img-jellyfish" />
-                <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss" />
+            <div class="help-row">
+                <div class="help-sub-row">
+                    <img src="./assets/img/6._Buttons/Keys/F_Key.png" alt="F Key" class="help-img-key">
+                    <h2 class="help-instruction">POISON BUBBLE TRAP ATTACK</h2>
+                </div>
+                <div class="help-sub-row">
+                    <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss">
+                </div>
             </div>
-        </div>
-        <div class="help-row">
-            <div class="help-sub-row">
-                <img src="./assets/img/6._Buttons/Keys/F_Key.png" alt="F Key" class="help-img-key" />
-                <h2 class="help-instruction">USE POISON BUBBLE FOR EXTRA DAMAGE</h2>
-            </div>
-            <div class="help-sub-row">
-                <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss" />
-            </div>
-        </div>
-        <div class="help-row">
-            <div class="help-sub-row help-last-row">
-                <h2 class="help-instruction">
-                    Don’t try to run away — fight your foes!<br /><br />
-                    Collect enough poison to power up your Poison Bubble and deal massive damage!
-                </h2>
-                <img src="./assets/img/4._Marks/Poison/Animated/1.png" alt="Poison" class="help-img-poison" />
+            <div class="help-row">
+                <div class="help-sub-row help-last-row">
+                    <h2 class="help-instruction">Don't try to swim away from enemies, fight them!<br><br>Collect enough poison to use your Poison Bubble and cause great damage!</h2>
+                    <img src="./assets/img/4._Marks/Poison/Animated/1.png" alt="Poison" class="help-img-poison">
+                </div>
             </div>
         </div>
     </div>
-</div>
-    <main id="content" class="content">
+    <main id="content" class="content"></main>
         <!-- Content is presented here -->
     </main>
-    <span id="img-attribution" class="img-attribution"><a href="https://www.freepik.com/free-vector/ocean-sea-underwater-background-empty-bottom_7058927.htm#&position=5&from_view=collections" target="_blank">Image by upklyak</a> on Freepik</span>
 </body>
 </html>

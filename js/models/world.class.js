@@ -33,7 +33,6 @@ class World {
         if (mobileAndTabletCheck()) {
             // Hide desktop-only elements
             document.getElementById('game-title').classList.add('d-none');
-            document.getElementById('canvas-frame-img').classList.add('d-none');
             document.getElementById('img-attribution').classList.add('d-none');
 
             // Show mobile controls and buttons

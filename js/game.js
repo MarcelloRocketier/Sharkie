@@ -1,3 +1,4 @@
+
 'use strict';
 
 // ################################################### Global variables ###################################################
@@ -26,15 +27,18 @@ loadFromLocalStorage();
 // ################################################### Game initialization ###################################################
 
 function init() {
+    const content = document.getElementById('content');
     preload();
     loadFromLocalStorage();
     updateUI();
 
-    if (currentLevel == null) {
-        currentLevel = 0;
-    } else if (currentLevel >= levels.length - 1) {
-        maxLevelReached = true;
-    }
+ if (currentLevel == null || currentLevel < 0 || currentLevel >= levels.length) {
+    currentLevel = 0;
+}
+
+if (currentLevel >= levels.length - 1) {
+    maxLevelReached = true;
+}
 
     if (mobileAndTabletCheck()) {
         document.getElementById('settings-menu-container').classList.add('scroll-enabled');
@@ -188,6 +192,7 @@ window.mobileAndTabletCheck = function() {
 // ################################################### Main game control functions ###################################################
 
 function startGame() {
+    const content = document.getElementById('content');
     content.innerHTML = generateGameHTML();
 
     canvas = document.getElementById('canvas');
@@ -197,6 +202,7 @@ function startGame() {
 }
 
 function renderStartScreen() {
+    const content = document.getElementById('content');
     content.innerHTML = generateStartScreenHTML();
 }
 
@@ -204,6 +210,7 @@ function checkForLevelWin() {
     setInterval(() => {
         if (endBossKilled && !levelEnded && !maxLevelReached) {
             setTimeout(() => {
+                const content = document.getElementById('content');
                 content.innerHTML = generateEndScreenHTML();
 
                 if (soundOn && !levelEnded) {
@@ -214,6 +221,7 @@ function checkForLevelWin() {
             }, 3000);
         } else if (endBossKilled && !levelEnded && maxLevelReached) {
             setTimeout(() => {
+                const content = document.getElementById('content');
                 content.innerHTML = generateMaxEndScreenHTML();
 
                 if (soundOn && !levelEnded) {
@@ -224,6 +232,7 @@ function checkForLevelWin() {
             }, 3000);
         } else if (characterIsDead && !levelEnded) {
             setTimeout(() => {
+                const content = document.getElementById('content');
                 content.innerHTML = generateGameOverScreenHTML();
 
                 if (soundOn && !levelEnded) {
@@ -247,6 +256,12 @@ function saveToLocalStorage() {
 function loadFromLocalStorage() {
     let currentLevelAsString = localStorage.getItem('currentLevel');
     currentLevel = JSON.parse(currentLevelAsString);
+
+    // Prüfe, ob currentLevel gültig ist (0 <= currentLevel < levels.length)
+    if (typeof currentLevel !== 'number' || currentLevel < 0 || currentLevel >= levels.length) {
+        currentLevel = 0;
+        saveToLocalStorage();  // Setze den Wert im LocalStorage zurück
+    }
 
     let soundOnAsString = localStorage.getItem('soundOn');
     soundOn = JSON.parse(soundOnAsString);
@@ -274,12 +289,10 @@ function restartGame() {
 
 function toggleSettingsMenu() {
     document.getElementById('settings-menu-container').classList.toggle('d-none');
-    document.getElementById('img-attribution').classList.toggle('d-none');
 }
 
 function toggleHelpSite() {
     document.getElementById('help-container').classList.toggle('d-none');
-    document.getElementById('img-attribution').classList.toggle('d-none');
 }
 
 function toggleSound() {
