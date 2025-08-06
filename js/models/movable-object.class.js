@@ -1,12 +1,17 @@
 /**
- * Basisklasse für alle beweglichen Objekte im Spiel
- * Auch Hintergrundelemente sind movable
+ * Base class for all objects that can move in the game world
+ * Includes background elements which are also movable
  */
 class MovableObject extends DrawableObject {
     speed = 0.15;
     energy;
     lastHit = 0;
-    offset = { x: 0, y: 0, width: 0, height: 0 };
+    offset = {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+    }
     checkAlreadyRunning = false;
     animationStarted = false;
     animationFinished = false;
@@ -14,7 +19,11 @@ class MovableObject extends DrawableObject {
     stopMovement = false;
 
     /**
-     * Objekt in eine Richtung bewegen (horizontal / vertikal)
+     * Move object either horizontally or vertically between two points
+     * @param {string} direction - 'horizontal' or 'vertical'
+     * @param {number} startPoint - coordinate where movement starts
+     * @param {number} endPoint - coordinate where movement ends
+     * @param {number} speed - movement speed per frame
      */
     move(direction, startPoint, endPoint, speed) {
         setInterval(() => {
@@ -38,19 +47,20 @@ class MovableObject extends DrawableObject {
                 }
             }
         }, 1000 / 60);
-    }
+    };
 
     /**
-     * Spielanimation abspielen
-     * @param {string[]} images 
-     * @param {number} loop 0 = einmal, 1 = unendlich
+     * Plays animation frames for the object
+     * @param {Array} images - array of image paths for animation
+     * @param {number} loop - 0 = play once, 1 = loop continuously
      */
     playAnimation(images, loop) {
         if (loop === 0 && !this.animationFinished) {
-            if (!this.animationStarted) this.currentImage = 0;
+            if (!this.animationStarted) {
+                this.currentImage = 0; // Start animation from first frame
+            }
             this.animationStarted = true;
-
-            const i = this.currentImage % images.length;
+            let i = this.currentImage % images.length;
             this.img = this.imageCache[images[i]];
             this.currentImage++;
 
@@ -59,7 +69,7 @@ class MovableObject extends DrawableObject {
                 this.animationStarted = false;
             }
         } else if (loop === 1) {
-            const i = this.currentImage % images.length;
+            let i = this.currentImage % images.length;
             this.img = this.imageCache[images[i]];
             this.currentImage++;
             this.animationFinished = false;
@@ -67,52 +77,75 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Prüft, ob zwei Objekte sich überschneiden (Kollision)
+     * Check for collision with another object, considering offsets
+     * @param {MovableObject} movableObject
+     * @returns {boolean}
      */
-    isColliding(mo) {
-        return this.x + this.width - this.offset.width > mo.x + mo.offset.x &&
-               this.y + this.height - this.offset.height > mo.y + mo.offset.y &&
-               this.x + this.offset.x < mo.x + mo.width - mo.offset.width &&
-               this.y + this.offset.y < mo.y + mo.height - mo.offset.height;
+    isColliding(movableObject) {
+        return this.x + this.width - this.offset.width > movableObject.x + movableObject.offset.x &&
+               this.y + this.height - this.offset.height > movableObject.y + movableObject.offset.y &&
+               this.x + this.offset.x < movableObject.x + movableObject.width - movableObject.offset.width &&
+               this.y + this.offset.y < movableObject.y + movableObject.height - movableObject.offset.height;
     }
 
-    isCollidingX(mo) {
-        if (this.y + this.height - this.offset.height - 3 > mo.y + mo.offset.y &&
-            this.y + this.offset.y < mo.y + mo.height - mo.offset.height - 3) {
-            return this.x + this.width - this.offset.width > mo.x + mo.offset.x &&
-                   this.x + this.offset.x < mo.x + mo.width - mo.offset.width;
-        }
-    }
-
-    isCollidingY(mo) {
-        if (this.x + this.width - this.offset.width - 3 > mo.x + mo.offset.x &&
-            this.x + this.offset.x < mo.x + mo.width - mo.offset.width - 3) {
-            return this.y + this.height - this.offset.height > mo.y + mo.offset.y &&
-                   this.y + this.offset.y < mo.y + mo.height - mo.offset.height;
+    /**
+     * Check collision on the x-axis between two objects
+     * @param {MovableObject} movableObject
+     * @returns {boolean}
+     */
+    isCollidingX(movableObject) {
+        if (this.y + this.height - this.offset.height - 3 > movableObject.y + movableObject.offset.y &&
+            this.y + this.offset.y < movableObject.y + movableObject.height - movableObject.offset.height - 3) {
+            return this.x + this.width - this.offset.width > movableObject.x + movableObject.offset.x &&
+                   this.x + this.offset.x < movableObject.x + movableObject.width - movableObject.offset.width;
         }
     }
 
     /**
-     * Schaden erhalten durch gegnerischen Angriff
+     * Check collision on the y-axis between two objects
+     * @param {MovableObject} movableObject
+     * @returns {boolean}
      */
-    hit(damage) {
-        this.energy -= damage;
-        if (this.energy < 0) this.energy = 0;
-        else this.lastHit = new Date().getTime();
+    isCollidingY(movableObject) {
+        if (this.x + this.width - this.offset.width - 3 > movableObject.x + movableObject.offset.x &&
+            this.x + this.offset.x < movableObject.x + movableObject.width - movableObject.offset.width - 3) {
+            return this.y + this.height - this.offset.height > movableObject.y + movableObject.offset.y &&
+                   this.y + this.offset.y < movableObject.y + movableObject.height - movableObject.offset.height;
+        }
     }
 
     /**
-     * Gegner nach dem Tod wegschweben lassen (Pufferfisch)
+     * Decreases energy when hit by an attack
+     * @param {number} attack - amount of damage
      */
-    floatAway(toRight) {
+    hit(attack) {
+        this.energy -= attack;
+
+        if (this.energy < 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = Date.now();
+        }
+    }
+
+    /**
+     * Moves dead enemy diagonally away (used for PufferFish)
+     * @param {boolean} otherDirection - if true, move right/up; else left/up
+     */
+    floatAway(otherDirection) {
         setInterval(() => {
-            this.x += toRight ? this.speed : -this.speed;
-            this.y -= this.speed;
+            if (otherDirection) {
+                this.x += this.speed;
+                this.y -= this.speed;
+            } else {
+                this.x -= this.speed;
+                this.y -= this.speed;
+            }
         }, 1000 / 60);
     }
 
     /**
-     * Gegner nach oben schweben lassen (Quallen)
+     * Moves dead enemy straight up (used for Jellyfish)
      */
     floatAwayUp() {
         setInterval(() => {
@@ -121,15 +154,17 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * True, wenn Charakter kürzlich getroffen wurde
+     * Returns true if character was hit less than 1 second ago
+     * @returns {boolean}
      */
     isHurt() {
-        const timePassed = (new Date().getTime() - this.lastHit) / 1000;
+        let timePassed = (Date.now() - this.lastHit) / 1000;
         return timePassed < 1;
     }
 
     /**
-     * True, wenn Energie leer ist
+     * Returns true if energy has reached zero
+     * @returns {boolean}
      */
     isDead() {
         return this.energy === 0;
