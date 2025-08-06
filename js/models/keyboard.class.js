@@ -1,12 +1,12 @@
 /**
- * Tastatursteuerung für Spielaktionen
+ * Class representing the keyboard input state
  */
 class Keyboard {
-    LEFT = false;
-    RIGHT = false;
-    UP = false;
-    DOWN = false;
-    SPACE = false;
-    D = false;
-    F = false;
+    LEFT;
+    RIGHT;
+    UP;
+    DOWN;
+    SPACE;
+    D;
+    F;
 }
