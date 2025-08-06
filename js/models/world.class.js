@@ -1,7 +1,6 @@
 /**
  * Game world controller
  * Responsible for managing all game objects (background, player, enemies, etc.)
- * To debug: use console.world.<object>.<property/method>
  */
 class World {
     canvas;
@@ -14,7 +13,6 @@ class World {
     // ################################################### Object initialization ###################################################
 
     character = new Character();
-    levelDesignHelper = new LevelDesignHelper();
     level = levels[currentLevel]; // Assign current level instance to this.level
     statusBarLife = new StatusBar('life', 'green', 100, 20, 0);
     statusBarCoins = new StatusBar('coins', 'green', 0, 20, 40);
@@ -100,7 +98,6 @@ class World {
      */
     setWorld() {
         this.character.world = this;
-        this.levelDesignHelper.world = this;
         this.level.getEndBoss().world = this;
     }
 
@@ -124,16 +121,8 @@ class World {
         this.addObjectsToWorld(this.level.enemies);
         this.addObjectsToWorld(this.level.barriers);
 
-        // Decide which character to render depending on debug mode
-        if (debugMode && !debugLevelDesignHelper) {
-            this.addToWorld(this.character);
-        } else if (!debugMode && !debugLevelDesignHelper) {
-            this.addToWorld(this.character);
-        } else if (debugLevelDesignHelper) {
-            this.addToWorld(this.levelDesignHelper);
-        } else {
-            this.addToWorld(this.character);
-        }
+        // Always render the character
+        this.addToWorld(this.character);
 
         // Render bubble if active
         if (this.bubble) {
@@ -146,7 +135,7 @@ class World {
         this.addToWorld(this.statusBarLife);
         this.addToWorld(this.statusBarCoins);
         this.addToWorld(this.statusBarPoison);
-        if (this.level.getEndBoss().endBossIntroduced == true) {
+        if (this.level.getEndBoss().endBossIntroduced) {
             this.addToWorld(this.statusBarEndBoss);
         }
 
@@ -174,10 +163,7 @@ class World {
 
         movableObject.draw(this.ctx); // Render the object
 
-        // Draw collision boxes if debug mode active
-        if (debugMode) {
-            movableObject.drawCollisionDetectionFrame(this.ctx);
-        }
+        // No debug collision boxes rendered
 
         // Undo horizontal flip for following drawings
         if (movableObject.imgMirrored) {
@@ -240,10 +226,6 @@ class World {
                         this.character.hitBy = 'EndBoss';
                         this.level.getEndBoss().isCollidingWithCharacter = true;
                     }
-
-                    if (debugLogStatements) {
-                        console.log('Character colliding with: ', enemy, 'Remaining energy: ', this.character.energy);
-                    }
                 }
             });
 
@@ -253,10 +235,6 @@ class World {
                     enemy.hit(this.character.attack);
                     enemy.stopMovement = true;
                     enemy.floatAway(this.character.imgMirrored);
-
-                    if (debugLogStatements) {
-                        console.log('Fin slap hit on: ', enemy, 'Enemy energy: ', enemy.energy);
-                    }
                 }
             });
 
@@ -269,10 +247,6 @@ class World {
                         enemy.speed = 1;
                         enemy.floatAwayUp();
                         this.bubble = undefined; // Bubble disappears after collision
-
-                        if (debugLogStatements) {
-                            console.log('Bubble hit: ', enemy, 'Enemy energy: ', enemy.energy);
-                        }
                     }
                 }
             });
@@ -282,10 +256,6 @@ class World {
                 if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof EndBoss) {
                     enemy.hit(this.character.attack);
                     this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
-
-                    if (debugLogStatements) {
-                        console.log('Fin slap hit on EndBoss: ', enemy, 'Energy: ', enemy.energy);
-                    }
                 }
             });
 
@@ -296,20 +266,12 @@ class World {
                         enemy.hit(this.bubble.attack);
                         this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
                         this.bubble = undefined;
-
-                        if (debugLogStatements) {
-                            console.log('Bubble hit EndBoss: ', enemy, 'Energy: ', enemy.energy);
-                        }
                     }
                 } else if (this.bubble instanceof PoisonBubble) {
                     if (this.bubble.isColliding(enemy) && enemy instanceof EndBoss) {
                         enemy.hit(this.bubble.attack);
                         this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
                         this.bubble = undefined;
-
-                        if (debugLogStatements) {
-                            console.log('Poison bubble hit EndBoss: ', enemy, 'Energy: ', enemy.energy);
-                        }
                     }
                 }
             });
@@ -322,10 +284,6 @@ class World {
                     this.character.coins++;
                     this.statusBarCoins.setPercentage((this.character.coins / totalCoins) * 100, this.statusBarCoins.type, this.statusBarCoins.color);
                     this.level.coins.splice(coinIndex, 1);
-
-                    if (debugLogStatements) {
-                        console.log('Coin collected: ', coin, 'Total coins: ', this.character.coins);
-                    }
                 }
             });
 
@@ -342,10 +300,6 @@ class World {
 
                     this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
                     this.level.life.splice(lifeIndex, 1);
-
-                    if (debugLogStatements) {
-                        console.log('Life collected: ', life, 'Energy now: ', this.character.energy);
-                    }
                 }
             });
 
@@ -358,10 +312,6 @@ class World {
                     this.statusBarPoison.setPercentage((this.character.poison / this.level.totalPoison) * 100, this.statusBarPoison.type, this.statusBarPoison.color);
                     this.level.poison.splice(poisonIndex, 1);
                     this.level.collectedPoison += 1;
-
-                    if (debugLogStatements) {
-                        console.log('Poison collected: ', poison, 'Total poison: ', this.character.poison);
-                    }
                 }
             });
         }, 200);

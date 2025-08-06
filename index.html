@@ -1,34 +1,29 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sharkie Game</title>
-    <link rel="icon" type="image/x-icon" href="./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Yellow_1.png">
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Ressourcen & Modelle -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sharkie</title>
+    <link rel="icon" type="image/x-icon" href="./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Yellow_1.png" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Resources (Required before all other classes) -->
     <script src="js/images.js"></script>
-
-    <!-- Spielfiguren und Gegner -->
+    <!-- Models -->
     <script src="js/models/drawable-object.class.js"></script>
     <script src="js/models/movable-object.class.js"></script>
     <script src="js/models/character.class.js"></script>
-    <script src="js/models/level-design-helper.js"></script>
     <script src="js/models/enemies/puffer-fish.class.js"></script>
     <script src="js/models/enemies/jellyfish-regular.class.js"></script>
     <script src="js/models/enemies/jellyfish-dangerous.class.js"></script>
     <script src="js/models/enemies/endboss.class.js"></script>
-
-    <!-- Umgebung & Hindernisse -->
     <script src="js/models/background-object.class.js"></script>
     <script src="js/models/barriers/barrier.class.js"></script>
     <script src="js/models/barriers/barrier-tunnel-above.class.js"></script>
     <script src="js/models/barriers/barrier-tunnel-below.class.js"></script>
     <script src="js/models/barriers/barrier-rock.class.js"></script>
     <script src="js/models/barriers/barrier-wall.class.js"></script>
-
-    <!-- Steuerung & HUD -->
     <script src="js/models/keyboard.class.js"></script>
     <script src="js/models/level.class.js"></script>
     <script src="js/models/bubble.class.js"></script>
@@ -38,8 +33,7 @@
     <script src="js/models/collectables/poison.class.js"></script>
     <script src="js/models/status-bar.class.js"></script>
     <script src="js/models/world.class.js"></script>
-
-    <!-- Levels & Spiel-Logik -->
+    <!-- Game Scripts -->
     <script src="js/levels/level_1.js"></script>
     <script src="js/levels/level_2.js"></script>
     <script src="js/game.js"></script>
@@ -48,35 +42,100 @@
 
 <body onload="init()">
     <div id="loading-screen" class="loading-screen">
-        <h2 class="loading-text">Wird geladen...</h2>
-        <img src="./assets/img/jellyfish_loader.gif" alt="Loader">
+        <h2 class="loading-text">Loading...</h2>
+        <img src="./assets/img/jellyfish_loader.gif" alt="Loader" />
     </div>
-
-    <!-- Navigation -->
     <nav class="nav">
-        <button class="nav-btn" onclick="toggleSettingsMenu()" title="Einstellungen">
-            <img src="./assets/img/icons/settings.svg" alt="Settings" class="nav-icon">
+        <button class="nav-btn" onclick="toggleSettingsMenu()" title="Settings">
+            <img src="./assets/img/icons/settings.svg" alt="Settings" class="nav-icon" />
         </button>
-        <button class="nav-btn" onclick="toggleSound()" title="Sound">
-            <img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img">
+        <button class="nav-btn" onclick="toggleSound()" title="Mute/Unmute">
+            <img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img" />
         </button>
-        <button id="toggle-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Vollbild">
-            <img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen" class="nav-icon">
+        <button id="toggle-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Fullscreen On/OFf">
+            <img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen On/Off" class="nav-icon" />
         </button>
-        <button class="nav-btn" onclick="toggleHelpSite()" title="Hilfe">
-            <img src="./assets/img/icons/help.svg" alt="Help" class="nav-icon">
+        <button class="nav-btn" onclick="toggleHelpSite()" title="Help">
+            <img src="./assets/img/icons/help.svg" alt="Help" class="nav-icon" />
         </button>
     </nav>
-
-    <!-- Einstellungen, Hilfe, Spielbereich -->
-    <div class="settings-menu-container d-none" id="settings-menu-container"></div>
-    <div class="help-container d-none" id="help-container"></div>
-    <main id="content" class="content"></main>
-
-    <span id="img-attribution" class="img-attribution">
-        <a href="https://www.freepik.com/free-vector/ocean-sea-underwater-background-empty-bottom_7058927.htm#&position=5&from_view=collections" target="_blank">
-            Image by upklyak
-        </a> on Freepik
-    </span>
+    <div class="settings-menu-container d-none" id="settings-menu-container">
+        <button class="nav-btn close-btn" onclick="toggleSettingsMenu()">
+            <img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon" />
+        </button>
+        <div class="settings-menu-body">
+            <div class="settings-menu-heading">
+                <h2 class="settings-menu-title">SETTINGS</h2>
+            </div>
+            <div class="settings-menu-row">
+                <h2 class="settings-menu-row-title">SOUND ON</h2>
+                <input type="checkbox" class="settings-menu-checkbox" id="sound-checkbox" onchange="toggleSound()" />
+            </div>
+            <div class="settings-menu-row">
+                <h2 class="settings-menu-row-title">FULLSCREEN <span class="settings-annotation">(WHEN GAME STARTED)</span></h2>
+                <input type="checkbox" class="settings-menu-checkbox" id="fullscreen-checkbox" onchange="toggleFullscreen()" />
+            </div>
+        </div>
+    </div><div class="help-container d-none" id="help-container">
+    <button class="nav-btn close-btn" onclick="toggleHelpSite()">
+        <img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon" />
+    </button>
+    <div class="help-header">
+        <h2 class="settings-menu-title">HOW TO PLAY</h2>
+    </div>
+    <div class="help-body">
+        <div class="help-row">
+            <div class="help-sub-row">
+                <img src="./assets/img/6._Buttons/Keys/Arrow_Keys.png" alt="Movement Keys" class="help-img" />
+                <h2 class="help-instruction">MOVE SHARKIE AROUND</h2>
+            </div>
+            <div class="help-sub-row">
+                <img src="./assets/img/1._Sharkie/1._Idle/1.png" alt="Sharkie" class="help-img-sharkie" />
+            </div>
+        </div>
+        <div class="help-row">
+            <div class="help-sub-row">
+                <img src="./assets/img/6._Buttons/Keys/Space_Bar_Key.png" alt="Space Bar Key" class="help-img" />
+                <h2 class="help-instruction">USE FIN-SLAP TO ATTACK</h2>
+            </div>
+            <div class="help-sub-row">
+                <img src="./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/3._Swim_1.png" alt="Puffer-Fish" class="help-img-puffer-fish" />
+                <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss" />
+            </div>
+        </div>
+        <div class="help-row">
+            <div class="help-sub-row">
+                <img src="./assets/img/6._Buttons/Keys/D_Key.png" alt="D Key" class="help-img-key" />
+                <h2 class="help-instruction">TRAP ENEMIES WITH BUBBLES</h2>
+            </div>
+            <div class="help-sub-row">
+                <img src="./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Yellow_1.png" alt="Jellyfish" class="help-img-jellyfish" />
+                <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss" />
+            </div>
+        </div>
+        <div class="help-row">
+            <div class="help-sub-row">
+                <img src="./assets/img/6._Buttons/Keys/F_Key.png" alt="F Key" class="help-img-key" />
+                <h2 class="help-instruction">USE POISON BUBBLE FOR EXTRA DAMAGE</h2>
+            </div>
+            <div class="help-sub-row">
+                <img src="./assets/img/2._Enemy/3._Final_Enemy/2._Floating/1.png" alt="Final Enemy" class="help-img-endboss" />
+            </div>
+        </div>
+        <div class="help-row">
+            <div class="help-sub-row help-last-row">
+                <h2 class="help-instruction">
+                    Don’t try to run away — fight your foes!<br /><br />
+                    Collect enough poison to power up your Poison Bubble and deal massive damage!
+                </h2>
+                <img src="./assets/img/4._Marks/Poison/Animated/1.png" alt="Poison" class="help-img-poison" />
+            </div>
+        </div>
+    </div>
+</div>
+    <main id="content" class="content">
+        <!-- Content is presented here -->
+    </main>
+    <span id="img-attribution" class="img-attribution"><a href="https://www.freepik.com/free-vector/ocean-sea-underwater-background-empty-bottom_7058927.htm#&position=5&from_view=collections" target="_blank">Image by upklyak</a> on Freepik</span>
 </body>
 </html>
