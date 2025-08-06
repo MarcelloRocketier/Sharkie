@@ -1,5 +1,5 @@
 /**
- * All drawable objects
+ * Base class for all objects that can be drawn on the canvas
  */
 class DrawableObject {
     x;
@@ -11,17 +11,17 @@ class DrawableObject {
     currentImage = 0;
 
     /**
-     * Load a single image
-     * @param {string} path - Path of the image to load
+     * Loads a single image and assigns it to the img property
+     * @param {string} path - Path to the image file
      */
     loadImage(path) {
         this.img = new Image();
         this.img.src = path;
-    }
+    };
 
     /**
-     * Load multiple images into cache for animation
-     * @param {string[]} array - Array of image paths
+     * Loads multiple images into the imageCache for animation purposes
+     * @param {Array} array - Array of image paths
      */
     loadImages(array) {
         array.forEach(path => {
@@ -32,50 +32,37 @@ class DrawableObject {
     }
 
     /**
-     * Draw the current image to the canvas
-     * @param {CanvasRenderingContext2D} ctx - The canvas context
+     * Renders the current image on the canvas context at the object's position and size
+     * @param {CanvasRenderingContext2D} ctx - Canvas drawing context
      */
     draw(ctx) {
         try {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         } catch (error) {
-            console.error('Draw error:', error);
-            console.warn('Failed to load image:', this.img);
+            console.error('Error drawing image:', error);
+            console.warn('Could not load image:', this.img);
         }
     }
 
     /**
-     * Draw collision frame if object type matches
-     * @param {CanvasRenderingContext2D} ctx 
+     * Draws a red dashed rectangle around the object for debugging collision detection
+     * Only draws for specific object types
+     * @param {CanvasRenderingContext2D} ctx - Canvas drawing context
      */
     drawCollisionDetectionFrame(ctx) {
-        const collisionTypes = [
-            Character,
-            LevelDesignHelper,
-            PufferFish,
-            JellyFishRegular,
-            JellyFishDangerous,
-            EndBoss,
-            Coin,
-            Life,
-            Poison,
-            Bubble,
-            PoisonBubble,
-            Barrier
-        ];
-
-        if (collisionTypes.some(type => this instanceof type)) {
+        const drawableTypes = [Character, LevelDesignHelper, PufferFish, JellyFishRegular, JellyFishDangerous, EndBoss, Coin, Life, Poison, Bubble, PoisonBubble, Barrier];
+        if (drawableTypes.some(type => this instanceof type)) {
             ctx.beginPath();
             ctx.lineWidth = 4;
             ctx.strokeStyle = 'red';
+            ctx.setLineDash([5, 5]);
             ctx.rect(
-                this.x + this.offset.x,
-                this.y + this.offset.y,
-                this.width - this.offset.width - this.offset.x,
+                this.x + this.offset.x, 
+                this.y + this.offset.y, 
+                this.width - this.offset.width - this.offset.x, 
                 this.height - this.offset.height - this.offset.y
             );
             ctx.stroke();
-            ctx.setLineDash([5, 5]);
         }
     }
 }
