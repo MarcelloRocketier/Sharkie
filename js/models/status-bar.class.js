@@ -1,43 +1,44 @@
 /**
- * Status bars for the game (e.g. life, coins, poison, boss)
+ * Handles the visual status bars shown in-game
  */
 class StatusBar extends DrawableObject {
     percentage;
 
     constructor(type, color, percentage, x, y) {
         super();
-        this.type = type;
-        this.color = color;
         this.loadImages(STATUS_BAR_IMAGES.IMAGES[type][color]);
-        this.setPercentage(percentage);
+        this.setPercentage(percentage, type, color);
         this.x = x;
         this.y = y;
         this.width = 200;
         this.height = 60;
+        this.type = type;
+        this.color = color;
     }
 
     /**
-     * Updates the percentage and corresponding image
-     * @param {number} percentage Value between 0–100
+     * Update the bar based on given percentage
+     * @param {number} percentage Value from 0 to 100
+     * @param {string} type Possible types: 'life', 'coins', or 'poison'
+     * @param {string} color Bar color variant: 'green', 'orange', or 'purple'
      */
-    setPercentage(percentage) {
+    setPercentage(percentage, type, color) {
         this.percentage = percentage;
-        let index = this.resolveImageIndex();
-        let path = STATUS_BAR_IMAGES.IMAGES[this.type][this.color][index];
+        const path = STATUS_BAR_IMAGES.IMAGES[type][color][this.resolveImageIndex()];
         this.img = this.imageCache[path];
     }
 
     /**
-     * Returns image index depending on percentage value
-     * @returns {number} Image index
+     * Determines which image to use depending on current percentage
+     * @returns {number} index of image in the array
      */
     resolveImageIndex() {
         if (this.percentage >= 100) return 5;
-        if (this.percentage > 80) return 5;
-        if (this.percentage > 60) return 4;
-        if (this.percentage > 40) return 3;
-        if (this.percentage > 20) return 2;
-        if (this.percentage > 0) return 1;
-        return 0;
+        else if (this.percentage > 80) return 5;
+        else if (this.percentage > 60) return 4;
+        else if (this.percentage > 40) return 3;
+        else if (this.percentage > 20) return 2;
+        else if (this.percentage > 0) return 1;
+        else return 0;
     }
 }
