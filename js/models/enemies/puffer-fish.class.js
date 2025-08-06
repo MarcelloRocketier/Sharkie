@@ -1,67 +1,52 @@
-class fish extends MovableObject {
-
-    x = 120;
-    y = 100 + Math.random() * 280; // Random vertical position between 100 and 380
-    img;
-    height = 60;
-    width = 60;
-
-    constructor() {
-        super();
-
-        const variants = [
-            [
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/1.swim1.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/1.swim2.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/1.swim3.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/1.swim4.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/1.swim5.png',
-            ],
-            [
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/2.swim1.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/2.swim2.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/2.swim3.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/2.swim4.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/2.swim5.png',
-            ],
-            [
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/3.swim1.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/3.swim2.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/3.swim3.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/3.swim4.png',
-                'assets/img/2.Enemy/1.Puffer fish (3 color options)/1.Swim/3.swim5.png',
-            ]
-        ];
-
-        this.IMAGES_SWIM = variants[Math.floor(Math.random() * variants.length)];
-        this.loadImage(this.IMAGES_SWIM[0]);
-        this.loadImages(this.IMAGES_SWIM);
-
-        this.x = 200 + Math.random() * 800;
-        this.speed = 0.15 + Math.random() * 0.25;
-        this.width = 50 + Math.random() * 30;
-        this.height = this.width;
-
-        this.animate();
+/**
+ * Puffer fish enemy object
+ */
+class PufferFish extends MovableObject {
+    width = 100;
+    height = 100;
+    energy = 5;
+    attack = 5;
+    speed = 2;
+    offset = {
+        x: 0,
+        y: 3,
+        width: 5,
+        height: 24
     }
 
-    moveLeft() {
-    setInterval(() => {
-        this.x -= this.speed;
-    }, 1000 / 60);
-}
+    constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
+        super().loadImage('./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/1._Swim_1.png');
+        this.loadImages(PUFFER_FISH_IMAGES.SWIM[color]);
+        this.loadImages(PUFFER_FISH_IMAGES.DEAD[color]);
+        this.x = x;
+        this.y = y;
 
-    animate() {
-        this.moveLeft();
-        let direction = 1;
+        if (imgInitiallyMirrored == 1) {
+            this.imgMirrored = true;
+        } else {
+            this.imgMirrored = false;
+        }
+        this.animate(color, direction, startPoint, endPoint, speed);
+    }
+
+    /**
+     * Animate puffer-fish
+     * @param {string} color The color of the enemy
+     * @param {string} direction 'horizontal' or 'vertical'
+     * @param {integer} startPoint The start point of the movement
+     * @param {integer} endPoint The end point of the movement
+     * @param {float} speed The speed of the enemy
+     * @param {integer} imgInitiallyMirrored 1 = mirrored, 0 = not mirrored (Necessary for horizontal movement)
+     */
+    animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
+        this.move(direction, startPoint, endPoint, speed, imgInitiallyMirrored);
 
         setInterval(() => {
-            this.y += direction * 0.5;
-            if (this.y <= 100 || this.y >= 380) direction *= -1;
-        }, 60);
-
-        setInterval(() => {
-            this.playAnimation(this.IMAGES_SWIM);
-        }, 280);
+            if (this.isDead()) {
+                this.playAnimation(PUFFER_FISH_IMAGES.DEAD[color], 0);
+            } else {
+                this.playAnimation(PUFFER_FISH_IMAGES.SWIM[color], 1);
+            }
+        }, 250)
     }
 }
