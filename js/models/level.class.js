@@ -1,6 +1,6 @@
 /**
- * Stores all level-specific objects
- * Each level has different backgrounds, enemies and items
+ * Class representing a game level
+ * Holds all objects that vary per level, such as backgrounds, enemies, and collectibles
  */
 class Level {
     backgroundObjects;
@@ -11,17 +11,18 @@ class Level {
     poison = 0;
     totalPoison = 0;
     collectedPoison = 0;
-    level_end_x;
+    level_end_x; // x position marking the end of the level
 
     /**
-     * Initializes all level objects
-     * @param {Array} backgroundObjects 
-     * @param {Array} coins 
-     * @param {Array} life 
-     * @param {Array} poison 
-     * @param {Array} enemies 
-     * @param {Array} barriers 
-     * @param {number} level_end_x 
+     * Constructor takes parameters from specific level definition files
+     * Assigns them to this level instance's properties
+     * @param {Array} backgroundObjects - Background elements for this level
+     * @param {Array} coins - Coins placed in the level
+     * @param {Array} life - Life pickups in the level
+     * @param {Array} poison - Poison pickups available
+     * @param {Array} enemies - Enemies present in this level
+     * @param {Array} barriers - Barriers restricting movement
+     * @param {number} level_end_x - X coordinate where level ends
      */
     constructor(backgroundObjects, coins, life, poison, enemies, barriers, level_end_x) {
         this.backgroundObjects = backgroundObjects;
@@ -31,11 +32,12 @@ class Level {
         this.enemies = enemies;
         this.barriers = barriers;
         this.level_end_x = level_end_x;
-        this.getEndBoss(); // Cache access to EndBoss if present
+        this.getEndBoss();
     }
 
     /**
-     * Returns the EndBoss object if available
+     * Finds and returns the EndBoss instance among enemies
+     * @returns {EndBoss|undefined}
      */
     getEndBoss() {
         return this.enemies.find(e => e instanceof EndBoss);
