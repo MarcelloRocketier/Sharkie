@@ -101,8 +101,6 @@ function preload() {
     preloadImages(STATUS_BAR_IMAGES['IMAGES']['poison']['green']);
     preloadImages(STATUS_BAR_IMAGES['IMAGES']['poison']['orange']);
     preloadImages(STATUS_BAR_IMAGES['IMAGES']['poison']['purple']);
-    preloadImages(BACKGROUND_IMAGES['IMAGES']['light'][1]);
-    preloadImages(BACKGROUND_IMAGES['IMAGES']['light'][2]);
     preloadImages(BACKGROUND_IMAGES['IMAGES']['dark'][1]);
     preloadImages(BACKGROUND_IMAGES['IMAGES']['dark'][2]);
     preloadImages(POISON_IMAGES['IMAGES']['animated']);

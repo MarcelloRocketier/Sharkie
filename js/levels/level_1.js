@@ -4,36 +4,35 @@ const level_1 = new Level(
     // ############################################### Background objects ###############################################
     // ### Instantiates BackgroundObject(scene, section, index, levelSection)
     // ##################################################################################################################
-    // ### scene: 'light' or 'dark'
     // ### section: 1 or 2 (Alternates, starts with 1)
     // ### index: from 0 to 4 (increments upwards)
     // ### levelSection: 0 to x (each section is 719px long, ascending)
     // ##################################################################################################################
 
     [
-        new BackgroundObject('light', 1, 0, 0),
-        new BackgroundObject('light', 1, 1, 0),
-        new BackgroundObject('light', 1, 2, 0),
-        new BackgroundObject('light', 1, 3, 0),
-        new BackgroundObject('light', 1, 4, 0),
+        new BackgroundObject('dark', 1, 0, 0),
+        new BackgroundObject('dark', 1, 1, 0),
+        new BackgroundObject('dark', 1, 2, 0),
+        new BackgroundObject('dark', 1, 3, 0),
+        new BackgroundObject('dark', 1, 4, 0),
 
-        new BackgroundObject('light', 2, 0, 1),
-        new BackgroundObject('light', 2, 1, 1),
-        new BackgroundObject('light', 2, 2, 1),
-        new BackgroundObject('light', 2, 3, 1),
-        new BackgroundObject('light', 2, 4, 1),
+        new BackgroundObject('dark', 2, 0, 1),
+        new BackgroundObject('dark', 2, 1, 1),
+        new BackgroundObject('dark', 2, 2, 1),
+        new BackgroundObject('dark', 2, 3, 1),
+        new BackgroundObject('dark', 2, 4, 1),
 
-        new BackgroundObject('light', 1, 0, 2),
-        new BackgroundObject('light', 1, 1, 2),
-        new BackgroundObject('light', 1, 2, 2),
-        new BackgroundObject('light', 1, 3, 2),
-        new BackgroundObject('light', 1, 4, 2),
+        new BackgroundObject('dark', 1, 0, 2),
+        new BackgroundObject('dark', 1, 1, 2),
+        new BackgroundObject('dark', 1, 2, 2),
+        new BackgroundObject('dark', 1, 3, 2),
+        new BackgroundObject('dark', 1, 4, 2),
 
-        new BackgroundObject('light', 2, 0, 3),
-        new BackgroundObject('light', 2, 1, 3),
-        new BackgroundObject('light', 2, 2, 3),
-        new BackgroundObject('light', 2, 3, 3),
-        new BackgroundObject('light', 2, 4, 3)
+        new BackgroundObject('dark', 2, 0, 3),
+        new BackgroundObject('dark', 2, 1, 3),
+        new BackgroundObject('dark', 2, 2, 3),
+        new BackgroundObject('dark', 2, 3, 3),
+        new BackgroundObject('dark', 2, 4, 3)
     ],
 
     // ############################################### Coins ###############################################
@@ -67,7 +66,6 @@ const level_1 = new Level(
     // ############################################### Poison pickups ###############################################
     // ### Instantiate new Poison(type, x, y)
     // ######################################################################################################
-    // ### type can be one of: 'animated', 'light_left', 'light_right', 'dark_left', 'dark_right'
     // ### x and y specify coordinates
     // #######################################################################################################
 

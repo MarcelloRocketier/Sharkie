@@ -24,20 +24,154 @@ body {
   height: 100%;
 }
 
+.nav-btn, .close-btn {
+  background: linear-gradient(145deg, #001b4f, #002f82);
+  border: 2px solid white;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  width: 64px;
+  height: 64px;
+  box-shadow: 0 0 10px rgba(0, 48, 128, 0.8);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav-btn:hover,
+.close-btn:hover {
+  background: linear-gradient(145deg, #003280, #0050c8);
+  box-shadow: 0 0 16px rgba(0, 80, 200, 1);
+}
+
+.nav-icon {
+  width: 36px;
+  height: 36px;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease;
+}
+
+.nav-btn:hover .nav-icon {
+  filter: brightness(1) invert(0.85) drop-shadow(0 0 3px #bde0ff);
+}
+
 .btn {
-  background-color: rgba(83, 26, 130, 1);
+  background: linear-gradient(135deg, #001f5b, #003080);
   border: 3px solid white;
-  border-radius: 16px;
+  border-radius: 20px;
   color: white;
   cursor: pointer;
-  font-family: 'LuckiestGuy';
-  font-size: 32px;
-  padding: 16px;
+  font-family: 'LuckiestGuy', cursive;
+  font-size: 38px;
+  padding: 22px 44px;
   user-select: none;
-  -moz-user-select: -moz-none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+  box-shadow: 0 0 16px rgba(0, 48, 128, 0.9);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #002a83, #0042b8);
+  box-shadow: 0 0 28px rgba(0, 66, 184, 1);
+}
+
+.btn:active {
+  background: linear-gradient(135deg, #000f2f, #002060);
+  box-shadow: 0 0 6px rgba(0, 48, 128, 1) inset;
+}
+
+.mobile-ctrl-btn {
+  background: linear-gradient(135deg, #001f5b, #003080);
+  border: 2px solid white;
+  border-radius: 50%;
+  color: white;
+  height: 64px;
+  width: 64px;
+  text-shadow: -1px 1px 3px black;
+  box-shadow: 0 0 12px rgba(0, 48, 128, 0.8);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mobile-ctrl-btn:hover,
+.mobile-ctrl-btn:focus {
+  background: linear-gradient(135deg, #002a83, #0050c8);
+  box-shadow: 0 0 18px rgba(0, 80, 200, 1);
+}
+
+.game-title,
+.start-screen-title,
+.game-over-screen-title,
+.max-level-heading,
+.settings-menu-title,
+.settings-menu-row-title,
+.help-instruction {
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.85);
+}
+
+.help-instruction {
+  font-size: 32px;
+  color: #e6f0ff;
+  text-shadow: 0 0 5px rgba(0, 0, 40, 0.8);
+}
+
+.status-bar-life {
+  background: linear-gradient(90deg, #3bb143, #2f8b30);
+  border-radius: 12px;
+  box-shadow: 0 0 10px #27a32a;
+}
+
+.status-bar-poison {
+  background: linear-gradient(90deg, #a2d729, #83b019);
+  border-radius: 12px;
+  box-shadow: 0 0 12px #a8d72c;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.status-bar-coins {
+  background: linear-gradient(90deg, #f5c842, #e6b832);
+  border-radius: 12px;
+  box-shadow: 0 0 10px #d7ac2f;
+}
+
+.status-bar-endboss {
+  background: linear-gradient(90deg, #ff5c33, #d1421f);
+  border-radius: 12px;
+  box-shadow: 0 0 14px #ff4b22;
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(255, 255, 255, 1);
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: url('./assets/img/overlays/water_waves.svg') repeat;
+  opacity: 0.08;
+  z-index: 0;
+  animation: waveMove 30s linear infinite;
+}
+
+@keyframes waveMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 img {
@@ -47,10 +181,6 @@ img {
   -ms-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
-}
-
-.btn:hover {
-  background-color: rgba(129, 37, 205, 1);
 }
 
 .d-none {
@@ -87,37 +217,18 @@ img {
   gap: 8px;
 }
 
-.nav-icon {
-  width: 100%;
-}
-
-.nav-btn {
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 4px;
-  width: 48px;
-}
-
-.nav-btn:hover,
-.close-btn:hover {
-  background-color: rgba(255, 255, 255, 0.8);
-}
-
 .game-title {
   color: white;
   font-size: 72px;
   font-weight: 100;
   margin-bottom: 52px;
-  text-shadow: 0 0 8px #003eab;
 }
 
 .canvas-wrapper {
   position: relative;
+  box-shadow: 0 0 20px rgba(0, 31, 91, 0.8);
+  border-radius: 24px;
+  overflow: hidden;
 }
 
 .canvas-frame-img {
@@ -192,16 +303,6 @@ canvas {
   right: 32px;
 }
 
-.mobile-ctrl-btn {
-  background-color: rgb(255 255 255 / 40%);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  height: 56px;
-  text-shadow: -1px 1px 2px black;
-  width: 56px;
-}
-
 .mobile-controller-x-control {
   display: flex;
   gap: 48px;
@@ -257,7 +358,6 @@ canvas {
   font-size: 72px;
   font-weight: 100;
   margin: 0;
-  text-shadow: 0 0 8px #003eab;
 }
 
 .start-screen-body {
@@ -342,7 +442,6 @@ canvas {
   font-size: 56px;
   margin: 0;
   padding: 0 32px;
-  text-shadow: 0 0 2px #000000;
 }
 
 .settings-menu-body {
@@ -376,7 +475,6 @@ canvas {
   color: white;
   font-size: 36px;
   margin: 0;
-  text-shadow: 0 0 2px #000000;
 }
 
 .settings-annotation {
@@ -459,7 +557,6 @@ canvas {
   font-size: 32px;
   justify-content: center;
   text-align: center;
-  text-shadow: 0 0 2px #000000;
 }
 
 .help-img {
@@ -510,14 +607,12 @@ canvas {
   text-decoration: none;
 }
 
-/* Hide message on desktop devices */
 @media (hover: hover) {
   #landscape-message {
     display: none !important;
   }
 }
 
-/* Show message on portrait mobile devices */
 @media (orientation: portrait) and (max-width: 992px) {
   #landscape-message {
     display: flex !important;
@@ -593,7 +688,6 @@ canvas {
   }
 }
 
-/* Medium devices (tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
   .debugLevelNr-select {
     color: #494949;
@@ -622,7 +716,6 @@ canvas {
   }
 }
 
-/* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
   .debugLevelNr-select {
     font-size: 24px;
@@ -644,4 +737,9 @@ canvas {
   .settings-menu-title {
     font-size: 56px;
   }
+}
+
+button, .btn, .nav-btn, .close-btn, .mobile-ctrl-btn {
+  cursor: pointer;
+  user-select: none;
 }

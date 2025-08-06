@@ -4,7 +4,6 @@ const level_2 = new Level(
     // ############################################### Background objects ###############################################
     // ### Instantiates BackgroundObject(scene, section, index, levelSection)
     // ##################################################################################################################
-    // ### scene: 'light' or 'dark'
     // ### section: 1 or 2 (Alternates between these)
     // ### index: from 0 to 4 (incremental)
     // ### levelSection: 0 to x (each section measures 719px, ascending order)
@@ -71,7 +70,6 @@ const level_2 = new Level(
     // ############################################### Poison pickups ###############################################
     // ### Instantiate new Poison(type, x, y)
     // ######################################################################################################
-    // ### type options: 'animated', 'light_left', 'light_right', 'dark_left', 'dark_right'
     // ### x and y coordinates
     // #######################################################################################################
 

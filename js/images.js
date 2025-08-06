@@ -385,23 +385,7 @@ let STATUS_BAR_IMAGES = {
 
 let BACKGROUND_IMAGES = {
     'IMAGES': {
-        'light': {
-            1: [
-                './assets/img/3._Background/Layers/5._Water/L1.png',
-                './assets/img/3._Background/Layers/4._Background_2/L1.png',
-                './assets/img/3._Background/Layers/3._Background_1/L1.png',
-                './assets/img/3._Background/Layers/2._Floor/L1.png',
-                './assets/img/3._Background/Layers/1._Light/1.png'
-            ],
-            2: [
-                './assets/img/3._Background/Layers/5._Water/L2.png',
-                './assets/img/3._Background/Layers/4._Background_2/L2.png',
-                './assets/img/3._Background/Layers/3._Background_1/L2.png',
-                './assets/img/3._Background/Layers/2._Floor/L2.png',
-                './assets/img/3._Background/Layers/1._Light/2.png'
-            ]
-        },
-
+       
         'dark': {
             1: [
                 './assets/img/3._Background/Layers/5._Water/D1.png',
