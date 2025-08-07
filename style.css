@@ -747,3 +747,21 @@ button, .btn, .nav-btn, .close-btn, .mobile-ctrl-btn {
   cursor: pointer;
   user-select: none;
 }
+
+footer {
+  background-color: #001f5b;
+  color: white;
+  font-family: 'LuckiestGuy', cursive;
+  padding: 16px 0;
+  font-size: 18px;
+}
+
+footer a {
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+footer a:hover {
+  color: #6699ff;
+}
