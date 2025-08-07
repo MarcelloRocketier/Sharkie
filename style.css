@@ -753,7 +753,14 @@ footer {
   color: white;
   font-family: 'LuckiestGuy', cursive;
   padding: 16px 0;
+  text-align: center;
   font-size: 18px;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  position: relative;
+  z-index: 10;
+  overflow: visible;
 }
 
 footer a {
