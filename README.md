@@ -68,4 +68,4 @@ Dieses Projekt wurde im Rahmen meiner **Full-Stack-Weiterbildung** entwickelt un
 
 **Marcel Reyes Langenhorst**  
 📍 Deutschland  
-🌐 [github.com/MarcelloRocketier](https://github.com/MarcelloRocketier)
+🌐 [github.com/MarcelloRocketier](https://github.com/MarcelloRocketier)stimmt
