@@ -198,6 +198,12 @@ function startGame() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
 
+    if (window.mobileAndTabletCheck()) {
+        document.getElementById('mobile-ctrl-left').classList.remove('d-none');
+        document.getElementById('mobile-ctrl-right').classList.remove('d-none');
+        setupMobileControls();
+    }
+
     document.getElementById('toggle-fullscreen-btn').classList.remove('d-none');
 }
 
@@ -352,4 +358,27 @@ function updateUI() {
             fullscreen = false;
         }
     }, 250)
+}
+
+function setupMobileControls() {
+    document.getElementById('ctrl-btn-up').addEventListener('touchstart', () => keyboard.UP = true);
+    document.getElementById('ctrl-btn-up').addEventListener('touchend', () => keyboard.UP = false);
+
+    document.getElementById('ctrl-btn-right').addEventListener('touchstart', () => keyboard.RIGHT = true);
+    document.getElementById('ctrl-btn-right').addEventListener('touchend', () => keyboard.RIGHT = false);
+
+    document.getElementById('ctrl-btn-down').addEventListener('touchstart', () => keyboard.DOWN = true);
+    document.getElementById('ctrl-btn-down').addEventListener('touchend', () => keyboard.DOWN = false);
+
+    document.getElementById('ctrl-btn-left').addEventListener('touchstart', () => keyboard.LEFT = true);
+    document.getElementById('ctrl-btn-left').addEventListener('touchend', () => keyboard.LEFT = false);
+
+    document.getElementById('ctrl-btn-fin-slap').addEventListener('touchstart', () => keyboard.SPACE = true);
+    document.getElementById('ctrl-btn-fin-slap').addEventListener('touchend', () => keyboard.SPACE = false);
+
+    document.getElementById('ctrl-btn-bubble-trap').addEventListener('touchstart', () => keyboard.D = true);
+    document.getElementById('ctrl-btn-bubble-trap').addEventListener('touchend', () => keyboard.D = false);
+
+    document.getElementById('ctrl-btn-poison-bubble-trap').addEventListener('touchstart', () => keyboard.F = true);
+    document.getElementById('ctrl-btn-poison-bubble-trap').addEventListener('touchend', () => keyboard.F = false);
 }

@@ -620,7 +620,6 @@ canvas {
 @media (orientation: portrait) and (max-width: 992px) {
   #landscape-message {
     display: flex !important;
-    padding: 16px;
   }
 }
 
@@ -771,4 +770,79 @@ footer a {
 
 footer a:hover {
   color: #6699ff;
+}
+
+#landscape-message {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 992px) {
+  #landscape-message {
+    display: flex !important;
+  }
+}
+
+body, html {
+  overflow-x: hidden;
+}
+
+@media (max-width: 992px) {
+  body, html {
+    overflow-y: hidden;
+  }
+}
+
+/* Mobile Controller Buttons - Cleaned and Responsive */
+#mobile-ctrl-left,
+#mobile-ctrl-right {
+  display: none;
+  position: fixed;
+  z-index: 20;
+}
+
+@media (max-width: 992px) {
+  #mobile-ctrl-left,
+  #mobile-ctrl-right {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+    bottom: 32px;
+    align-items: center;
+  }
+  #mobile-ctrl-left {
+    left: 16px;
+    right: auto;
+  }
+  #mobile-ctrl-right {
+    right: 16px;
+    left: auto;
+  }
+  .mobile-ctrl-btn {
+    display: flex;
+    background: linear-gradient(135deg, #001f5b, #003080);
+    border: 2px solid white;
+    border-radius: 50%;
+    color: white;
+    height: 64px;
+    width: 64px;
+    text-shadow: -1px 1px 3px black;
+    box-shadow: 0 0 12px rgba(0, 48, 128, 0.8);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    justify-content: center;
+    align-items: center;
+    font-family: 'LuckiestGuy', cursive;
+    font-size: 24px;
+    user-select: none;
+  }
+  .mobile-ctrl-btn:hover,
+  .mobile-ctrl-btn:focus {
+    background: linear-gradient(135deg, #002a83, #0050c8);
+    box-shadow: 0 0 18px rgba(0, 80, 200, 1);
+  }
+  .mobile-ctrl-btn img {
+    width: 28px;
+    height: 28px;
+    pointer-events: none;
+    user-select: none;
+  }
 }

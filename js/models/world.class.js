@@ -31,46 +31,59 @@ class World {
 
         // Automatically switch to fullscreen on mobile/tablet devices
         if (mobileAndTabletCheck()) {
-            // Hide desktop-only elements
-            document.getElementById('game-title').classList.add('d-none');
-            document.getElementById('img-attribution').classList.add('d-none');
+            const gameTitle = document.getElementById('game-title');
+            if (gameTitle) gameTitle.classList.add('d-none');
 
-            // Show mobile controls and buttons
-            document.getElementById('mobile-fullscreen-btn').classList.remove('d-none');
-            document.getElementById('mobile-mute-btn').classList.remove('d-none');
-            document.getElementById('mobile-close-btn').classList.remove('d-none');
-            document.getElementById('mobile-ctrl-left').classList.remove('d-none');
-            document.getElementById('mobile-ctrl-right').classList.remove('d-none');
+            const imgAttribution = document.getElementById('img-attribution');
+            if (imgAttribution) imgAttribution.classList.add('d-none');
 
-            // Apply fullscreen styles to canvas container
-            document.getElementById('canvas-wrapper').classList.add('fullscreen');
-            document.getElementById('fullscreen-container').classList.add('fullscreen');
-            document.getElementById('canvas').style = 'width: 100%; height: 100%';
+            const mobileFullscreenBtn = document.getElementById('mobile-fullscreen-btn');
+            if (mobileFullscreenBtn) mobileFullscreenBtn.classList.remove('d-none');
+
+            const mobileMuteBtn = document.getElementById('mobile-mute-btn');
+            if (mobileMuteBtn) mobileMuteBtn.classList.remove('d-none');
+
+            const mobileCloseBtn = document.getElementById('mobile-close-btn');
+            if (mobileCloseBtn) mobileCloseBtn.classList.remove('d-none');
+
+            const mobileCtrlLeft = document.getElementById('mobile-ctrl-left');
+            if (mobileCtrlLeft) mobileCtrlLeft.classList.remove('d-none');
+
+            const mobileCtrlRight = document.getElementById('mobile-ctrl-right');
+            if (mobileCtrlRight) mobileCtrlRight.classList.remove('d-none');
+
+            const canvasWrapper = document.getElementById('canvas-wrapper');
+            if (canvasWrapper) canvasWrapper.classList.add('fullscreen');
+
+            const fullscreenContainer = document.getElementById('fullscreen-container');
+            if (fullscreenContainer) fullscreenContainer.classList.add('fullscreen');
+
+            const canvas = document.getElementById('canvas');
+            if (canvas) canvas.style = 'width: 100%; height: 100%';
 
             toggleFullscreen();
         }
 
         // Keep checking fullscreen mode and device orientation regularly
         setInterval(() => {
-            if (fullscreen && document.getElementById('canvas')) {
-                document.getElementById('canvas').classList.add('fullscreen');
-            } else if (!fullscreen && document.getElementById('canvas')) {
-                document.getElementById('canvas').classList.remove('fullscreen');
+            const canvas = document.getElementById('canvas');
+            if (canvas) {
+                if (fullscreen) {
+                    canvas.classList.add('fullscreen');
+                } else {
+                    canvas.classList.remove('fullscreen');
+                }
             }
 
-            if (!mobileAndTabletCheck() && window.innerWidth <= 992) {
-                if (document.getElementById('fullscreen-message')) {
-                    document.getElementById('fullscreen-message').classList.remove('d-none');
-                }
-                document.getElementById('landscape-message').style = "opacity: 0";
-            } else {
-                if (document.getElementById('fullscreen-message')) {
-                    document.getElementById('fullscreen-message').classList.add('d-none');
-                }
+            const fullscreenMessage = document.getElementById('fullscreen-message');
+            const landscapeMessage = document.getElementById('landscape-message');
 
-                if (document.getElementById('landscape-message')) {
-                    document.getElementById('landscape-message').style = "opacity: 1";
-                }
+            if (!mobileAndTabletCheck() && window.innerWidth <= 992) {
+                if (fullscreenMessage) fullscreenMessage.classList.remove('d-none');
+                if (landscapeMessage) landscapeMessage.style = "opacity: 0";
+            } else {
+                if (fullscreenMessage) fullscreenMessage.classList.add('d-none');
+                if (landscapeMessage) landscapeMessage.style = "opacity: 1";
             }
         }, 1000 / 60);
 

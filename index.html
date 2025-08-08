@@ -120,8 +120,31 @@
             </div>
         </div>
     </div>
-    <main id="content" class="content"></main>
+    <main id="content" class="content">
         <!-- Content is presented here -->
+        <div id="canvas-wrapper">
+            <canvas></canvas>
+            <div id="mobile-ctrl-left" class="mobile-controller-container-left d-none">
+                <button id="ctrl-btn-up" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_up.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
+                <div class="mobile-controller-x-control">
+                    <button id="ctrl-btn-left" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_left.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
+                    <button id="ctrl-btn-right" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_right.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
+                </div>
+                <button id="ctrl-btn-down" class="mobile-ctrl-btn"><img src="./assets/img/icons/arrow_down.svg" class="ctrl-arrow-img" oncontextmenu="return false;"></button>
+            </div>
+
+            <div id="mobile-ctrl-right" class="mobile-controller-container-right d-none">
+                <button id="ctrl-btn-fin-slap" class="mobile-ctrl-btn">Fin Slap</button>
+                <button id="ctrl-btn-bubble-trap" class="mobile-ctrl-btn">Bubble</button>
+                <button id="ctrl-btn-poison-bubble-trap" class="mobile-ctrl-btn">Poison Bubble</button>
+            </div>
+
+            <button id="mobile-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Fullscreen On/Off"><img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen On/Off" class="nav-icon"></button>
+
+            <button id="mobile-mute-btn" class="nav-btn d-none" onclick="toggleSound()" title="Mute/Unmute"><img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img-mobile"></button>
+
+            <button id="mobile-close-btn" class="nav-btn d-none" onclick="restartLevel()" title="Exit Game"><img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon"></button>
+        </div>
     </main>
 </body>
 <footer style="text-align:center; padding: 1rem; background: #001f5b; color: white; font-family: 'LuckiestGuy', cursive;">
