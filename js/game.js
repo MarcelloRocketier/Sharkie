@@ -274,6 +274,9 @@ function loadFromLocalStorage() {
 }
 
 function restartLevel() {
+    levelEnded = false;
+    characterIsDead = false;
+    endBossKilled = false;
     window.location.reload();
 }
 

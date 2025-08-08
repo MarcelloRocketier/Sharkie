@@ -846,3 +846,19 @@ body, html {
     user-select: none;
   }
 }
+@media (max-width: 992px) {
+  .fullscreen-container {
+    height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
+  }
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 100%;
+  }
+  #mobile-ctrl-left,
+  #mobile-ctrl-right {
+    bottom: 16px;
+    z-index: 20;
+  }
+}
