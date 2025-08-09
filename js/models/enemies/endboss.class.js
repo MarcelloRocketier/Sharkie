@@ -33,7 +33,7 @@ class EndBoss extends MovableObject {
     SPLASH_SOUND = new Audio('./assets/audio/splash.mp3');
     BITE_SOUND = new Audio('./assets/audio/bite.mp3');
     bossThemeIntervalId = null;
-    static INTRO_TO_FLOAT_DELAY = 1490; // 10ms before animation end for smooth transition
+    static INTRO_TO_FLOAT_DELAY = 1490; 
 
     /**
      * Creates an EndBoss instance.
@@ -43,7 +43,7 @@ class EndBoss extends MovableObject {
      * @param {number} startY - The base Y coordinate for AI movement patterns.
      */
     constructor(x, y, startX, startY) {
-        super().loadImage(''); // Empty because EndBoss has introduce animation. Otherwise an image would be displayed permanently
+        super().loadImage('');
         this.loadImages(ENDBOSS_IMAGES.FLOATING);
         this.loadImages(ENDBOSS_IMAGES.INTRODUCE);
         this.loadImages(ENDBOSS_IMAGES.HURT);
@@ -225,7 +225,7 @@ class EndBoss extends MovableObject {
     attackAnimation() {
         if (this.checkAlreadyRunning) return;
         this.playBiteIfAllowed();
-        this.currentImage = 0; // start with first img of animation
+        this.currentImage = 0; 
         this.beginAttackWindow();
     }
 
@@ -284,7 +284,7 @@ class EndBoss extends MovableObject {
      * @returns {void}
      */
     startBossThemeLoop() {
-        if (this.bossThemeIntervalId) return; // already running
+        if (this.bossThemeIntervalId) return; 
         this.bossThemeIntervalId = setInterval(() => {
             if (soundOn && !this.world.character.isDead() && !this.isDead()) {
                 this.BOSS_THEME_SOUND.play();

@@ -43,6 +43,6 @@ class Poison extends MovableObject {
     animate() {
         setInterval(() => {
             this.playAnimation(this.IMAGES_ANIMATED);
-        }, 180); // langsame flackernde Bewegung
+        }, 180); 
     }
 }

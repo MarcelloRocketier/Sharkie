@@ -113,7 +113,6 @@ class Character extends MovableObject {
      * Handles character attack actions based on keyboard and touch controls.
      */
     handleAttacks() {
-        // Keyboard controls
         if (this.world.keyboard.SPACE && !this.isDead()) {
             this.finSlapAttack();
             this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
@@ -124,7 +123,6 @@ class Character extends MovableObject {
             this.bubbleTrapAttackPoison();
             this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
         }
-        // Touch controls
         if (this.touchCtrlFinSlapStart && !this.isDead()) {
             this.finSlapAttack();
             this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);

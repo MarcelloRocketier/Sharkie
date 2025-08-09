@@ -40,9 +40,7 @@ let loading = true;
 /** @type {number|null} */
 let fullscreenIntervalId = null;
 
-// Load saved game settings from localStorage
 loadFromLocalStorage();
-
 
 /**
  * Initializes the game, preloads assets, loads settings, updates the UI, and sets up device-specific features.
@@ -156,9 +154,7 @@ function preloadImage(url) {
     img.src = url;
 }
 
-// Map für Tastencodes zu Key-Flags
 const KEY_MAP = { 32:'SPACE', 37:'LEFT', 38:'UP', 39:'RIGHT', 40:'DOWN', 68:'D', 70:'F' };
-// Keyboard-Events
 window.addEventListener('keydown', (e) => { const k = KEY_MAP[e.keyCode]; if (k) keyboard[k] = true; });
 window.addEventListener('keyup',   (e) => { const k = KEY_MAP[e.keyCode]; if (k) keyboard[k] = false; });
 
@@ -266,10 +262,9 @@ function loadFromLocalStorage() {
     let currentLevelAsString = localStorage.getItem('currentLevel');
     currentLevel = JSON.parse(currentLevelAsString);
 
-    // Prüfe, ob currentLevel gültig ist (0 <= currentLevel < levels.length)
     if (typeof currentLevel !== 'number' || currentLevel < 0 || currentLevel >= levels.length) {
         currentLevel = 0;
-        saveToLocalStorage();  // Setze den Wert im LocalStorage zurück
+        saveToLocalStorage(); 
     }
 
     let soundOnAsString = localStorage.getItem('soundOn');
@@ -381,7 +376,6 @@ function updateUI() {
         document.getElementById('sound-img-mobile').src = './assets/img/icons/mute.svg';
     }
 
-    // Update fullscreen checkbox every 250ms (register once)
     if (!fullscreenIntervalId) {
         fullscreenIntervalId = setInterval(() => {
             function fs_status() {

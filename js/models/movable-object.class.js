@@ -81,7 +81,7 @@ class MovableObject extends DrawableObject {
     playAnimation(images, loop) {
         if (loop === 0 && !this.animationFinished) {
             if (!this.animationStarted) {
-                this.currentImage = 0; // Reset animation to the first frame
+                this.currentImage = 0; 
             }
             this.animationStarted = true;
             this.updateFrame(images);

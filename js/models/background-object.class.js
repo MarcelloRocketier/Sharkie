@@ -17,7 +17,6 @@ class BackgroundObject extends MovableObject {
      * @param {number} levelSection - The horizontal section index of the level to position the background.
      */
     constructor(scene, section, index, levelSection) {
-        // Load the appropriate background image based on parameters
         super().loadImage(BACKGROUND_IMAGES.IMAGES[scene][section][index]);
 
         /** 

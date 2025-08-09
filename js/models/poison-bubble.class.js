@@ -28,13 +28,13 @@ class PoisonBubble extends MovableObject {
      */
     float() {
         if (this.otherDirection) {
-            this.x -= 200; // Adjust bubble start position when character faces right
+            this.x -= 200; 
         }
         setInterval(() => {
-            if (this.otherDirection) { // Moves bubble diagonally up-left
+            if (this.otherDirection) { 
                 this.x -= this.speed;
                 this.y -= this.speed;
-            } else { // Moves bubble diagonally up-right
+            } else { 
                 this.x += this.speed;
                 this.y -= this.speed;
             }

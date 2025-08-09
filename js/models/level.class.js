@@ -24,7 +24,7 @@ class Level {
     poison = 0;
     totalPoison = 0;
     collectedPoison = 0;
-    level_end_x; // x position marking the end of the level
+    level_end_x; 
 
     /**
      * Constructor takes parameters from specific level definition files

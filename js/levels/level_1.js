@@ -1,7 +1,6 @@
 /**
  * Defines and initializes the first level of the Sharkie game, specifying backgrounds, collectibles, enemies, barriers, and the level endpoint.
  */
-// Creating a new instance of the level
 /**
  * Level 1 configuration instance.
  * @type {Level}

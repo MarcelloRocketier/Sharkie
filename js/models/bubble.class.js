@@ -31,17 +31,14 @@ class Bubble extends MovableObject {
      * every frame to create smooth movement.
      */
     float() {
-        // Adjust start position if bubble is coming from the right side
         if (this.otherDirection) {
             this.x -= 200;
         }
         setInterval(() => {
             if (this.otherDirection) {
-                // Bubble moves diagonally up-left
                 this.x -= this.speed;
                 this.y -= this.speed;
             } else {
-                // Bubble moves diagonally up-right
                 this.x += this.speed;
                 this.y -= this.speed;
             }

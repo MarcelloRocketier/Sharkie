@@ -10,9 +10,8 @@ class World {
     bubble;
     MAIN_SOUND = new Audio('./assets/audio/main_theme.mp3');
 
-    // ################################################### Object initialization ###################################################
     character = new Character();
-    level = levels[currentLevel]; // Assign current level instance to this.level
+    level = levels[currentLevel]; 
     statusBarLife = new StatusBar('life', 'green', 100, 20, 0);
     statusBarCoins = new StatusBar('coins', 'green', 0, 20, 40);
     statusBarPoison = new StatusBar('poison', 'green', 0, 20, 80);
@@ -25,15 +24,15 @@ class World {
      * @param {Object} keyboard - The keyboard input handler instance.
      */
     constructor(canvas, keyboard) {
-        this.canvas = canvas; // Save canvas reference
-        this.keyboard = keyboard; // Save keyboard reference
+        this.canvas = canvas; 
+        this.keyboard = keyboard; 
         this.ctx = canvas.getContext('2d');
         this.draw();
         try {
             updateScreenMessages();
             window.addEventListener('resize', updateScreenMessages);
             window.addEventListener('orientationchange', updateScreenMessages);
-        } catch (e) {} // fail-safe: do nothing if DOM not ready yet
+        } catch (e) {} 
         this.setWorld();
         this.checkCollisions();
         if (mobileAndTabletCheck()) {
@@ -71,31 +70,29 @@ class World {
         this.level.getEndBoss().world = this;
     }
 
-    // ################################################### Core rendering functions ###################################################
-
     /**
      * Draws all game objects and UI elements to the canvas.
      * Uses requestAnimationFrame to continuously render the scene.
      * @returns {void}
      */
     draw() {
-        this.clearCanvas(); // Clear frame
-        this.ctx.translate(this.camera_x, 0); // Apply camera offset (simulate movement)
+        this.clearCanvas(); 
+        this.ctx.translate(this.camera_x, 0); 
         this.addObjectsToWorld(this.level.backgroundObjects);
         this.addObjectsToWorld(this.level.coins);
         this.addObjectsToWorld(this.level.life);
         this.addObjectsToWorld(this.level.poison);
         this.addObjectsToWorld(this.level.enemies);
         this.addObjectsToWorld(this.level.barriers);
-        this.addToWorld(this.character); // Always render the character
-        if (this.bubble) this.addToWorld(this.bubble); // Render bubble if active
-        this.ctx.translate(-this.camera_x, 0); // Fixed UI elements drawn on top and not affected by camera
+        this.addToWorld(this.character); 
+        if (this.bubble) this.addToWorld(this.bubble); 
+        this.ctx.translate(-this.camera_x, 0); 
         this.addToWorld(this.statusBarLife);
         this.addToWorld(this.statusBarCoins);
         this.addToWorld(this.statusBarPoison);
         if (this.level.getEndBoss().endBossIntroduced) this.addToWorld(this.statusBarEndBoss);
         this.ctx.translate(this.camera_x, 0);
-        this.ctx.translate(-this.camera_x, 0); // Reset camera translation for next frame
+        this.ctx.translate(-this.camera_x, 0); 
         let self = this;
         requestAnimationFrame(function() { self.draw(); });
     }
@@ -107,9 +104,9 @@ class World {
      * @returns {void}
      */
     addToWorld(movableObject) {
-        if (movableObject.imgMirrored) this.flipImage(movableObject); // Flip the image horizontally if needed
-        movableObject.draw(this.ctx); // Render the object
-        if (movableObject.imgMirrored) this.undoFlipImage(movableObject); // Undo horizontal flip for following drawings
+        if (movableObject.imgMirrored) this.flipImage(movableObject); 
+        movableObject.draw(this.ctx); 
+        if (movableObject.imgMirrored) this.undoFlipImage(movableObject); 
     }
 
     /**
@@ -135,7 +132,7 @@ class World {
      * @returns {void}
      */
     flipImage(movableObject) {
-        this.ctx.save(); // Save current drawing context
+        this.ctx.save(); 
         this.ctx.translate(movableObject.width, 0);
         this.ctx.scale(-1, 1);
         movableObject.x = movableObject.x * -1;
@@ -148,7 +145,7 @@ class World {
      */
     undoFlipImage(movableObject) {
         movableObject.x = movableObject.x * -1;
-        this.ctx.restore(); // Restore drawing context
+        this.ctx.restore(); 
     }
 
     /**

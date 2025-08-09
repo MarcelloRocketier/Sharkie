@@ -3,7 +3,6 @@
  * Defines background layers, collectible items, enemies, barriers, and the level end position.
  * @type {Level}
  */
-// Instantiate a new level object
 const level_2 = new Level(
 
     /**
