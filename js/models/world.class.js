@@ -11,7 +11,6 @@ class World {
     MAIN_SOUND = new Audio('./assets/audio/main_theme.mp3');
 
     // ################################################### Object initialization ###################################################
-
     character = new Character();
     level = levels[currentLevel]; // Assign current level instance to this.level
     statusBarLife = new StatusBar('life', 'green', 100, 20, 0);
@@ -28,57 +27,38 @@ class World {
     constructor(canvas, keyboard) {
         this.canvas = canvas; // Save canvas reference
         this.keyboard = keyboard; // Save keyboard reference
-
-        // Get 2D rendering context of the canvas
         this.ctx = canvas.getContext('2d');
         this.draw();
-        // Initialize and keep overlays (fullscreen/rotate) in sync
         try {
             updateScreenMessages();
             window.addEventListener('resize', updateScreenMessages);
             window.addEventListener('orientationchange', updateScreenMessages);
-        } catch (e) {
-            // fail-safe: do nothing if DOM not ready yet
-        }
+        } catch (e) {} // fail-safe: do nothing if DOM not ready yet
         this.setWorld();
         this.checkCollisions();
-
-        // Automatically switch to fullscreen on mobile/tablet devices
         if (mobileAndTabletCheck()) {
             const gameTitle = document.getElementById('game-title');
             if (gameTitle) gameTitle.classList.add('d-none');
-
             const imgAttribution = document.getElementById('img-attribution');
             if (imgAttribution) imgAttribution.classList.add('d-none');
-
             const mobileFullscreenBtn = document.getElementById('mobile-fullscreen-btn');
             if (mobileFullscreenBtn) mobileFullscreenBtn.classList.remove('d-none');
-
             const mobileMuteBtn = document.getElementById('mobile-mute-btn');
             if (mobileMuteBtn) mobileMuteBtn.classList.remove('d-none');
-
             const mobileCloseBtn = document.getElementById('mobile-close-btn');
             if (mobileCloseBtn) mobileCloseBtn.classList.remove('d-none');
-
             const mobileCtrlLeft = document.getElementById('mobile-ctrl-left');
             if (mobileCtrlLeft) mobileCtrlLeft.classList.remove('d-none');
-
             const mobileCtrlRight = document.getElementById('mobile-ctrl-right');
             if (mobileCtrlRight) mobileCtrlRight.classList.remove('d-none');
-
             const canvasWrapper = document.getElementById('canvas-wrapper');
             if (canvasWrapper) canvasWrapper.classList.add('fullscreen');
-
             const fullscreenContainer = document.getElementById('fullscreen-container');
             if (fullscreenContainer) fullscreenContainer.classList.add('fullscreen');
-
             const canvas = document.getElementById('canvas');
             if (canvas) canvas.style = 'width: 100%; height: 100%';
-
             toggleFullscreen();
         }
-
-        // Control main theme playback based on game state and sound setting
         this.startAudioLoop();
     }
 
@@ -91,7 +71,6 @@ class World {
         this.level.getEndBoss().world = this;
     }
 
-
     // ################################################### Core rendering functions ###################################################
 
     /**
@@ -100,47 +79,25 @@ class World {
      * @returns {void}
      */
     draw() {
-        this.clearCanvas(); // Clear previous frame
-
-        // Apply camera offset (simulate movement)
-        this.ctx.translate(this.camera_x, 0);
-
-        // Render all game objects from current level
+        this.clearCanvas(); // Clear frame
+        this.ctx.translate(this.camera_x, 0); // Apply camera offset (simulate movement)
         this.addObjectsToWorld(this.level.backgroundObjects);
         this.addObjectsToWorld(this.level.coins);
         this.addObjectsToWorld(this.level.life);
         this.addObjectsToWorld(this.level.poison);
         this.addObjectsToWorld(this.level.enemies);
         this.addObjectsToWorld(this.level.barriers);
-
-        // Always render the character
-        this.addToWorld(this.character);
-
-        // Render bubble if active
-        if (this.bubble) {
-            this.addToWorld(this.bubble);
-        }
-
-        // Fixed UI elements drawn on top and not affected by camera
-        this.ctx.translate(-this.camera_x, 0);
-
+        this.addToWorld(this.character); // Always render the character
+        if (this.bubble) this.addToWorld(this.bubble); // Render bubble if active
+        this.ctx.translate(-this.camera_x, 0); // Fixed UI elements drawn on top and not affected by camera
         this.addToWorld(this.statusBarLife);
         this.addToWorld(this.statusBarCoins);
         this.addToWorld(this.statusBarPoison);
-        if (this.level.getEndBoss().endBossIntroduced) {
-            this.addToWorld(this.statusBarEndBoss);
-        }
-
+        if (this.level.getEndBoss().endBossIntroduced) this.addToWorld(this.statusBarEndBoss);
         this.ctx.translate(this.camera_x, 0);
-
-        // Reset camera translation for next frame
-        this.ctx.translate(-this.camera_x, 0);
-
-        // Recursively call draw() 60 times per second via requestAnimationFrame
+        this.ctx.translate(-this.camera_x, 0); // Reset camera translation for next frame
         let self = this;
-        requestAnimationFrame(function() {
-            self.draw();
-        });
+        requestAnimationFrame(function() { self.draw(); });
     }
 
     /**
@@ -150,19 +107,9 @@ class World {
      * @returns {void}
      */
     addToWorld(movableObject) {
-        // Flip the image horizontally if needed
-        if (movableObject.imgMirrored) {
-            this.flipImage(movableObject);
-        }
-
+        if (movableObject.imgMirrored) this.flipImage(movableObject); // Flip the image horizontally if needed
         movableObject.draw(this.ctx); // Render the object
-
-        // No debug collision boxes rendered
-
-        // Undo horizontal flip for following drawings
-        if (movableObject.imgMirrored) {
-            this.undoFlipImage(movableObject);
-        }
+        if (movableObject.imgMirrored) this.undoFlipImage(movableObject); // Undo horizontal flip for following drawings
     }
 
     /**
@@ -171,9 +118,7 @@ class World {
      * @returns {void}
      */
     addObjectsToWorld(objects) {
-        objects.forEach(object => {
-            this.addToWorld(object);
-        });
+        objects.forEach(object => this.addToWorld(object));
     }
 
     /**
@@ -380,22 +325,11 @@ class World {
 function updateScreenMessages() {
   const fullscreenMessage = document.getElementById('fullscreen-message');
   const landscapeMessage = document.getElementById('landscape-message');
-
   const isMobile = (typeof mobileAndTabletCheck === 'function') ? mobileAndTabletCheck() : false;
   const isPortrait = window.matchMedia('(orientation: portrait)').matches;
   const isNarrow = window.innerWidth <= 992;
-
-  if (fullscreenMessage) {
-    const showFullscreenMsg = !isMobile && isNarrow;
-    fullscreenMessage.classList.toggle('d-none', !showFullscreenMsg);
-  }
-  if (landscapeMessage) {
-    const showRotate = isMobile && isPortrait;
-    landscapeMessage.classList.toggle('d-none', !showRotate);
-  }
-
+  if (fullscreenMessage) fullscreenMessage.classList.toggle('d-none', !( !isMobile && isNarrow ));
+  if (landscapeMessage) landscapeMessage.classList.toggle('d-none', !( isMobile && isPortrait ));
   const rotateOverlay = document.getElementById('rotate-overlay');
-  if (rotateOverlay) {
-    rotateOverlay.classList.toggle('d-none', !(isMobile && isPortrait));
-  }
+  if (rotateOverlay) rotateOverlay.classList.toggle('d-none', !(isMobile && isPortrait));
 }

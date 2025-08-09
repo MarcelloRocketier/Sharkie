@@ -199,78 +199,33 @@ class Character extends MovableObject {
         const ctrlBubbleTrap = document.getElementById('ctrl-btn-bubble-trap');
         const ctrlPoisonBubbleTrap = document.getElementById('ctrl-btn-poison-bubble-trap');
 
-        ctrlUp.addEventListener('touchstart', this.ctrlUpStart.bind(this));
-        ctrlUp.addEventListener('touchend', this.ctrlUpEnd.bind(this));
-        ctrlRight.addEventListener('touchstart', this.ctrlRightStart.bind(this));
-        ctrlRight.addEventListener('touchend', this.ctrlRightEnd.bind(this));
-        ctrlDown.addEventListener('touchstart', this.ctrlDownStart.bind(this));
-        ctrlDown.addEventListener('touchend', this.ctrlDownEnd.bind(this));
-        ctrlLeft.addEventListener('touchstart', this.ctrlLeftStart.bind(this));
-        ctrlLeft.addEventListener('touchend', this.ctrlLeftEnd.bind(this));
-        ctrlFinSlap.addEventListener('touchstart', this.ctrlFinSlapStart.bind(this));
-        ctrlFinSlap.addEventListener('touchend', this.ctrlFinSlapEnd.bind(this));
-        ctrlBubbleTrap.addEventListener('touchstart', this.ctrlBubbleTrapStart.bind(this));
-        ctrlBubbleTrap.addEventListener('touchend', this.ctrlBubbleTrapEnd.bind(this));
-        ctrlPoisonBubbleTrap.addEventListener('touchstart', this.ctrlPoisonBubbleTrapStart.bind(this));
-        ctrlPoisonBubbleTrap.addEventListener('touchend', this.ctrlPoisonBubbleTrapEnd.bind(this));
+        ctrlUp.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlUpStart', 'touchCtrlUpEnd', true));
+        ctrlUp.addEventListener('touchend', () => this.handleTouchControl('touchCtrlUpStart', 'touchCtrlUpEnd', false));
+        ctrlRight.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlRightStart', 'touchCtrlRightEnd', true));
+        ctrlRight.addEventListener('touchend', () => this.handleTouchControl('touchCtrlRightStart', 'touchCtrlRightEnd', false));
+        ctrlDown.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlDownStart', 'touchCtrlDownEnd', true));
+        ctrlDown.addEventListener('touchend', () => this.handleTouchControl('touchCtrlDownStart', 'touchCtrlDownEnd', false));
+        ctrlLeft.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlLeftStart', 'touchCtrlLeftEnd', true));
+        ctrlLeft.addEventListener('touchend', () => this.handleTouchControl('touchCtrlLeftStart', 'touchCtrlLeftEnd', false));
+        ctrlFinSlap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlFinSlapStart', 'touchCtrlFinSlapEnd', true));
+        ctrlFinSlap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlFinSlapStart', 'touchCtrlFinSlapEnd', false));
+        ctrlBubbleTrap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlBubbleTrapStart', 'touchCtrlBubbleTrapEnd', true));
+        ctrlBubbleTrap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlBubbleTrapStart', 'touchCtrlBubbleTrapEnd', false));
+        ctrlPoisonBubbleTrap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', true));
+        ctrlPoisonBubbleTrap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', false));
     }
 
-    ctrlUpStart() {
-        this.touchCtrlUpStart = true;
-        this.touchCtrlUpEnd = false;
+    /**
+     * Generic handler for touch controls
+     * @param {string} startFlag - property name for touch start boolean
+     * @param {string} endFlag - property name for touch end boolean
+     * @param {boolean} isStart - whether this is a start or end event
+     */
+    handleTouchControl(startFlag, endFlag, isStart) {
+        this[startFlag] = isStart;
+        this[endFlag] = !isStart;
     }
-    ctrlUpEnd() {
-        this.touchCtrlUpEnd = true;
-        this.touchCtrlUpStart = false;
-    }
-    ctrlRightStart() {
-        this.touchCtrlRightStart = true;
-        this.touchCtrlRightEnd = false;
-    }
-    ctrlRightEnd() {
-        this.touchCtrlRightEnd = true;
-        this.touchCtrlRightStart = false;
-    }
-    ctrlDownStart() {
-        this.touchCtrlDownStart = true;
-        this.touchCtrlDownEnd = false;
-    }
-    ctrlDownEnd() {
-        this.touchCtrlDownEnd = true;
-        this.touchCtrlDownStart = false;
-    }
-    ctrlLeftStart() {
-        this.touchCtrlLeftStart = true;
-        this.touchCtrlLeftEnd = false;
-    }
-    ctrlLeftEnd() {
-        this.touchCtrlLeftEnd = true;
-        this.touchCtrlLeftStart = false;
-    }
-    ctrlFinSlapStart() {
-        this.touchCtrlFinSlapStart = true;
-        this.touchCtrlFinSlapEnd = false;
-    }
-    ctrlFinSlapEnd() {
-        this.touchCtrlFinSlapEnd = true;
-        this.touchCtrlFinSlapStart = false;
-    }
-    ctrlBubbleTrapStart() {
-        this.touchCtrlBubbleTrapStart = true;
-        this.touchCtrlBubbleTrapEnd = false;
-    }
-    ctrlBubbleTrapEnd() {
-        this.touchCtrlBubbleTrapEnd = true;
-        this.touchCtrlBubbleTrapStart = false;
-    }
-    ctrlPoisonBubbleTrapStart() {
-        this.touchCtrlPoisonBubbleTrapStart = true;
-        this.touchCtrlPoisonBubbleTrapEnd = false;
-    }
-    ctrlPoisonBubbleTrapEnd() {
-        this.touchCtrlPoisonBubbleTrapEnd = true;
-        this.touchCtrlPoisonBubbleTrapStart = false;
-    }
+
 
     /**
      * Handles playing character sounds based on various game events.
@@ -414,98 +369,64 @@ class Character extends MovableObject {
     }
 
     finSlapAttack() {
-        this.activateSPACE();
+        this.activateKey('SPACE', 600, () => this.isFinSlapping = false);
         this.lastMove = new Date().getTime();
         this.isFinSlapping = true;
     }
 
-    activateSPACE() {
+    /**
+     * Activates a key for a set duration
+     * @param {string} key - key property to activate (e.g., 'SPACE')
+     * @param {number} duration - duration in ms
+     * @param {function} onEnd - optional callback after end
+     */
+    activateKey(key, duration, onEnd) {
         if (!this.checkAlreadyRunning) {
             this.currentImage = 0;
-            let spacePressed = setInterval(() => {
-                this.world.keyboard.SPACE = true;
+            let pressed = setInterval(() => {
+                this.world.keyboard[key] = true;
                 this.checkAlreadyRunning = true;
             }, 100);
-
             setTimeout(() => {
-                this.world.keyboard.SPACE = false;
+                this.world.keyboard[key] = false;
                 this.checkAlreadyRunning = false;
-                clearInterval(spacePressed);
-                this.isFinSlapping = false;
-            }, 600);
+                clearInterval(pressed);
+                if (typeof onEnd === 'function') onEnd();
+            }, duration);
         }
     }
 
     bubbleTrapAttack() {
-        this.activateD();
+        this.activateKey('D', 600, () => this.isBubbleTrapping = false);
         this.lastMove = new Date().getTime();
         this.isBubbleTrapping = true;
-
-        if (!this.checkAlreadyRunning) {
-            let otherDirection;
-
-            if (this.imgMirrored == true) {
-                otherDirection = true;
-            }
-
-            setTimeout(() => {
-                this.world.bubble = new Bubble(this.x + this.offset.bubbleX, this.y + this.offset.bubbleY, otherDirection);
-            }, 600)
-        }
-    }
-
-    activateD() {
-        if (!this.checkAlreadyRunning) {
-            this.currentImage = 0;
-            let dPressed = setInterval(() => {
-                this.world.keyboard.D = true;
-                this.checkAlreadyRunning = true;
-            }, 100);
-
-            setTimeout(() => {
-                this.world.keyboard.D = false;
-                this.checkAlreadyRunning = false;
-                clearInterval(dPressed);
-                this.isBubbleTrapping = false;
-            }, 600);
-        }
+        this.spawnBubble(false);
     }
 
     bubbleTrapAttackPoison() {
-        this.activateF();
+        this.activateKey('F', 600, () => this.isBubbleTrapping = false);
         this.lastMove = new Date().getTime();
         this.isBubbleTrapping = true;
-
-        if (!this.checkAlreadyRunning) {
-            let otherDirection;
-
-            if (this.imgMirrored == true) {
-                otherDirection = true;
-            }
-
-            setTimeout(() => {
-                if (this.poison > 0) {
-                    this.world.bubble = new PoisonBubble(this.x + this.offset.bubbleX, this.y + this.offset.bubbleY, otherDirection);
-                    this.poison--;
-                    this.world.statusBarPoison.setPercentage((this.poison / this.world.level.totalPoison) * 100, this.world.statusBarPoison.type, this.world.statusBarPoison.color);
-                }
-            }, 600)
-        }
+        this.spawnBubble(true);
     }
 
-    activateF() {
+    /**
+     * Spawns a bubble or poison bubble after a delay
+     * @param {boolean} isPoison - true for poison bubble, false for normal
+     */
+    spawnBubble(isPoison = false) {
         if (!this.checkAlreadyRunning) {
-            this.currentImage = 0;
-            let fPressed = setInterval(() => {
-                this.world.keyboard.F = true;
-                this.checkAlreadyRunning = true;
-            }, 100);
-
+            let otherDirection = this.imgMirrored === true;
             setTimeout(() => {
-                this.world.keyboard.F = false;
-                this.checkAlreadyRunning = false;
-                clearInterval(fPressed);
-                this.isBubbleTrapping = false;
+                if (isPoison) {
+                    if (this.poison > 0) {
+                        this.world.bubble = new PoisonBubble(this.x + this.offset.bubbleX, this.y + this.offset.bubbleY, otherDirection);
+                        this.poison--;
+                        this.world.statusBarPoison.setPercentage((this.poison / this.world.level.totalPoison) * 100, this.world.statusBarPoison.type, this.world.statusBarPoison.color);
+                    }
+                } else {
+                    this.world.bubble = new Bubble(this.x + this.offset.bubbleX, this.y + this.offset.bubbleY, otherDirection);
+                }
             }, 600);
         }
     }
