@@ -1,5 +1,8 @@
 /**
- * Jellyfish enemy object
+ * Represents a dangerous jellyfish enemy in the game.
+ * Can inflict higher damage than regular jellyfish.
+ * Moves horizontally or vertically and switches between swim and dead animations.
+ * Extends MovableObject for rendering, movement, and collision handling.
  */
 class JellyFishDangerous extends MovableObject {
     width = 100;
@@ -13,6 +16,17 @@ class JellyFishDangerous extends MovableObject {
         height: 8
     }
 
+    /**
+     * Creates a dangerous jellyfish enemy.
+     * @param {string} color - Color variant ('lila', 'yellow', 'green', or 'pink').
+     * @param {number} x - Horizontal starting position.
+     * @param {number} y - Vertical starting position.
+     * @param {string} direction - Movement direction ('horizontal' or 'vertical').
+     * @param {number} startPoint - Starting coordinate for movement.
+     * @param {number} endPoint - Ending coordinate for movement.
+     * @param {number} speed - Movement speed.
+     * @param {number} imgInitiallyMirrored - 1 if initially mirrored, 0 otherwise (for horizontal movement).
+     */
     constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         super().loadImage('./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Lila_1.png');
         this.loadImages(JELLYFISH_DANGEROUS_IMAGES.SWIM[color]);
@@ -30,13 +44,15 @@ class JellyFishDangerous extends MovableObject {
     }
 
     /**
-     * Animate jellyfish
-     * @param {string} color 'regular_damage' = 'lila' or 'yellow', 'super_dangerous' = 'green' or 'pink'
-     * @param {string} direction 'horizontal' or 'vertical'
-     * @param {integer} startPoint The start point of the movement
-     * @param {integer} endPoint The end point of the movement
-     * @param {float} speed The speed of the enemy
-     * @param {integer} imgInitiallyMirrored 1 = mirrored, 0 = not mirrored (Necessary for horizontal movement)
+     * Starts the dangerous jellyfish animation loop.
+     * Plays swim or dead animations depending on enemy's state.
+     * @param {string} color - Color variant ('lila', 'yellow', 'green', or 'pink').
+     * @param {string} direction - Movement direction ('horizontal' or 'vertical').
+     * @param {number} startPoint - Starting coordinate for movement.
+     * @param {number} endPoint - Ending coordinate for movement.
+     * @param {number} speed - Movement speed.
+     * @param {number} imgInitiallyMirrored - 1 if initially mirrored, 0 otherwise.
+     * @returns {void}
      */
     animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         this.move(direction, startPoint, endPoint, speed, imgInitiallyMirrored);

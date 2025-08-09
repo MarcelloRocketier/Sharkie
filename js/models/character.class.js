@@ -76,83 +76,118 @@ class Character extends MovableObject {
         this.touchEvents();
     }
 
+    /**
+     * Handles animation state updates for the character.
+     */
     animate() {
         setInterval(() => {
-            if (this.isDead() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
-                this.playAnimation(SHARKIE_IMAGES.DIE_POISONED, 0);
-                characterIsDead = true;
-            } else if (this.isDead() && this.hitBy == 'JellyFish') {
-                this.playAnimation(SHARKIE_IMAGES.DIE_ELECTRIC_SHOCK, 0);
-                characterIsDead = true;
-            } else if (this.isHurt() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
-                this.playAnimation(SHARKIE_IMAGES.HURT_POISONED, 1);
-            } else if (this.isHurt() && this.hitBy == 'JellyFish') {
-                this.playAnimation(SHARKIE_IMAGES.HURT_ELECTRIC_SHOCK, 1);
-            } else if (this.world.keyboard.LEFT || this.world.keyboard.UP || this.world.keyboard.RIGHT || this.world.keyboard.DOWN) {
-                this.playAnimation(SHARKIE_IMAGES.SWIM, 1);
-            } else if (this.isLongIdle()) {
-                this.playAnimation(SHARKIE_IMAGES.LONG_IDLE, 1);
-            } else {
-                this.playAnimation(SHARKIE_IMAGES.IDLE, 1);
-            }
+            this.updateAnimationState();
         }, 200);
 
         setInterval(() => {
-            // Keyboard controls
-            if (this.world.keyboard.SPACE && !this.isDead()) {
-                this.finSlapAttack();
-                this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
-            } else if (this.world.keyboard.D && !this.isDead()) {
-                this.bubbleTrapAttack();
-                this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
-            } else if (this.world.keyboard.F && this.poison > 0 && !this.isDead()) {
-                this.bubbleTrapAttackPoison();
-                this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
-            }
-
-            // Touch controls
-            if (this.touchCtrlFinSlapStart && !this.isDead()) {
-                this.finSlapAttack();
-                this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
-            } else if (this.touchCtrlBubbleTrapStart && !this.isDead()) {
-                this.bubbleTrapAttack();
-                this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
-            } else if (this.touchCtrlPoisonBubbleTrapStart && this.poison > 0 && !this.isDead()) {
-                this.bubbleTrapAttackPoison();
-                this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
-            }
+            this.handleAttacks();
         }, 100)
     }
 
+    /**
+     * Updates the animation state based on character status and input.
+     */
+    updateAnimationState() {
+        if (this.isDead() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
+            this.playAnimation(SHARKIE_IMAGES.DIE_POISONED, 0);
+            characterIsDead = true;
+        } else if (this.isDead() && this.hitBy == 'JellyFish') {
+            this.playAnimation(SHARKIE_IMAGES.DIE_ELECTRIC_SHOCK, 0);
+            characterIsDead = true;
+        } else if (this.isHurt() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
+            this.playAnimation(SHARKIE_IMAGES.HURT_POISONED, 1);
+        } else if (this.isHurt() && this.hitBy == 'JellyFish') {
+            this.playAnimation(SHARKIE_IMAGES.HURT_ELECTRIC_SHOCK, 1);
+        } else if (this.world.keyboard.LEFT || this.world.keyboard.UP || this.world.keyboard.RIGHT || this.world.keyboard.DOWN) {
+            this.playAnimation(SHARKIE_IMAGES.SWIM, 1);
+        } else if (this.isLongIdle()) {
+            this.playAnimation(SHARKIE_IMAGES.LONG_IDLE, 1);
+        } else {
+            this.playAnimation(SHARKIE_IMAGES.IDLE, 1);
+        }
+    }
+
+    /**
+     * Handles character attack actions based on keyboard and touch controls.
+     */
+    handleAttacks() {
+        // Keyboard controls
+        if (this.world.keyboard.SPACE && !this.isDead()) {
+            this.finSlapAttack();
+            this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
+        } else if (this.world.keyboard.D && !this.isDead()) {
+            this.bubbleTrapAttack();
+            this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
+        } else if (this.world.keyboard.F && this.poison > 0 && !this.isDead()) {
+            this.bubbleTrapAttackPoison();
+            this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
+        }
+
+        // Touch controls
+        if (this.touchCtrlFinSlapStart && !this.isDead()) {
+            this.finSlapAttack();
+            this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
+        } else if (this.touchCtrlBubbleTrapStart && !this.isDead()) {
+            this.bubbleTrapAttack();
+            this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
+        } else if (this.touchCtrlPoisonBubbleTrapStart && this.poison > 0 && !this.isDead()) {
+            this.bubbleTrapAttackPoison();
+            this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
+        }
+    }
+
+    /**
+     * Handles character movement input events from keyboard and touch controls.
+     */
     characterEvents() {
         setInterval(() => {
-            if (this.world.keyboard.UP && this.y > -135 && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('up');
-            }
-            if (this.touchCtrlUpStart && this.y > -135 && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('up');
-            }
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('right');
-            }
-            if (this.touchCtrlRightStart && this.x < this.world.level.level_end_x && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('right');
-            }
-            if (this.world.keyboard.DOWN && this.y < 240 && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('down');
-            }
-            if (this.touchCtrlDownStart && this.y < 240 && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('down');
-            }
-            if (this.world.keyboard.LEFT && this.x > 0 && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('left');
-            }
-            if (this.touchCtrlLeftStart && this.x > 0 && !this.isDead() && !this.world.level.getEndBoss().isDead()) {
-                this.moveCharacter('left');
-            }
-
+            this.handleMovementInput(
+                'up',
+                'UP',
+                'touchCtrlUpStart',
+                () => this.y > -135 && !this.isDead() && !this.world.level.getEndBoss().isDead()
+            );
+            this.handleMovementInput(
+                'right',
+                'RIGHT',
+                'touchCtrlRightStart',
+                () => this.x < this.world.level.level_end_x && !this.isDead() && !this.world.level.getEndBoss().isDead()
+            );
+            this.handleMovementInput(
+                'down',
+                'DOWN',
+                'touchCtrlDownStart',
+                () => this.y < 240 && !this.isDead() && !this.world.level.getEndBoss().isDead()
+            );
+            this.handleMovementInput(
+                'left',
+                'LEFT',
+                'touchCtrlLeftStart',
+                () => this.x > 0 && !this.isDead() && !this.world.level.getEndBoss().isDead()
+            );
             this.world.camera_x = -this.x;
         }, 1000 / 60)
+    }
+
+    /**
+     * Handles movement input for a given direction from keyboard and touch.
+     * @param {string} direction - The movement direction ('up', 'down', 'left', 'right')
+     * @param {string} keyboardKey - The keyboard key name (e.g., 'UP', 'RIGHT')
+     * @param {string} touchKey - The touch control boolean name (e.g., 'touchCtrlUpStart')
+     * @param {function} limitCheck - Function to check if movement is allowed
+     */
+    handleMovementInput(direction, keyboardKey, touchKey, limitCheck) {
+        if (this.world.keyboard[keyboardKey] && limitCheck()) {
+            this.moveCharacter(direction);
+        }
+        if (this[touchKey] && limitCheck()) {
+            this.moveCharacter(direction);
+        }
     }
 
     touchEvents() {
@@ -237,57 +272,95 @@ class Character extends MovableObject {
         this.touchCtrlPoisonBubbleTrapStart = false;
     }
 
+    /**
+     * Handles playing character sounds based on various game events.
+     */
     characterSounds() {
         setInterval(() => {
             if (soundOn) {
-                if (this.world.keyboard.LEFT || this.world.keyboard.RIGHT || this.world.keyboard.UP || this.world.keyboard.DOWN) {
-                    this.SWIM_SOUND.pause();
-                    this.SWIM_SOUND.play();
-                }
-                if (this.isDead() && !this.isAlreadyDead) {
-                    this.DYING_SOUND.play();
-                    this.isAlreadyDead = true;
-                }
-                if (this.isFinSlapping) {
-                    this.SLAP_SOUND.play();
-                }
-                if (this.isBubbleTrapping) {
-                    this.BUBBLE_SOUND.play();
-                }
-                this.world.level.enemies.forEach(enemy => {
-                    if (this.world.bubble) {
-                        if (this.world.bubble.isColliding(enemy) && (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous || enemy instanceof EndBoss)) {
-                            this.BUBBLING_SOUND.currentTime = 0;
-                            this.BUBBLING_SOUND.play();
-                        }
-                    }
-                });
-                this.world.level.enemies.forEach(enemy => {
-                    if (this.isColliding(enemy) && !this.isDead() && !enemy.isDead() && !this.isFinSlapping) {
-                        if (enemy instanceof PufferFish || enemy instanceof EndBoss) {
-                            this.HURT_SOUND.play();
-                        } else if (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous) {
-                            this.ELECTRIC_ZAP_SOUND.play();
-                        }
-                    }
-                });
-                this.world.level.coins.forEach(coin => {
-                    if (this.isColliding(coin)) {
-                        this.COIN_SOUND.play();
-                    }
-                });
-                this.world.level.poison.forEach(poison => {
-                    if (this.isColliding(poison)) {
-                        this.COLLECT_SOUND.play();
-                    }
-                });
-                this.world.level.life.forEach(life => {
-                    if (this.isColliding(life)) {
-                        this.LIFE_SOUND.play();
-                    }
-                });
+                this.handleSwimSound();
+                this.handleDeathSound();
+                this.handleSlapBubbleSounds();
+                this.handleEnemyCollisionSounds();
+                this.handleItemPickupSounds();
             }
         }, 1000 / 60)
+    }
+
+    /**
+     * Plays swim sound when movement keys are pressed.
+     */
+    handleSwimSound() {
+        if (this.world.keyboard.LEFT || this.world.keyboard.RIGHT || this.world.keyboard.UP || this.world.keyboard.DOWN) {
+            this.SWIM_SOUND.pause();
+            this.SWIM_SOUND.play();
+        }
+    }
+
+    /**
+     * Plays death sound when character dies, only once.
+     */
+    handleDeathSound() {
+        if (this.isDead() && !this.isAlreadyDead) {
+            this.DYING_SOUND.play();
+            this.isAlreadyDead = true;
+        }
+    }
+
+    /**
+     * Plays slap and bubble trap sounds for attacks and enemy bubble collisions.
+     */
+    handleSlapBubbleSounds() {
+        if (this.isFinSlapping) {
+            this.SLAP_SOUND.play();
+        }
+        if (this.isBubbleTrapping) {
+            this.BUBBLE_SOUND.play();
+        }
+        this.world.level.enemies.forEach(enemy => {
+            if (this.world.bubble) {
+                if (this.world.bubble.isColliding(enemy) && (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous || enemy instanceof EndBoss)) {
+                    this.BUBBLING_SOUND.currentTime = 0;
+                    this.BUBBLING_SOUND.play();
+                }
+            }
+        });
+    }
+
+    /**
+     * Plays hurt or electric zap sound when colliding with enemies.
+     */
+    handleEnemyCollisionSounds() {
+        this.world.level.enemies.forEach(enemy => {
+            if (this.isColliding(enemy) && !this.isDead() && !enemy.isDead() && !this.isFinSlapping) {
+                if (enemy instanceof PufferFish || enemy instanceof EndBoss) {
+                    this.HURT_SOUND.play();
+                } else if (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous) {
+                    this.ELECTRIC_ZAP_SOUND.play();
+                }
+            }
+        });
+    }
+
+    /**
+     * Plays item pickup sounds for coins, poison, and life.
+     */
+    handleItemPickupSounds() {
+        this.world.level.coins.forEach(coin => {
+            if (this.isColliding(coin)) {
+                this.COIN_SOUND.play();
+            }
+        });
+        this.world.level.poison.forEach(poison => {
+            if (this.isColliding(poison)) {
+                this.COLLECT_SOUND.play();
+            }
+        });
+        this.world.level.life.forEach(life => {
+            if (this.isColliding(life)) {
+                this.LIFE_SOUND.play();
+            }
+        });
     }
 
     moveCharacter(direction) {

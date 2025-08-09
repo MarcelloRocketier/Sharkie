@@ -1,5 +1,7 @@
 /**
- * Puffer fish enemy object
+ * Represents a Puffer Fish enemy in the game.
+ * Can move horizontally or vertically and plays swim or dead animations based on its state.
+ * Extends MovableObject for rendering and movement.
  */
 class PufferFish extends MovableObject {
     width = 100;
@@ -14,6 +16,17 @@ class PufferFish extends MovableObject {
         height: 24
     }
 
+    /**
+     * Creates a PufferFish enemy.
+     * @param {string} color - The color variant of the puffer fish.
+     * @param {number} x - The horizontal position of the enemy.
+     * @param {number} y - The vertical position of the enemy.
+     * @param {string} direction - Movement direction, either 'horizontal' or 'vertical'.
+     * @param {number} startPoint - The start coordinate for movement.
+     * @param {number} endPoint - The end coordinate for movement.
+     * @param {number} speed - Movement speed of the enemy.
+     * @param {number} imgInitiallyMirrored - 1 to mirror image initially, 0 otherwise.
+     */
     constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         super().loadImage('./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/1._Swim_1.png');
         this.loadImages(PUFFER_FISH_IMAGES.SWIM[color]);
@@ -30,13 +43,15 @@ class PufferFish extends MovableObject {
     }
 
     /**
-     * Animate puffer-fish
-     * @param {string} color The color of the enemy
-     * @param {string} direction 'horizontal' or 'vertical'
-     * @param {integer} startPoint The start point of the movement
-     * @param {integer} endPoint The end point of the movement
-     * @param {float} speed The speed of the enemy
-     * @param {integer} imgInitiallyMirrored 1 = mirrored, 0 = not mirrored (Necessary for horizontal movement)
+     * Starts the animation loop for the puffer fish.
+     * Switches between swim and dead image sets based on enemy state.
+     * @param {string} color - The color variant of the puffer fish.
+     * @param {string} direction - Movement direction, either 'horizontal' or 'vertical'.
+     * @param {number} startPoint - The start coordinate for movement.
+     * @param {number} endPoint - The end coordinate for movement.
+     * @param {number} speed - Movement speed of the enemy.
+     * @param {number} imgInitiallyMirrored - 1 to mirror image initially, 0 otherwise.
+     * @returns {void}
      */
     animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         this.move(direction, startPoint, endPoint, speed, imgInitiallyMirrored);

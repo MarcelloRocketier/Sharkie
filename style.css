@@ -364,10 +364,33 @@ canvas {
   margin: 0;
 }
 
+
 .start-screen-body {
   align-items: center;
   display: flex;
   flex-direction: column;
+}
+
+/* Footer for Impressum link on Start Screen */
+.start-screen-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  text-align: center;
+  z-index: 20; /* above background but below dialogs */
+}
+.impressum-link {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.impressum-link:hover {
+  color: #ffffff;
+  text-decoration-thickness: 2px;
 }
 
 .end-screen-container {
@@ -600,6 +623,7 @@ canvas {
   width: 64px;
 }
 
+
 .img-attribution {
   bottom: 8px;
   position: absolute;
@@ -609,6 +633,40 @@ canvas {
 
 .img-attribution a {
   text-decoration: none;
+}
+
+/* --- How-To Dialog (Startscreen) --- */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+}
+.dialog {
+  background: #0b1a3a;
+  color: #fff;
+  padding: 24px 28px;
+  width: min(92vw, 560px);
+  border: 2px solid #fff;
+  border-radius: 16px;
+  box-shadow: 0 0 24px rgba(0, 80, 200, 0.6);
+}
+.dialog-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+}
+.dialog-list {
+  margin: 12px 0 0 0;
+  padding-left: 18px;
+  line-height: 1.6;
 }
 
 @media (hover: hover) {
@@ -747,7 +805,7 @@ button, .btn, .nav-btn, .close-btn, .mobile-ctrl-btn {
   user-select: none;
 }
 
-footer {
+.page-footer {
   background-color: #001f5b;
   color: white;
   font-family: 'LuckiestGuy', cursive;
@@ -762,13 +820,13 @@ footer {
   overflow: visible;
 }
 
-footer a {
+.page-footer a {
   color: white;
   text-decoration: underline;
   cursor: pointer;
 }
 
-footer a:hover {
+.page-footer a:hover {
   color: #6699ff;
 }
 
@@ -798,6 +856,17 @@ body, html {
   display: none;
   position: fixed;
   z-index: 20;
+}
+
+@media (pointer: coarse) {
+  #mobile-ctrl-left,
+  #mobile-ctrl-right {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+    bottom: 32px;
+    align-items: center;
+  }
 }
 
 @media (max-width: 992px) {

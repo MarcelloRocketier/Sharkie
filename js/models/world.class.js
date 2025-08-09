@@ -19,6 +19,12 @@ class World {
     statusBarPoison = new StatusBar('poison', 'green', 0, 20, 80);
     statusBarEndBoss = new StatusBar('life', 'orange', 100, 460, 400);
 
+    /**
+     * Creates an instance of the game world.
+     * Initializes canvas, keyboard, overlays, audio, and collision checks.
+     * @param {HTMLCanvasElement} canvas - The canvas element for rendering.
+     * @param {Object} keyboard - The keyboard input handler instance.
+     */
     constructor(canvas, keyboard) {
         this.canvas = canvas; // Save canvas reference
         this.keyboard = keyboard; // Save keyboard reference
@@ -26,6 +32,14 @@ class World {
         // Get 2D rendering context of the canvas
         this.ctx = canvas.getContext('2d');
         this.draw();
+        // Initialize and keep overlays (fullscreen/rotate) in sync
+        try {
+            updateScreenMessages();
+            window.addEventListener('resize', updateScreenMessages);
+            window.addEventListener('orientationchange', updateScreenMessages);
+        } catch (e) {
+            // fail-safe: do nothing if DOM not ready yet
+        }
         this.setWorld();
         this.checkCollisions();
 
@@ -64,44 +78,8 @@ class World {
             toggleFullscreen();
         }
 
-        // Keep checking fullscreen mode and device orientation regularly
-        setInterval(() => {
-            const canvas = document.getElementById('canvas');
-            if (canvas) {
-                if (fullscreen) {
-                    canvas.classList.add('fullscreen');
-                } else {
-                    canvas.classList.remove('fullscreen');
-                }
-            }
-
-            const fullscreenMessage = document.getElementById('fullscreen-message');
-            const landscapeMessage = document.getElementById('landscape-message');
-
-            if (!mobileAndTabletCheck() && window.innerWidth <= 992) {
-                if (fullscreenMessage) fullscreenMessage.classList.remove('d-none');
-                if (landscapeMessage) landscapeMessage.style = "opacity: 0";
-            } else {
-                if (fullscreenMessage) fullscreenMessage.classList.add('d-none');
-                if (landscapeMessage) landscapeMessage.style = "opacity: 1";
-            }
-        }, 1000 / 60);
-
         // Control main theme playback based on game state and sound setting
-        setInterval(() => {
-            if (soundOn && !this.level.getEndBoss().endBossAlreadyTriggered && !levelEnded) {
-                this.MAIN_SOUND.play();
-
-                // Loop the main theme smoothly
-                this.MAIN_SOUND.addEventListener('ended', function() {
-                    this.currentTime = 0;
-                    this.play();
-                }, false);
-            } else {
-                this.MAIN_SOUND.pause();
-                this.MAIN_SOUND.currentTime = 0;
-            }
-        }, 1000 / 60);
+        this.startAudioLoop();
     }
 
     /**
@@ -117,7 +95,9 @@ class World {
     // ################################################### Core rendering functions ###################################################
 
     /**
-     * Draw all game objects and UI elements on the canvas
+     * Draws all game objects and UI elements to the canvas.
+     * Uses requestAnimationFrame to continuously render the scene.
+     * @returns {void}
      */
     draw() {
         this.clearCanvas(); // Clear previous frame
@@ -164,8 +144,10 @@ class World {
     }
 
     /**
-     * Add one object to the canvas
-     * @param {*} movableObject Instance of any class extending MovableObject
+     * Adds a single MovableObject to the rendering context.
+     * Handles image mirroring if needed.
+     * @param {MovableObject} movableObject - An object extending MovableObject to be drawn.
+     * @returns {void}
      */
     addToWorld(movableObject) {
         // Flip the image horizontally if needed
@@ -184,8 +166,9 @@ class World {
     }
 
     /**
-     * Add multiple objects from an array to the canvas
-     * @param {*} objects Array of objects extending MovableObject
+     * Renders an array of MovableObject instances.
+     * @param {MovableObject[]} objects - Array of movable objects to draw.
+     * @returns {void}
      */
     addObjectsToWorld(objects) {
         objects.forEach(object => {
@@ -194,14 +177,17 @@ class World {
     }
 
     /**
-     * Clear the entire canvas area
+     * Clears the entire canvas.
+     * @returns {void}
      */
     clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     /**
-     * Flip image horizontally for mirroring
+     * Flips the given object's image horizontally for mirrored rendering.
+     * @param {MovableObject} movableObject - Object whose image will be flipped.
+     * @returns {void}
      */
     flipImage(movableObject) {
         this.ctx.save(); // Save current drawing context
@@ -211,7 +197,9 @@ class World {
     }
 
     /**
-     * Undo image flip transformation
+     * Restores the rendering context after horizontal flipping.
+     * @param {MovableObject} movableObject - Object whose flip will be undone.
+     * @returns {void}
      */
     undoFlipImage(movableObject) {
         movableObject.x = movableObject.x * -1;
@@ -219,113 +207,195 @@ class World {
     }
 
     /**
-     * Continuously checks for collisions between the character and other objects
+     * Starts a lightweight loop that controls the main theme based on game state and sound setting.
+     * Keeps constructor short and respects clean-code line limits.
+     */
+    startAudioLoop() {
+        setInterval(() => {
+            if (soundOn && !this.level.getEndBoss().endBossAlreadyTriggered && !levelEnded) {
+                this.MAIN_SOUND.play();
+                this.MAIN_SOUND.addEventListener('ended', function() {
+                    this.currentTime = 0;
+                    this.play();
+                }, false);
+            } else {
+                this.MAIN_SOUND.pause();
+                this.MAIN_SOUND.currentTime = 0;
+            }
+        }, 1000 / 60);
+    }
+
+    /**
+     * Continuously checks for collisions between the character and other objects.
+     * Split into small helpers to comply with the 14-lines-per-function rule.
      */
     checkCollisions() {
         setInterval(() => {
-            // Check collisions with enemies
-            this.level.enemies.forEach(enemy => {
-                if (this.character.isColliding(enemy) && !enemy.isDead() && !this.character.isFinSlapping) {
-                    this.character.hit(enemy.attack);
-                    this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
-
-                    // Track which enemy hit the character for animation reasons
-                    if (enemy instanceof PufferFish) {
-                        this.character.hitBy = 'PufferFish';
-                    } else if (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous) {
-                        this.character.hitBy = 'JellyFish';
-                    } else if (enemy instanceof EndBoss) {
-                        this.character.hitBy = 'EndBoss';
-                        this.level.getEndBoss().isCollidingWithCharacter = true;
-                    }
-                }
-            });
-
-            // Handle Fin Slap attack on PufferFish
-            this.level.enemies.forEach(enemy => {
-                if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof PufferFish) {
-                    enemy.hit(this.character.attack);
-                    enemy.stopMovement = true;
-                    enemy.floatAway(this.character.imgMirrored);
-                }
-            });
-
-            // Bubble collision with JellyFish
-            this.level.enemies.forEach(enemy => {
-                if (this.bubble) {
-                    if ((this.bubble.isColliding(enemy) && enemy instanceof JellyFishRegular) || (this.bubble.isColliding(enemy) && enemy instanceof JellyFishDangerous)) {
-                        enemy.hit(this.bubble.attack);
-                        enemy.stopMovement = true;
-                        enemy.speed = 1;
-                        enemy.floatAwayUp();
-                        this.bubble = undefined; // Bubble disappears after collision
-                    }
-                }
-            });
-
-            // Fin Slap attack on EndBoss
-            this.level.enemies.forEach(enemy => {
-                if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof EndBoss) {
-                    enemy.hit(this.character.attack);
-                    this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
-                }
-            });
-
-            // Bubble collision with EndBoss
-            this.level.enemies.forEach(enemy => {
-                if (this.bubble instanceof Bubble) {
-                    if (this.bubble.isColliding(enemy) && enemy instanceof EndBoss) {
-                        enemy.hit(this.bubble.attack);
-                        this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
-                        this.bubble = undefined;
-                    }
-                } else if (this.bubble instanceof PoisonBubble) {
-                    if (this.bubble.isColliding(enemy) && enemy instanceof EndBoss) {
-                        enemy.hit(this.bubble.attack);
-                        this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
-                        this.bubble = undefined;
-                    }
-                }
-            });
-
-            // Check collision with coins and update count & status bar
-            this.level.coins.forEach(coin => {
-                if (this.character.isColliding(coin)) {
-                    let coinIndex = this.level.coins.indexOf(coin);
-                    let totalCoins = this.level.coins.length + this.character.coins;
-                    this.character.coins++;
-                    this.statusBarCoins.setPercentage((this.character.coins / totalCoins) * 100, this.statusBarCoins.type, this.statusBarCoins.color);
-                    this.level.coins.splice(coinIndex, 1);
-                }
-            });
-
-            // Life pickups: increase character energy but never over max
-            this.level.life.forEach(life => {
-                if (this.character.isColliding(life)) {
-                    let lifeIndex = this.level.life.indexOf(life);
-
-                    if (this.character.energy < 100 && this.character.energy < 90) {
-                        this.character.energy += 10;
-                    } else if (this.character.energy < 100 && this.character.energy > 90) {
-                        this.character.energy += 5;
-                    }
-
-                    this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
-                    this.level.life.splice(lifeIndex, 1);
-                }
-            });
-
-            // Poison pickups: increase poison count and update bar
-            this.level.poison.forEach(poison => {
-                if (this.character.isColliding(poison)) {
-                    let poisonIndex = this.level.poison.indexOf(poison);
-                    this.level.totalPoison = this.level.poison.length + this.level.collectedPoison;
-                    this.character.poison++;
-                    this.statusBarPoison.setPercentage((this.character.poison / this.level.totalPoison) * 100, this.statusBarPoison.type, this.statusBarPoison.color);
-                    this.level.poison.splice(poisonIndex, 1);
-                    this.level.collectedPoison += 1;
-                }
-            });
+            this.handleEnemyDamageOnCharacter();
+            this.handleFinSlapOnPuffer();
+            this.handleBubbleVsJelly();
+            this.handleFinSlapOnEndBoss();
+            this.handleBubbleVsEndBoss();
+            this.collectCoins();
+            this.collectLife();
+            this.collectPoison();
         }, 200);
     }
+
+    /**
+     * Applies enemy damage to the character on collision.
+     * @returns {void}
+     */
+    handleEnemyDamageOnCharacter() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && !enemy.isDead() && !this.character.isFinSlapping) {
+                this.character.hit(enemy.attack);
+                this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
+                if (enemy instanceof PufferFish) this.character.hitBy = 'PufferFish';
+                else if (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous) this.character.hitBy = 'JellyFish';
+                else if (enemy instanceof EndBoss) {
+                    this.character.hitBy = 'EndBoss';
+                    this.level.getEndBoss().isCollidingWithCharacter = true;
+                }
+            }
+        });
+    }
+
+    /**
+     * Handles Fin Slap attack on PufferFish.
+     * @returns {void}
+     */
+    handleFinSlapOnPuffer() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof PufferFish) {
+                enemy.hit(this.character.attack);
+                enemy.stopMovement = true;
+                enemy.floatAway(this.character.imgMirrored);
+            }
+        });
+    }
+
+    /**
+     * Handles bubble collision with JellyFish (regular & dangerous).
+     * @returns {void}
+     */
+    handleBubbleVsJelly() {
+        if (!this.bubble) return;
+        this.level.enemies.forEach(enemy => {
+            const isJelly = enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous;
+            if (isJelly && this.bubble.isColliding(enemy)) {
+                enemy.hit(this.bubble.attack);
+                enemy.stopMovement = true;
+                enemy.speed = 1;
+                enemy.floatAwayUp();
+                this.bubble = undefined;
+            }
+        });
+    }
+
+    /**
+     * Handles Fin Slap attack on EndBoss.
+     * @returns {void}
+     */
+    handleFinSlapOnEndBoss() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof EndBoss) {
+                enemy.hit(this.character.attack);
+                this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
+            }
+        });
+    }
+
+    /**
+     * Handles bubble collision with EndBoss (both Bubble & PoisonBubble).
+     * @returns {void}
+     */
+    handleBubbleVsEndBoss() {
+        if (!this.bubble) return;
+        this.level.enemies.forEach(enemy => {
+            const isEndBoss = enemy instanceof EndBoss;
+            if (isEndBoss && this.bubble.isColliding(enemy)) {
+                enemy.hit(this.bubble.attack);
+                this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
+                this.bubble = undefined;
+            }
+        });
+    }
+
+    /**
+     * Collects coins and updates the status bar.
+     * @returns {void}
+     */
+    collectCoins() {
+        this.level.coins.forEach(coin => {
+            if (this.character.isColliding(coin)) {
+                const idx = this.level.coins.indexOf(coin);
+                const total = this.level.coins.length + this.character.coins;
+                this.character.coins++;
+                this.statusBarCoins.setPercentage((this.character.coins / total) * 100, this.statusBarCoins.type, this.statusBarCoins.color);
+                this.level.coins.splice(idx, 1);
+            }
+        });
+    }
+
+    /**
+     * Collects life pick-ups and updates the status bar.
+     * @returns {void}
+     */
+    collectLife() {
+        this.level.life.forEach(life => {
+            if (this.character.isColliding(life)) {
+                const idx = this.level.life.indexOf(life);
+                if (this.character.energy < 100 && this.character.energy < 90) this.character.energy += 10;
+                else if (this.character.energy < 100 && this.character.energy > 90) this.character.energy += 5;
+                this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
+                this.level.life.splice(idx, 1);
+            }
+        });
+    }
+
+    /**
+     * Collects poison pick-ups and updates the status bar.
+     * @returns {void}
+     */
+    collectPoison() {
+        this.level.poison.forEach(poison => {
+            if (this.character.isColliding(poison)) {
+                const idx = this.level.poison.indexOf(poison);
+                this.level.totalPoison = this.level.poison.length + this.level.collectedPoison;
+                this.character.poison++;
+                this.statusBarPoison.setPercentage((this.character.poison / this.level.totalPoison) * 100, this.statusBarPoison.type, this.statusBarPoison.color);
+                this.level.poison.splice(idx, 1);
+                this.level.collectedPoison += 1;
+            }
+        });
+    }
+}
+
+/**
+ * Updates fullscreen and orientation overlay messages based on device state.
+ * - Shows fullscreen message on desktop if viewport is narrow.
+ * - Shows rotate (landscape) hint on mobile when in portrait.
+ */
+function updateScreenMessages() {
+  const fullscreenMessage = document.getElementById('fullscreen-message');
+  const landscapeMessage = document.getElementById('landscape-message');
+
+  const isMobile = (typeof mobileAndTabletCheck === 'function') ? mobileAndTabletCheck() : false;
+  const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+  const isNarrow = window.innerWidth <= 992;
+
+  if (fullscreenMessage) {
+    const showFullscreenMsg = !isMobile && isNarrow;
+    fullscreenMessage.classList.toggle('d-none', !showFullscreenMsg);
+  }
+  if (landscapeMessage) {
+    const showRotate = isMobile && isPortrait;
+    landscapeMessage.classList.toggle('d-none', !showRotate);
+  }
+
+  const rotateOverlay = document.getElementById('rotate-overlay');
+  if (rotateOverlay) {
+    rotateOverlay.classList.toggle('d-none', !(isMobile && isPortrait));
+  }
 }

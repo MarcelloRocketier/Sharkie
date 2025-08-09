@@ -1,31 +1,57 @@
 
+
+/**
+ * @file game.js
+ * @description
+ * Manages global game state, initialization, user interface handling, keyboard and touch controls, and localStorage persistence for the Sharkie game.
+ */
+
 'use strict';
 
 // ################################################### Global variables ###################################################
 
+/** @type {HTMLCanvasElement} */
 let canvas;
+/** @type {World} */
 let world;
+/** @type {Keyboard} */
 let keyboard = new Keyboard();
+/** @type {boolean} */
 let soundOn = true;
+/** @type {boolean} */
 let fullscreen = false;
+/** @type {boolean} */
 let endBossKilled = false;
+/** @type {boolean} */
 let characterIsDead = false;
+/** @type {boolean} */
 let levelEnded = false;
+/** @type {Array} */
 let levels = [
     level_1,
     level_2
 ];
+/** @type {number} */
 let currentLevel;
+/** @type {boolean} */
 let maxLevelReached = false;
+/** @type {HTMLAudioElement} */
 let WIN_SOUND = new Audio('./assets/audio/congrats.mp3');
+/** @type {HTMLAudioElement} */
 let GAME_OVER_SOUND = new Audio('./assets/audio/game_over.mp3');
+/** @type {boolean} */
 let loading = true;
+/** @type {number|null} */
+let fullscreenIntervalId = null;
 
 // Load saved game settings from localStorage
 loadFromLocalStorage();
 
 // ################################################### Game initialization ###################################################
 
+/**
+ * Initializes the game, preloads assets, loads settings, updates the UI, and sets up device-specific features.
+ */
 function init() {
     const content = document.getElementById('content');
     preload();
@@ -67,6 +93,9 @@ document.onreadystatechange = () => {
 
 // ################################################### Preload all necessary images ###################################################
 
+/**
+ * Preloads all required images for the game.
+ */
 function preload() {
     preloadImages(SHARKIE_IMAGES['IDLE']);
     preloadImages(SHARKIE_IMAGES['LONG_IDLE']);
@@ -114,12 +143,20 @@ function preload() {
     preloadImages(POISON_IMAGES['IMAGES']['dark_right']);
 }
 
+/**
+ * Preloads an array of image URLs.
+ * @param {string[]} array - Array of image URLs to preload.
+ */
 function preloadImages(array) {
     for (let i = 0; i < array.length; i++) {
         preloadImage(array[i]);
     }
 }
 
+/**
+ * Preloads a single image by URL.
+ * @param {string} url - The image URL to preload.
+ */
 function preloadImage(url) {
     const img = new Image();
     img.src = url;
@@ -181,6 +218,10 @@ window.addEventListener('keyup', (e) => {
 
 // ################################################### Mobile device detection ###################################################
 
+/**
+ * Checks if the current device is a mobile or tablet using user agent sniffing.
+ * @returns {boolean} True if the device is mobile or tablet, false otherwise.
+ */
 window.mobileAndTabletCheck = function() {
     let isMobile = false;
     (function(a) {
@@ -191,9 +232,15 @@ window.mobileAndTabletCheck = function() {
 
 // ################################################### Main game control functions ###################################################
 
+/**
+ * Starts the game by rendering the game UI, initializing the world, and setting up controls.
+ */
 function startGame() {
     const content = document.getElementById('content');
     content.innerHTML = generateGameHTML();
+
+    if (typeof initSoundUI === 'function') initSoundUI();
+    updateUI();
 
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
@@ -207,11 +254,18 @@ function startGame() {
     document.getElementById('toggle-fullscreen-btn').classList.remove('d-none');
 }
 
+/**
+ * Renders the start screen UI.
+ */
 function renderStartScreen() {
     const content = document.getElementById('content');
     content.innerHTML = generateStartScreenHTML();
+    updateUI();
 }
 
+/**
+ * Periodically checks for level win, game over, or max level, and updates the screen accordingly.
+ */
 function checkForLevelWin() {
     setInterval(() => {
         if (endBossKilled && !levelEnded && !maxLevelReached) {
@@ -251,6 +305,9 @@ function checkForLevelWin() {
     }, 250)
 }
 
+/**
+ * Saves the current game state to localStorage.
+ */
 function saveToLocalStorage() {
     let currentLevelAsString = JSON.stringify(currentLevel);
     localStorage.setItem('currentLevel', currentLevelAsString);
@@ -259,6 +316,9 @@ function saveToLocalStorage() {
     localStorage.setItem('soundOn', soundOnAsString);
 }
 
+/**
+ * Loads the game state from localStorage, including current level and sound settings.
+ */
 function loadFromLocalStorage() {
     let currentLevelAsString = localStorage.getItem('currentLevel');
     currentLevel = JSON.parse(currentLevelAsString);
@@ -273,37 +333,62 @@ function loadFromLocalStorage() {
     soundOn = JSON.parse(soundOnAsString);
 }
 
+/**
+ * Restarts the current level, resetting relevant game state.
+ */
 function restartLevel() {
     levelEnded = false;
     characterIsDead = false;
     endBossKilled = false;
-    window.location.reload();
+    startGame();
 }
 
+/**
+ * Advances to the next level if available, saves state, and starts the game.
+ */
 function nextLevel() {
-    if (currentLevel < levels.length && !maxLevelReached) {
+    if (!maxLevelReached && currentLevel < levels.length - 1) {
         currentLevel++;
+        if (currentLevel >= levels.length - 1) {
+            maxLevelReached = true;
+        }
         saveToLocalStorage();
-        window.location.reload();
+        startGame();
     }
 }
 
+/**
+ * Restarts the game from the first level, resetting all progress.
+ */
 function restartGame() {
     currentLevel = 0;
+    maxLevelReached = false;
+    levelEnded = false;
+    characterIsDead = false;
+    endBossKilled = false;
     saveToLocalStorage();
-    window.location.reload();
+    startGame();
 }
 
 // ################################################### Navbar interaction handlers ###################################################
 
+/**
+ * Toggles the visibility of the settings menu.
+ */
 function toggleSettingsMenu() {
     document.getElementById('settings-menu-container').classList.toggle('d-none');
 }
 
+/**
+ * Toggles the visibility of the help site.
+ */
 function toggleHelpSite() {
     document.getElementById('help-container').classList.toggle('d-none');
 }
 
+/**
+ * Toggles sound on or off, updates icons, and saves state.
+ */
 function toggleSound() {
     soundOn = !soundOn;
 
@@ -315,8 +400,12 @@ function toggleSound() {
 
     saveToLocalStorage();
     updateUI();
+    if (typeof updateSoundIcon === 'function') updateSoundIcon();
 }
 
+/**
+ * Toggles fullscreen mode and updates the UI and saved state.
+ */
 function toggleFullscreen() {
     fullscreen = !fullscreen;
 
@@ -333,6 +422,9 @@ function toggleFullscreen() {
     updateUI();
 }
 
+/**
+ * Updates the UI elements for sound and fullscreen status.
+ */
 function updateUI() {
     if (soundOn) {
         document.getElementById('sound-img').src = './assets/img/icons/speaker.svg';
@@ -348,21 +440,26 @@ function updateUI() {
         document.getElementById('sound-img-mobile').src = './assets/img/icons/mute.svg';
     }
 
-    // Update fullscreen checkbox every 250ms
-    setInterval(() => {
-        function fs_status() {
-            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
-        }
+    // Update fullscreen checkbox every 250ms (register once)
+    if (!fullscreenIntervalId) {
+        fullscreenIntervalId = setInterval(() => {
+            function fs_status() {
+                return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+            }
 
-        if (fs_status()) {
-            document.getElementById('fullscreen-checkbox').checked = true;
-        } else {
-            document.getElementById('fullscreen-checkbox').checked = false;
-            fullscreen = false;
-        }
-    }, 250)
+            if (fs_status()) {
+                document.getElementById('fullscreen-checkbox').checked = true;
+            } else {
+                document.getElementById('fullscreen-checkbox').checked = false;
+                fullscreen = false;
+            }
+        }, 250);
+    }
 }
 
+/**
+ * Sets up touch event handlers for mobile controls to update the keyboard object.
+ */
 function setupMobileControls() {
     document.getElementById('ctrl-btn-up').addEventListener('touchstart', () => keyboard.UP = true);
     document.getElementById('ctrl-btn-up').addEventListener('touchend', () => keyboard.UP = false);

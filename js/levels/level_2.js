@@ -1,14 +1,15 @@
+/**
+ * Configuration and initialization of Level 2 in the Sharkie game.
+ * Defines background layers, collectible items, enemies, barriers, and the level end position.
+ * @type {Level}
+ */
 // Instantiate a new level object
 const level_2 = new Level(
 
-    // ############################################### Background objects ###############################################
-    // ### Instantiates BackgroundObject(scene, section, index, levelSection)
-    // ##################################################################################################################
-    // ### section: 1 or 2 (Alternates between these)
-    // ### index: from 0 to 4 (incremental)
-    // ### levelSection: 0 to x (each section measures 719px, ascending order)
-    // ##################################################################################################################
-
+    /**
+     * Background layers for Level 2.
+     * Each BackgroundObject is defined by: scene, section (1|2), index (0–4), and levelSection (0+).
+     */
     [
         new BackgroundObject('dark', 1, 0, 0),
         new BackgroundObject('dark', 1, 1, 0),
@@ -41,12 +42,10 @@ const level_2 = new Level(
         new BackgroundObject('dark', 1, 4, 4)
     ],
 
-    // ############################################### Coins ###############################################
-    // ### Instantiate new Coin(x, y)
-    // #####################################################################################################
-    // ### x and y define position coordinates
-    // #####################################################################################################
-
+    /**
+     * Coin collectibles with (x, y) positions.
+     * @type {Coin[]}
+     */
     [
         new Coin(548, 252),
         new Coin(612, 180),
@@ -56,60 +55,29 @@ const level_2 = new Level(
         new Coin(2168, 112)
     ],
 
-    // ############################################### Life pickups ###############################################
-    // ### Instantiate new Life(x, y)
-    // ####################################################################################################
-    // ### x and y coordinate values
-    // ####################################################################################################
-
+    /**
+     * Life pickups that restore character energy.
+     * @type {Life[]}
+     */
     [
         new Life(976, 52),
         new Life(2564, 412)
     ],
 
-    // ############################################### Poison pickups ###############################################
-    // ### Instantiate new Poison(type, x, y)
-    // ######################################################################################################
-    // ### x and y coordinates
-    // #######################################################################################################
-
+    /**
+     * Poison collectibles used for special attacks.
+     * @type {Poison[]}
+     */
     [
         new Poison('dark_right', 96, 412),
         new Poison('animated', 1128, 412),
         new Poison('dark_right', 1588, 404)
     ],
 
-    // ############################################### Enemies ###############################################
-    // ### Instantiate enemies with parameters:
-    // ### PufferFish(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored)
-    // #######################################################################################################
-    // ### color options: 'green', 'orange', 'red'
-    // ### x and y are positions
-    // ### direction: 'horizontal' or 'vertical'
-    // ### startPoint and endPoint are waypoint coordinates (either x or y based on direction)
-    // ### speed ranges between 0 and 5
-    // ### imgInitiallyMirrored: 0 (no), 1 (yes)
-    // #######################################################################################################
-    // ### JellyFishRegular(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored)
-    // #######################################################################################################
-    // ### color options: 'lila', 'yellow'
-    // ### x, y positions
-    // ### direction: 'horizontal' or 'vertical'
-    // ### start and end points for movement
-    // ### speed between 0 and 5
-    // ### imgInitiallyMirrored flag 0 or 1
-    // #######################################################################################################
-    // ### JellyFishDangerous(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored)
-    // #######################################################################################################
-    // ### color options: 'green', 'pink'
-    // ### same parameter structure as above
-    // #######################################################################################################
-    // ### EndBoss(x, y, startX, startY)
-    // #######################################################################################################
-    // ### x and y coordinates
-    // ### startX and startY are AI movement start positions
-    // #######################################################################################################
-
+    /**
+     * Enemy entities for Level 2 with their movement parameters.
+     * @type {(PufferFish|JellyFishRegular|JellyFishDangerous|EndBoss)[]}
+     */
     [
         new JellyFishDangerous('pink', 400, 100, 'vertical', 100, 240, 0.5, 0),
         new PufferFish('orange', 600, 128, 'horizontal', 600, 1000, 1.5, 1),
@@ -120,16 +88,10 @@ const level_2 = new Level(
         new EndBoss(3000, 50, 3000, 50)
     ],
 
-    // ############################################### Barriers ###############################################
-    // ### Instantiate barriers:
-    // ### BarrierTunnelAbove(x, y)
-    // ### BarrierTunnelBelow(x, y)
-    // ### BarrierRock(x, y)
-    // ### BarrierWall(x, y)
-    // ########################################################################################################
-    // ### x and y coordinate values (y = 290 indicates floor level)
-    // ########################################################################################################
-
+    /**
+     * Environmental barriers that restrict player/enemy movement.
+     * @type {(BarrierTunnelAbove|BarrierTunnelBelow|BarrierRock|BarrierWall)[]}
+     */
     [
         new BarrierRock(300, 290),
         new BarrierWall(1380, -250),
@@ -137,8 +99,10 @@ const level_2 = new Level(
         new BarrierTunnelBelow(1800, 290)
     ],
 
-    // ############################################### level_end_x ###############################################
-
+    /**
+     * Level end position in pixels (x coordinate).
+     * @type {number}
+     */
     3000
 
 );

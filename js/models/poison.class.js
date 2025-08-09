@@ -1,3 +1,12 @@
+/**
+ * Represents a collectible poison bottle that extends MovableObject and is animated in place.
+ *
+ * @property {number} height - The height of the poison bottle sprite.
+ * @property {number} width - The width of the poison bottle sprite.
+ * @property {number} x - The horizontal position of the poison bottle.
+ * @property {number} y - The vertical position of the poison bottle.
+ * @property {string[]} IMAGES_ANIMATED - Array of image paths used for animating the poison bottle.
+ */
 class Poison extends MovableObject {
     height = 60;
     width = 60;
@@ -14,6 +23,11 @@ class Poison extends MovableObject {
         'assets/img/4. Marcadores/Posion/Animada/8.png',
     ];
 
+    /**
+     * Creates a new Poison bottle at the specified position.
+     * @param {number} x - The horizontal position where the poison bottle will appear.
+     * @param {number} y - The vertical position where the poison bottle will appear.
+     */
     constructor(x, y) {
         super().loadImage(this.IMAGES_ANIMATED[0]);
         this.loadImages(this.IMAGES_ANIMATED);
@@ -22,6 +36,10 @@ class Poison extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Starts the animation loop for the poison bottle sprite by cycling through images every 180ms.
+     * @returns {void}
+     */
     animate() {
         setInterval(() => {
             this.playAnimation(this.IMAGES_ANIMATED);

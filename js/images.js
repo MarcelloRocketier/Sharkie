@@ -1,3 +1,22 @@
+/**
+ * Central registry of image asset paths grouped by entity and animation/state.
+ * Used by classes (Character, EndBoss, Jellyfish, PufferFish, StatusBar, BackgroundObject, etc.) to preload and play animations.
+ */
+
+/**
+ * Sharkie image frames grouped by animation key.
+ * @type {{
+ *   IDLE: string[],
+ *   LONG_IDLE: string[],
+ *   SWIM: string[],
+ *   HURT_POISONED: string[],
+ *   HURT_ELECTRIC_SHOCK: string[],
+ *   DIE_POISONED: string[],
+ *   DIE_ELECTRIC_SHOCK: string[],
+ *   FIN_SLAP: string[],
+ *   BUBBLE_TRAP: string[]
+ * }}
+ */
 let SHARKIE_IMAGES = {
     'IDLE': [
         './assets/img/1._Sharkie/1._Idle/1.png',
@@ -110,6 +129,10 @@ let SHARKIE_IMAGES = {
     ]
 };
 
+/**
+ * EndBoss image frames grouped by state.
+ * @type {{ INTRODUCE: string[], FLOATING: string[], HURT: string[], DEAD: string[], ATTACK: string[] }}
+ */
 let ENDBOSS_IMAGES = {
     'INTRODUCE': [
         './assets/img/2._Enemy/3._Final_Enemy/1._Introduce/1.png',
@@ -166,6 +189,10 @@ let ENDBOSS_IMAGES = {
     ]
 };
 
+/**
+ * Dangerous Jellyfish frames by state and color variant.
+ * @type {{ SWIM: Record<'green'|'pink', string[]>, DEAD: Record<'green'|'pink', string[]> }}
+ */
 let JELLYFISH_DANGEROUS_IMAGES = {
     'SWIM': {
         'green': [
@@ -198,6 +225,10 @@ let JELLYFISH_DANGEROUS_IMAGES = {
     }
 };
 
+/**
+ * Regular Jellyfish frames by state and color variant.
+ * @type {{ SWIM: Record<'lila'|'yellow', string[]>, DEAD: Record<'lila'|'yellow', string[]> }}
+ */
 let JELLYFISH_REGULAR_IMAGES = {
     'SWIM': {
         'lila': [
@@ -230,6 +261,11 @@ let JELLYFISH_REGULAR_IMAGES = {
     }
 };
 
+/**
+ * Puffer Fish frames by state and color variant.
+ * Includes forward and reverse transition frames in SWIM sequences when defined.
+ * @type {{ SWIM: Record<'green'|'orange'|'red', string[]>, DEAD: Record<'green'|'orange'|'red', string[]> }}
+ */
 let PUFFER_FISH_IMAGES = {
     'SWIM': {
         'green': [
@@ -298,6 +334,11 @@ let PUFFER_FISH_IMAGES = {
     }
 };
 
+/**
+ * Status bar sprites grouped by type and color.
+ * Index 0..5 corresponds to 0,20,40,60,80,100 percent fill levels.
+ * @type {{ IMAGES: Record<'coins'|'life'|'poison', Record<'green'|'orange'|'purple', string[]>> }}
+ */
 let STATUS_BAR_IMAGES = {
     'IMAGES': {
         'coins': {
@@ -383,6 +424,11 @@ let STATUS_BAR_IMAGES = {
     }
 };
 
+/**
+ * Background layer images grouped by scene name and section index.
+ * Layers order: Water, Background_2, Background_1, Floor, Light.
+ * @type {{ IMAGES: Record<'dark', Record<1|2, string[]>> }}
+ */
 let BACKGROUND_IMAGES = {
     'IMAGES': {
        
@@ -405,6 +451,10 @@ let BACKGROUND_IMAGES = {
     }
 };
 
+/**
+ * Poison item sprites grouped by variant name.
+ * @type {{ IMAGES: Record<'animated'|'light_left'|'light_right'|'dark_left'|'dark_right', string[]> }}
+ */
 let POISON_IMAGES = {
     'IMAGES': {
         'animated': [

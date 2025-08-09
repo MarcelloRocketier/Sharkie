@@ -13,7 +13,25 @@ function generateStartScreenHTML() {
             </div>
             <div class="start-screen-body">
                 <button class="start-game-btn btn" onclick="startGame()">START GAME</button>
+                <button class="help-btn btn" onclick="openHelp()">HOW TO PLAY</button>
             </div>
+            <div id="help-backdrop" class="dialog-backdrop d-none" onclick="backdropClick(event)">
+                <div class="dialog">
+                    <button class="dialog-close" onclick="closeHelp()" aria-label="Close">×</button>
+                    <h2>How to play</h2>
+                    <ul class="dialog-list">
+                        <li>Move: Arrow keys or on-screen controls</li>
+                        <li>Fin Slap: SPACE / Fin Slap button</li>
+                        <li>Bubble: D / Bubble button</li>
+                        <li>Poison Bubble: F (requires poison)</li>
+                        <li>Mute/Unmute: Speaker button (saved)</li>
+                        <li>Rotate device to landscape on mobile</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="start-screen-footer">
+            <a href="impressum.html" class="impressum-link">Impressum</a>
         </div>
     `;
 }
@@ -28,6 +46,9 @@ function generateGameHTML() {
         <div id="canvas-wrapper" class="canvas-wrapper">
             <div id="fullscreen-message" class="screen-message d-none">
                 Please switch to fullscreen mode
+            </div>
+            <div id="rotate-overlay" class="screen-message d-none">
+                Please rotate your device to landscape mode to play
             </div>
             <div id="fullscreen-container" class="fullscreen-container">
                 <div id="landscape-message" class="screen-message d-none">
@@ -107,4 +128,39 @@ function generateGameOverScreenHTML() {
             </div>
         </div>
     `;
+}
+
+/** Opens the How-To dialog */
+function openHelp() {
+    const el = document.getElementById('help-backdrop');
+    if (el) el.classList.remove('d-none');
+}
+
+/** Closes the How-To dialog */
+function closeHelp() {
+    const el = document.getElementById('help-backdrop');
+    if (el) el.classList.add('d-none');
+}
+
+/** Closes the dialog when clicking the semi-transparent backdrop */
+function backdropClick(ev) {
+    if (ev && ev.target && ev.target.id === 'help-backdrop') closeHelp();
+}
+
+/** Initializes sound UI state from localStorage and updates icons */
+function initSoundUI() {
+    try {
+        const saved = localStorage.getItem('soundOn');
+        if (saved !== null && typeof soundOn !== 'undefined') {
+            soundOn = saved === 'true';
+        }
+    } catch (e) {}
+    updateSoundIcon();
+}
+
+/** Updates the mute/unmute icon to reflect current soundOn */
+function updateSoundIcon() {
+    const img = document.getElementById('sound-img-mobile');
+    if (!img || typeof soundOn === 'undefined') return;
+    img.src = soundOn ? './assets/img/icons/speaker.svg' : './assets/img/icons/speaker_muted.svg';
 }

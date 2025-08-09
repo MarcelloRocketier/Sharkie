@@ -1,6 +1,19 @@
 /**
- * Class representing a game level
- * Holds all objects that vary per level, such as backgrounds, enemies, and collectibles
+ * Class representing a game level.
+ * 
+ * This class holds all per-level objects and gameplay-relevant data, such as background elements,
+ * enemies, collectibles (coins, life, poison), barriers, and level boundaries.
+ * It provides access to all items that can vary between levels, and methods to retrieve key objects.
+ *
+ * @property {BackgroundObject[]} backgroundObjects - Array of background elements for this level.
+ * @property {Barrier[]} barriers - Array of barriers restricting movement in the level.
+ * @property {Enemy[]} enemies - Array of all enemies present in this level, including EndBoss.
+ * @property {Coin[]} coins - Array of coin collectibles placed in the level.
+ * @property {Life[]} life - Array of life pickups in the level.
+ * @property {Poison[]} poison - Array of poison pickups available in the level.
+ * @property {number} totalPoison - Number of poison collectibles available in the level.
+ * @property {number} collectedPoison - Number of poison collectibles collected so far.
+ * @property {number} level_end_x - X coordinate marking the end of the level.
  */
 class Level {
     backgroundObjects;
@@ -15,14 +28,14 @@ class Level {
 
     /**
      * Constructor takes parameters from specific level definition files
-     * Assigns them to this level instance's properties
-     * @param {Array} backgroundObjects - Background elements for this level
-     * @param {Array} coins - Coins placed in the level
-     * @param {Array} life - Life pickups in the level
-     * @param {Array} poison - Poison pickups available
-     * @param {Array} enemies - Enemies present in this level
-     * @param {Array} barriers - Barriers restricting movement
-     * @param {number} level_end_x - X coordinate where level ends
+     * Assigns them to this level instance's properties.
+     * @param {BackgroundObject[]} backgroundObjects - Background elements for this level.
+     * @param {Coin[]} coins - Coins placed in the level.
+     * @param {Life[]} life - Life pickups in the level.
+     * @param {Poison[]} poison - Poison pickups available in the level.
+     * @param {Enemy[]} enemies - Enemies present in this level.
+     * @param {Barrier[]} barriers - Barriers restricting movement in the level.
+     * @param {number} level_end_x - X coordinate where level ends.
      */
     constructor(backgroundObjects, coins, life, poison, enemies, barriers, level_end_x) {
         this.backgroundObjects = backgroundObjects;
@@ -36,8 +49,8 @@ class Level {
     }
 
     /**
-     * Finds and returns the EndBoss instance among enemies
-     * @returns {EndBoss|undefined}
+     * Searches the enemies array and returns the EndBoss instance if found, otherwise returns undefined.
+     * @returns {EndBoss|undefined} The EndBoss enemy if present in this level, otherwise undefined.
      */
     getEndBoss() {
         return this.enemies.find(e => e instanceof EndBoss);
