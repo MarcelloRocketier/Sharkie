@@ -162,5 +162,5 @@ function initSoundUI() {
 function updateSoundIcon() {
     const img = document.getElementById('sound-img-mobile');
     if (!img || typeof soundOn === 'undefined') return;
-    img.src = soundOn ? './assets/img/icons/speaker.svg' : './assets/img/icons/speaker_muted.svg';
+    img.src = soundOn ? './assets/img/icons/speaker.svg' : './assets/img/icons/mute.svg';
 }

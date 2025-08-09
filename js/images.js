@@ -128,7 +128,6 @@ let SHARKIE_IMAGES = {
         './assets/img/1._Sharkie/4._Attack/Bubble_Trap/Op1_(With_Bubble_Formation)/8.png'
     ]
 };
-
 /**
  * EndBoss image frames grouped by state.
  * @type {{ INTRODUCE: string[], FLOATING: string[], HURT: string[], DEAD: string[], ATTACK: string[] }}
@@ -188,7 +187,6 @@ let ENDBOSS_IMAGES = {
         './assets/img/2._Enemy/3._Final_Enemy/Attack/6.png'
     ]
 };
-
 /**
  * Dangerous Jellyfish frames by state and color variant.
  * @type {{ SWIM: Record<'green'|'pink', string[]>, DEAD: Record<'green'|'pink', string[]> }}
@@ -224,7 +222,6 @@ let JELLYFISH_DANGEROUS_IMAGES = {
         ]
     }
 };
-
 /**
  * Regular Jellyfish frames by state and color variant.
  * @type {{ SWIM: Record<'lila'|'yellow', string[]>, DEAD: Record<'lila'|'yellow', string[]> }}
@@ -260,7 +257,6 @@ let JELLYFISH_REGULAR_IMAGES = {
         ]
     }
 };
-
 /**
  * Puffer Fish frames by state and color variant.
  * Includes forward and reverse transition frames in SWIM sequences when defined.
@@ -333,7 +329,6 @@ let PUFFER_FISH_IMAGES = {
         ]
     }
 };
-
 /**
  * Status bar sprites grouped by type and color.
  * Index 0..5 corresponds to 0,20,40,60,80,100 percent fill levels.
@@ -450,7 +445,6 @@ let BACKGROUND_IMAGES = {
         }
     }
 };
-
 /**
  * Poison item sprites grouped by variant name.
  * @type {{ IMAGES: Record<'animated'|'light_left'|'light_right'|'dark_left'|'dark_right', string[]> }}

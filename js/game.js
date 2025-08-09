@@ -1,5 +1,3 @@
-
-
 /**
  * @file game.js
  * @description
@@ -7,8 +5,6 @@
  */
 
 'use strict';
-
-// ################################################### Global variables ###################################################
 
 /** @type {HTMLCanvasElement} */
 let canvas;
@@ -47,7 +43,6 @@ let fullscreenIntervalId = null;
 // Load saved game settings from localStorage
 loadFromLocalStorage();
 
-// ################################################### Game initialization ###################################################
 
 /**
  * Initializes the game, preloads assets, loads settings, updates the UI, and sets up device-specific features.
@@ -75,8 +70,6 @@ if (currentLevel >= levels.length - 1) {
     renderStartScreen();
 }
 
-// ################################################### Loading screen handling ###################################################
-
 document.onreadystatechange = () => {
     let state = document.readyState;
 
@@ -91,56 +84,57 @@ document.onreadystatechange = () => {
     }
 }
 
-// ################################################### Preload all necessary images ###################################################
-
 /**
  * Preloads all required images for the game.
  */
 function preload() {
-    preloadImages(SHARKIE_IMAGES['IDLE']);
-    preloadImages(SHARKIE_IMAGES['LONG_IDLE']);
-    preloadImages(SHARKIE_IMAGES['SWIM']);
-    preloadImages(SHARKIE_IMAGES['HURT_POISONED']);
-    preloadImages(SHARKIE_IMAGES['HURT_ELECTRIC_SHOCK']);
-    preloadImages(SHARKIE_IMAGES['DIE_POISONED']);
-    preloadImages(SHARKIE_IMAGES['DIE_ELECTRIC_SHOCK']);
-    preloadImages(SHARKIE_IMAGES['FIN_SLAP']);
-    preloadImages(SHARKIE_IMAGES['BUBBLE_TRAP']);
-    preloadImages(ENDBOSS_IMAGES['INTRODUCE']);
-    preloadImages(ENDBOSS_IMAGES['FLOATING']);
-    preloadImages(ENDBOSS_IMAGES['HURT']);
-    preloadImages(ENDBOSS_IMAGES['DEAD']);
-    preloadImages(ENDBOSS_IMAGES['ATTACK']);
-    preloadImages(JELLYFISH_DANGEROUS_IMAGES['SWIM']['green']);
-    preloadImages(JELLYFISH_DANGEROUS_IMAGES['SWIM']['pink']);
-    preloadImages(JELLYFISH_DANGEROUS_IMAGES['DEAD']['green']);
-    preloadImages(JELLYFISH_DANGEROUS_IMAGES['DEAD']['pink']);
-    preloadImages(JELLYFISH_REGULAR_IMAGES['SWIM']['lila']);
-    preloadImages(JELLYFISH_REGULAR_IMAGES['SWIM']['yellow']);
-    preloadImages(JELLYFISH_REGULAR_IMAGES['DEAD']['lila']);
-    preloadImages(JELLYFISH_REGULAR_IMAGES['DEAD']['yellow']);
-    preloadImages(PUFFER_FISH_IMAGES['SWIM']['green']);
-    preloadImages(PUFFER_FISH_IMAGES['SWIM']['orange']);
-    preloadImages(PUFFER_FISH_IMAGES['SWIM']['red']);
-    preloadImages(PUFFER_FISH_IMAGES['DEAD']['green']);
-    preloadImages(PUFFER_FISH_IMAGES['DEAD']['orange']);
-    preloadImages(PUFFER_FISH_IMAGES['DEAD']['red']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['coins']['green']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['coins']['orange']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['coins']['purple']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['life']['green']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['life']['orange']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['life']['purple']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['poison']['green']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['poison']['orange']);
-    preloadImages(STATUS_BAR_IMAGES['IMAGES']['poison']['purple']);
-    preloadImages(BACKGROUND_IMAGES['IMAGES']['dark'][1]);
-    preloadImages(BACKGROUND_IMAGES['IMAGES']['dark'][2]);
-    preloadImages(POISON_IMAGES['IMAGES']['animated']);
-    preloadImages(POISON_IMAGES['IMAGES']['light_left']);
-    preloadImages(POISON_IMAGES['IMAGES']['light_right']);
-    preloadImages(POISON_IMAGES['IMAGES']['dark_left']);
-    preloadImages(POISON_IMAGES['IMAGES']['dark_right']);
+    const groups = [
+        SHARKIE_IMAGES.IDLE,
+        SHARKIE_IMAGES.LONG_IDLE,
+        SHARKIE_IMAGES.SWIM,
+        SHARKIE_IMAGES.HURT_POISONED,
+        SHARKIE_IMAGES.HURT_ELECTRIC_SHOCK,
+        SHARKIE_IMAGES.DIE_POISONED,
+        SHARKIE_IMAGES.DIE_ELECTRIC_SHOCK,
+        SHARKIE_IMAGES.FIN_SLAP,
+        SHARKIE_IMAGES.BUBBLE_TRAP,
+        ENDBOSS_IMAGES.INTRODUCE,
+        ENDBOSS_IMAGES.FLOATING,
+        ENDBOSS_IMAGES.HURT,
+        ENDBOSS_IMAGES.DEAD,
+        ENDBOSS_IMAGES.ATTACK,
+        JELLYFISH_DANGEROUS_IMAGES.SWIM.green,
+        JELLYFISH_DANGEROUS_IMAGES.SWIM.pink,
+        JELLYFISH_DANGEROUS_IMAGES.DEAD.green,
+        JELLYFISH_DANGEROUS_IMAGES.DEAD.pink,
+        JELLYFISH_REGULAR_IMAGES.SWIM.lila,
+        JELLYFISH_REGULAR_IMAGES.SWIM.yellow,
+        JELLYFISH_REGULAR_IMAGES.DEAD.lila,
+        JELLYFISH_REGULAR_IMAGES.DEAD.yellow,
+        PUFFER_FISH_IMAGES.SWIM.green,
+        PUFFER_FISH_IMAGES.SWIM.orange,
+        PUFFER_FISH_IMAGES.SWIM.red,
+        PUFFER_FISH_IMAGES.DEAD.green,
+        PUFFER_FISH_IMAGES.DEAD.orange,
+        PUFFER_FISH_IMAGES.DEAD.red,
+        STATUS_BAR_IMAGES.IMAGES.coins.green,
+        STATUS_BAR_IMAGES.IMAGES.coins.orange,
+        STATUS_BAR_IMAGES.IMAGES.coins.purple,
+        STATUS_BAR_IMAGES.IMAGES.life.green,
+        STATUS_BAR_IMAGES.IMAGES.life.orange,
+        STATUS_BAR_IMAGES.IMAGES.life.purple,
+        STATUS_BAR_IMAGES.IMAGES.poison.green,
+        STATUS_BAR_IMAGES.IMAGES.poison.orange,
+        STATUS_BAR_IMAGES.IMAGES.poison.purple,
+        BACKGROUND_IMAGES.IMAGES.dark[1],
+        BACKGROUND_IMAGES.IMAGES.dark[2],
+        POISON_IMAGES.IMAGES.animated,
+        POISON_IMAGES.IMAGES.light_left,
+        POISON_IMAGES.IMAGES.light_right,
+        POISON_IMAGES.IMAGES.dark_left,
+        POISON_IMAGES.IMAGES.dark_right
+    ];
+    groups.forEach(preloadImages);
 }
 
 /**
@@ -162,61 +156,12 @@ function preloadImage(url) {
     img.src = url;
 }
 
-// ################################################### Keyboard event handlers ###################################################
+// Map für Tastencodes zu Key-Flags
+const KEY_MAP = { 32:'SPACE', 37:'LEFT', 38:'UP', 39:'RIGHT', 40:'DOWN', 68:'D', 70:'F' };
+// Keyboard-Events
+window.addEventListener('keydown', (e) => { const k = KEY_MAP[e.keyCode]; if (k) keyboard[k] = true; });
+window.addEventListener('keyup',   (e) => { const k = KEY_MAP[e.keyCode]; if (k) keyboard[k] = false; });
 
-window.addEventListener('keydown', (e) => {
-    switch (e.keyCode) {
-        case 32:
-            keyboard.SPACE = true;
-            break;
-        case 37:
-            keyboard.LEFT = true;
-            break;
-        case 38:
-            keyboard.UP = true;
-            break;
-        case 39:
-            keyboard.RIGHT = true;
-            break;
-        case 40:
-            keyboard.DOWN = true;
-            break;
-        case 68:
-            keyboard.D = true;
-            break;
-        case 70:
-            keyboard.F = true;
-            break;
-    }
-});
-
-window.addEventListener('keyup', (e) => {
-    switch (e.keyCode) {
-        case 32:
-            keyboard.SPACE = false;
-            break;
-        case 37:
-            keyboard.LEFT = false;
-            break;
-        case 38:
-            keyboard.UP = false;
-            break;
-        case 39:
-            keyboard.RIGHT = false;
-            break;
-        case 40:
-            keyboard.DOWN = false;
-            break;
-        case 68:
-            keyboard.D = false;
-            break;
-        case 70:
-            keyboard.F = false;
-            break;
-    }
-});
-
-// ################################################### Mobile device detection ###################################################
 
 /**
  * Checks if the current device is a mobile or tablet using user agent sniffing.
@@ -229,8 +174,6 @@ window.mobileAndTabletCheck = function() {
     })(navigator.userAgent || navigator.vendor || window.opera);
     return isMobile;
 };
-
-// ################################################### Main game control functions ###################################################
 
 /**
  * Starts the game by rendering the game UI, initializing the world, and setting up controls.
@@ -369,8 +312,6 @@ function restartGame() {
     saveToLocalStorage();
     startGame();
 }
-
-// ################################################### Navbar interaction handlers ###################################################
 
 /**
  * Toggles the visibility of the settings menu.

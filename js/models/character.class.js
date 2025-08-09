@@ -75,7 +75,6 @@ class Character extends MovableObject {
         this.triggerEndboss();
         this.touchEvents();
     }
-
     /**
      * Handles animation state updates for the character.
      */
@@ -88,7 +87,6 @@ class Character extends MovableObject {
             this.handleAttacks();
         }, 100)
     }
-
     /**
      * Updates the animation state based on character status and input.
      */
@@ -111,7 +109,6 @@ class Character extends MovableObject {
             this.playAnimation(SHARKIE_IMAGES.IDLE, 1);
         }
     }
-
     /**
      * Handles character attack actions based on keyboard and touch controls.
      */
@@ -127,7 +124,6 @@ class Character extends MovableObject {
             this.bubbleTrapAttackPoison();
             this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
         }
-
         // Touch controls
         if (this.touchCtrlFinSlapStart && !this.isDead()) {
             this.finSlapAttack();
@@ -140,7 +136,6 @@ class Character extends MovableObject {
             this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
         }
     }
-
     /**
      * Handles character movement input events from keyboard and touch controls.
      */
@@ -173,7 +168,6 @@ class Character extends MovableObject {
             this.world.camera_x = -this.x;
         }, 1000 / 60)
     }
-
     /**
      * Handles movement input for a given direction from keyboard and touch.
      * @param {string} direction - The movement direction ('up', 'down', 'left', 'right')
@@ -214,7 +208,6 @@ class Character extends MovableObject {
         ctrlPoisonBubbleTrap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', true));
         ctrlPoisonBubbleTrap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', false));
     }
-
     /**
      * Generic handler for touch controls
      * @param {string} startFlag - property name for touch start boolean
@@ -225,8 +218,6 @@ class Character extends MovableObject {
         this[startFlag] = isStart;
         this[endFlag] = !isStart;
     }
-
-
     /**
      * Handles playing character sounds based on various game events.
      */
@@ -241,7 +232,6 @@ class Character extends MovableObject {
             }
         }, 1000 / 60)
     }
-
     /**
      * Plays swim sound when movement keys are pressed.
      */
@@ -251,7 +241,6 @@ class Character extends MovableObject {
             this.SWIM_SOUND.play();
         }
     }
-
     /**
      * Plays death sound when character dies, only once.
      */
@@ -261,7 +250,6 @@ class Character extends MovableObject {
             this.isAlreadyDead = true;
         }
     }
-
     /**
      * Plays slap and bubble trap sounds for attacks and enemy bubble collisions.
      */
@@ -281,7 +269,6 @@ class Character extends MovableObject {
             }
         });
     }
-
     /**
      * Plays hurt or electric zap sound when colliding with enemies.
      */
@@ -296,7 +283,6 @@ class Character extends MovableObject {
             }
         });
     }
-
     /**
      * Plays item pickup sounds for coins, poison, and life.
      */
@@ -373,7 +359,6 @@ class Character extends MovableObject {
         this.lastMove = new Date().getTime();
         this.isFinSlapping = true;
     }
-
     /**
      * Activates a key for a set duration
      * @param {string} key - key property to activate (e.g., 'SPACE')
@@ -402,14 +387,12 @@ class Character extends MovableObject {
         this.isBubbleTrapping = true;
         this.spawnBubble(false);
     }
-
     bubbleTrapAttackPoison() {
         this.activateKey('F', 600, () => this.isBubbleTrapping = false);
         this.lastMove = new Date().getTime();
         this.isBubbleTrapping = true;
         this.spawnBubble(true);
     }
-
     /**
      * Spawns a bubble or poison bubble after a delay
      * @param {boolean} isPoison - true for poison bubble, false for normal
@@ -430,7 +413,6 @@ class Character extends MovableObject {
             }, 600);
         }
     }
-
     /**
      * Triggers the EndBoss when exceeding the x coordinate minus the triggerDistance
      */
