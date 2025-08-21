@@ -2,12 +2,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
-  background-image: url('assets/img/3._Background/Dark/1.png');
-  background-size: cover;
+  min-height: 100dvh;
+  background-color: #000; /* plain black outside the game area */
   font-family: LuckiestGuy;
   margin: 0;
   overflow: hidden;
+  color: #fff;
 }
 
 @font-face {
@@ -21,7 +21,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  min-height: 100dvh; /* ensure children can stretch to full viewport */
 }
 
 .nav-btn, .close-btn {
@@ -63,8 +63,8 @@ body {
   color: white;
   cursor: pointer;
   font-family: 'LuckiestGuy', cursive;
-  font-size: 38px;
-  padding: 22px 44px;
+  font-size: clamp(18px, 3.2vw, 38px);
+  padding: clamp(12px, 1.8vw, 22px) clamp(18px, 3.6vw, 44px);
   user-select: none;
   box-shadow: 0 0 16px rgba(0, 48, 128, 0.9);
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -89,8 +89,8 @@ body {
   border: 2px solid white;
   border-radius: 50%;
   color: white;
-  height: 64px;
-  width: 64px;
+  width: clamp(44px, 9vmin, 72px);
+height: clamp(44px, 9vmin, 72px);
   text-shadow: -1px 1px 3px black;
   box-shadow: 0 0 12px rgba(0, 48, 128, 0.8);
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -153,31 +153,6 @@ body {
   }
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  background: url('assets/img/3._Background/Dark/1.png') repeat;
-  opacity: 0.08;
-  z-index: 0;
-  animation: waveMove 30s linear infinite;
-}
-
-@keyframes waveMove {
-  0% { background-position: 0 0; }
-  100% { background-position: 1000px 0; }
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
 img {
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
@@ -231,8 +206,31 @@ img {
 .canvas-wrapper {
   position: relative;
   box-shadow: 0 0 20px rgba(0, 31, 91, 0.8);
-  border-radius: 24px;
+  border-radius: 0;
   overflow: hidden;
+}
+
+#canvas-wrapper{
+    position: fixed;
+  inset: 0;              /* füllt den ganzen Viewport */
+  overflow: hidden;
+  display: block;
+  line-height: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  background: #000;
+  border-radius: 0;
+  box-shadow: 0 20px 48px rgba(0,0,0,.45), inset 0 -18px 36px rgba(0,0,0,.32);
+}
+
+/* Canvas always fills its wrapper */
+#canvas-wrapper canvas{
+  display: block;
+  width: 100vw !important;   /* Viewport füllen */
+  height: 100vh !important;
+  object-fit: fill;           /* erlaubt Strecken – keine Balken */
+  background: #000;
 }
 
 .canvas-frame-img {
@@ -245,8 +243,9 @@ img {
   z-index: 1;
 }
 
-canvas {
-  background-color: black;
+/* Hide global top-right nav on small screens to avoid duplicates with in-canvas UI */
+@media (max-width: 992px){
+  .nav{ display: none; }
 }
 
 .fullscreen-container {
@@ -285,26 +284,12 @@ canvas {
   z-index: 2;
 }
 
+/* Attack-Buttons werden vom rechten Container layoutet (Flex-Spalte) */
 #ctrl-btn-fin-slap,
 #ctrl-btn-bubble-trap,
 #ctrl-btn-poison-bubble-trap {
-  position: absolute;
+  position: static; /* wichtig: NICHT absolut, sonst überlappen sie */
   z-index: 2;
-}
-
-#ctrl-btn-fin-slap {
-  bottom: 16px;
-  right: 128px;
-}
-
-#ctrl-btn-bubble-trap {
-  bottom: 64px;
-  right: 80px;
-}
-
-#ctrl-btn-poison-bubble-trap {
-  bottom: 112px;
-  right: 32px;
 }
 
 .mobile-controller-x-control {
@@ -342,9 +327,11 @@ canvas {
   align-items: center;
   background-image: url('assets/img/3._Background/Dark/1.png');
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100dvh; /* fill full viewport height to avoid black bar */
   justify-content: center;
   width: 100%;
 }
@@ -700,9 +687,6 @@ canvas {
 }
 
 @media only screen and (max-width: 480px) {
-  .btn {
-    font-size: 18px !important;
-  }
   .end-screen-header {
     height: unset;
   }
@@ -712,9 +696,6 @@ canvas {
 }
 
 @media only screen and (max-width: 900px) {
-  .btn {
-    font-size: 24px;
-  }
   .end-screen-header {
     margin: 0 0 16px 0;
   }
@@ -854,8 +835,42 @@ body, html {
 #mobile-ctrl-left,
 #mobile-ctrl-right {
   display: none;
-  position: fixed;
+  position: fixed; /* pin to viewport corners for better mobile gameplay */
   z-index: 20;
+  pointer-events: auto;
+}
+
+/* Attack-Buttons: text labels via data-label (FIN / BUB / PSN) */
+#ctrl-btn-fin-slap,
+#ctrl-btn-bubble-trap,
+#ctrl-btn-poison-bubble-trap{
+  position: relative; /* needed for ::after centering */
+  font-size: 0;       /* hide any inline text – we render via ::after */
+}
+
+/* Render compact label centered inside the round button */
+#ctrl-btn-fin-slap::after,
+#ctrl-btn-bubble-trap::after,
+#ctrl-btn-poison-bubble-trap::after{
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'LuckiestGuy', cursive;
+  font-size: clamp(10px, 2.4vw, 16px);
+  letter-spacing: .5px;
+  color: #fff;
+  text-shadow: -1px 1px 2px rgba(0,0,0,.7);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#ctrl-btn-fin-slap img,
+#ctrl-btn-bubble-trap img,
+#ctrl-btn-poison-bubble-trap img{
+  display: none !important;
 }
 
 @media (pointer: coarse) {
@@ -863,42 +878,53 @@ body, html {
   #mobile-ctrl-right {
     display: flex !important;
     flex-direction: column;
-    gap: 12px;
-    bottom: 32px;
+    gap: clamp(8px, 2vmin, 14px);
     align-items: center;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
   }
+  #mobile-ctrl-left { left: 16px; right: auto; }
+  #mobile-ctrl-right { right: 16px; left: auto; align-items: flex-end; }
 }
 
 @media (max-width: 992px) {
-  #mobile-ctrl-left,
-  #mobile-ctrl-right {
+  #mobile-ctrl-right{
+    position: fixed;
+    right: 16px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    left: auto;
+    top: auto;
     display: flex !important;
     flex-direction: column;
-    gap: 12px;
-    bottom: 32px;
-    align-items: center;
+    gap: clamp(8px, 2vmin, 14px);
+    align-items: flex-end;
+    z-index: 20;
   }
-  #mobile-ctrl-left {
+
+  #mobile-ctrl-left{
+    position: fixed;
     left: 16px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
     right: auto;
+    top: auto;
+    display: flex !important;
+    flex-direction: column;
+    gap: clamp(8px, 2vmin, 14px);
+    align-items: center;
+    z-index: 20;
   }
-  #mobile-ctrl-right {
-    right: 16px;
-    left: auto;
-  }
+
   .mobile-ctrl-btn {
-    display: flex;
+    display: grid;
     background: linear-gradient(135deg, #001f5b, #003080);
     border: 2px solid white;
     border-radius: 50%;
     color: white;
-    height: 64px;
-    width: 64px;
+    width: clamp(44px, 9vmin, 72px);
+height: clamp(44px, 9vmin, 72px);
     text-shadow: -1px 1px 3px black;
     box-shadow: 0 0 12px rgba(0, 48, 128, 0.8);
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    justify-content: center;
-    align-items: center;
+    place-items: center;
     font-family: 'LuckiestGuy', cursive;
     font-size: 24px;
     user-select: none;
@@ -914,17 +940,33 @@ body, html {
     pointer-events: none;
     user-select: none;
   }
+
+  /* Place right-side attack buttons as a tidy column inside the canvas */
+  #mobile-ctrl-right{
+    right: 16px;
+    left: auto;
+  }
+
+  #mobile-ctrl-left{
+    left: 16px;
+    right: auto;
+  }
+
+  /* Ensure round buttons properly center icons/labels */
+  #mobile-ctrl-right .mobile-ctrl-btn,
+  #mobile-ctrl-left .mobile-ctrl-btn{
+    position: relative;
+  }
 }
 @media (max-width: 992px) {
   .fullscreen-container {
     height: calc(100vh - 100px);
     max-height: calc(100vh - 100px);
   }
-  canvas {
-    width: 100% !important;
-    height: auto !important;
-    max-height: 100%;
-  }
+  #canvas-wrapper canvas {
+  width: 100vw !important;
+  height: 100vh !important;
+}
   #mobile-ctrl-left,
   #mobile-ctrl-right {
     bottom: 16px;

@@ -176,11 +176,33 @@ window.mobileAndTabletCheck = function() {
 };
 
 /**
+ * Adjusts the canvas-wrapper size to maintain 16:9 aspect ratio
+ * and fit maximally into the current viewport.
+ */
+function fitCanvasToViewport() {
+    const wrapper = document.getElementById('canvas-wrapper');
+if (!wrapper) return;
+
+// Fullscreen fill (Variant B): no letterboxing, allow stretch
+wrapper.style.top = '0';
+wrapper.style.left = '0';
+wrapper.style.right = '0';
+wrapper.style.bottom = '0';
+wrapper.style.transform = 'none';
+
+wrapper.style.width = `${window.innerWidth}px`;
+wrapper.style.height = `${window.innerHeight}px`;
+}
+
+/**
  * Starts the game by rendering the game UI, initializing the world, and setting up controls.
  */
 function startGame() {
     const content = document.getElementById('content');
     content.innerHTML = generateGameHTML();
+    fitCanvasToViewport();
+    window.addEventListener('resize', fitCanvasToViewport);
+    window.addEventListener('orientationchange', fitCanvasToViewport);
 
     if (typeof initSoundUI === 'function') initSoundUI();
     updateUI();
