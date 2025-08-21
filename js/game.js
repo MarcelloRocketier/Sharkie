@@ -39,6 +39,8 @@ let GAME_OVER_SOUND = new Audio('./assets/audio/game_over.mp3');
 let loading = true;
 /** @type {number|null} */
 let fullscreenIntervalId = null;
+let viewportListenersBound = false;
+let mobileControlsBound = false;
 
 // Load saved game settings from localStorage
 loadFromLocalStorage();
@@ -181,17 +183,29 @@ window.mobileAndTabletCheck = function() {
  */
 function fitCanvasToViewport() {
     const wrapper = document.getElementById('canvas-wrapper');
-if (!wrapper) return;
+    const cv = document.getElementById('canvas');
+    if (!wrapper) return;
 
-// Fullscreen fill (Variant B): no letterboxing, allow stretch
-wrapper.style.top = '0';
-wrapper.style.left = '0';
-wrapper.style.right = '0';
-wrapper.style.bottom = '0';
-wrapper.style.transform = 'none';
+    // Fill viewport (Variant B)
+    wrapper.style.top = '0';
+    wrapper.style.left = '0';
+    wrapper.style.right = '0';
+    wrapper.style.bottom = '0';
+    wrapper.style.transform = 'none';
 
-wrapper.style.width = `${window.innerWidth}px`;
-wrapper.style.height = `${window.innerHeight}px`;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    wrapper.style.width = `${vw}px`;
+    wrapper.style.height = `${vh}px`;
+
+    if (cv) {
+        // Set internal canvas resolution and CSS size to viewport
+        cv.width = vw;
+        cv.height = vh;
+        cv.style.width = '100vw';
+        cv.style.height = '100vh';
+    }
 }
 
 /**
@@ -201,8 +215,11 @@ function startGame() {
     const content = document.getElementById('content');
     content.innerHTML = generateGameHTML();
     fitCanvasToViewport();
-    window.addEventListener('resize', fitCanvasToViewport);
-    window.addEventListener('orientationchange', fitCanvasToViewport);
+    if (!viewportListenersBound) {
+        window.addEventListener('resize', fitCanvasToViewport);
+        window.addEventListener('orientationchange', fitCanvasToViewport);
+        viewportListenersBound = true;
+    }
 
     if (typeof initSoundUI === 'function') initSoundUI();
     updateUI();
@@ -233,38 +250,32 @@ function renderStartScreen() {
  */
 function checkForLevelWin() {
     setInterval(() => {
-        if (endBossKilled && !levelEnded && !maxLevelReached) {
+        if (!levelEnded && endBossKilled && !maxLevelReached) {
+            levelEnded = true; // prevent multiple schedules
             setTimeout(() => {
                 const content = document.getElementById('content');
-                content.innerHTML = generateEndScreenHTML();
-
-                if (soundOn && !levelEnded) {
-                    WIN_SOUND.play();
+                if (typeof generateEndScreenHTML === 'function') {
+                    content.innerHTML = generateEndScreenHTML();
                 }
-
-                levelEnded = true;
+                if (soundOn) { try { WIN_SOUND.currentTime = 0; WIN_SOUND.play(); } catch(e){} }
             }, 3000);
-        } else if (endBossKilled && !levelEnded && maxLevelReached) {
+        } else if (!levelEnded && endBossKilled && maxLevelReached) {
+            levelEnded = true;
             setTimeout(() => {
                 const content = document.getElementById('content');
-                content.innerHTML = generateMaxEndScreenHTML();
-
-                if (soundOn && !levelEnded) {
-                    WIN_SOUND.play();
+                if (typeof generateMaxEndScreenHTML === 'function') {
+                    content.innerHTML = generateMaxEndScreenHTML();
                 }
-
-                levelEnded = true;
+                if (soundOn) { try { WIN_SOUND.currentTime = 0; WIN_SOUND.play(); } catch(e){} }
             }, 3000);
-        } else if (characterIsDead && !levelEnded) {
+        } else if (!levelEnded && characterIsDead) {
+            levelEnded = true;
             setTimeout(() => {
                 const content = document.getElementById('content');
-                content.innerHTML = generateGameOverScreenHTML();
-
-                if (soundOn && !levelEnded) {
-                    GAME_OVER_SOUND.play();
+                if (typeof generateGameOverScreenHTML === 'function') {
+                    content.innerHTML = generateGameOverScreenHTML();
                 }
-
-                levelEnded = true;
+                if (soundOn) { try { GAME_OVER_SOUND.currentTime = 0; GAME_OVER_SOUND.play(); } catch(e){} }
             }, 3000);
         }
     }, 250)
@@ -299,17 +310,19 @@ function loadFromLocalStorage() {
 }
 
 /**
- * Restarts the current level, resetting relevant game state.
+ * Restarts the current level, resetting relevant game state and stopping sounds.
  */
 function restartLevel() {
     levelEnded = false;
     characterIsDead = false;
     endBossKilled = false;
+    try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
+    try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
     startGame();
 }
 
 /**
- * Advances to the next level if available, saves state, and starts the game.
+ * Advances to the next level if available, resets flags, stops sounds, saves state, and starts the game.
  */
 function nextLevel() {
     if (!maxLevelReached && currentLevel < levels.length - 1) {
@@ -317,13 +330,20 @@ function nextLevel() {
         if (currentLevel >= levels.length - 1) {
             maxLevelReached = true;
         }
+        // reset run-state flags so the new level is interactive
+        levelEnded = false;
+        characterIsDead = false;
+        endBossKilled = false;
+        // stop any sounds from previous screen
+        try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
+        try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
         saveToLocalStorage();
         startGame();
     }
 }
 
 /**
- * Restarts the game from the first level, resetting all progress.
+ * Restarts the game from the first level, resetting all progress and stopping sounds.
  */
 function restartGame() {
     currentLevel = 0;
@@ -331,6 +351,8 @@ function restartGame() {
     levelEnded = false;
     characterIsDead = false;
     endBossKilled = false;
+    try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
+    try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
     saveToLocalStorage();
     startGame();
 }
@@ -424,6 +446,7 @@ function updateUI() {
  * Sets up touch event handlers for mobile controls to update the keyboard object.
  */
 function setupMobileControls() {
+    if (mobileControlsBound) return;
     document.getElementById('ctrl-btn-up').addEventListener('touchstart', () => keyboard.UP = true);
     document.getElementById('ctrl-btn-up').addEventListener('touchend', () => keyboard.UP = false);
 
@@ -444,4 +467,5 @@ function setupMobileControls() {
 
     document.getElementById('ctrl-btn-poison-bubble-trap').addEventListener('touchstart', () => keyboard.F = true);
     document.getElementById('ctrl-btn-poison-bubble-trap').addEventListener('touchend', () => keyboard.F = false);
+    mobileControlsBound = true;
 }

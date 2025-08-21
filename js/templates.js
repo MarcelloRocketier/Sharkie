@@ -169,3 +169,51 @@ function closeOverlay() {
     const overlay = document.querySelector('.overlay');
     if (overlay) overlay.remove();
 }
+/**
+ * Overlay: End Screen after defeating Endboss.
+ */
+function generateEndScreenHTML() {
+    return `
+        <div id="end-screen" class="overlay">
+            <div class="overlay-content">
+                <h2>Level Completed!</h2>
+                <p>Congratulations! You defeated the Endboss.</p>
+                <button onclick="restartLevel()">Restart Level</button>
+                <button onclick="nextLevel()">Next Level</button>
+                <button onclick="closeOverlay()">Close</button>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Overlay: End Screen if the last level (max level) is finished.
+ */
+function generateMaxEndScreenHTML() {
+    return `
+        <div id="max-end-screen" class="overlay">
+            <div class="overlay-content">
+                <h2>Game Completed!</h2>
+                <p>You have beaten all levels of Sharkie. Well done!</p>
+                <button onclick="restartGame()">Play Again</button>
+                <button onclick="closeOverlay()">Close</button>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Overlay: Game Over Screen when Sharkie dies.
+ */
+function generateGameOverScreenHTML() {
+    return `
+        <div id="game-over-screen" class="overlay">
+            <div class="overlay-content">
+                <h2>Game Over</h2>
+                <p>Sharkie has been defeated. Try again!</p>
+                <button onclick="restartLevel()">Restart Level</button>
+                <button onclick="closeOverlay()">Close</button>
+            </div>
+        </div>
+    `;
+}

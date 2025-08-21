@@ -159,7 +159,7 @@ class World {
       if (this.stopped || levelEnded || characterIsDead) return;
       this.handleEnemyDamageOnCharacter();
       this.handleFinSlapOnPuffer();
-      this.handleBubbleVsJelly();
+      if (this.level) this.handleBubbleVsJelly();
       this.handleFinSlapOnEndBoss();
       this.handleBubbleVsEndBoss();
       this.collectCoins();
@@ -196,14 +196,27 @@ class World {
   }
 
   handleBubbleVsJelly() {
-    if (!this.bubble) return;
-    this.level.enemies.forEach(enemy => {
-      const isJelly = enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous;
-      if (isJelly && this.bubble.isColliding(enemy)) {
-        enemy.hit(this.bubble.attack);
+    // Null-safe bubble vs jellyfish collision handling
+    const bubble = this.bubble;
+    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
+
+    // if no bubble or bubble cannot collide, stop early
+    if (!bubble || bubble.markedForDeletion || typeof bubble.isColliding !== 'function') {
+      return;
+    }
+
+    enemies.forEach((enemy) => {
+      if (!enemy) return;
+      const isJelly = (enemy instanceof JellyFishRegular) || (enemy instanceof JellyFishDangerous);
+      if (!isJelly) return;
+      if (typeof enemy.isColliding !== 'function') return;
+
+      if (bubble.isColliding(enemy)) {
+        if (typeof enemy.hit === 'function') enemy.hit(bubble.attack);
         enemy.stopMovement = true;
         enemy.speed = 1;
-        enemy.floatAwayUp();
+        if (typeof enemy.floatAwayUp === 'function') enemy.floatAwayUp();
+        if (typeof bubble.pop === 'function') bubble.pop();
         this.bubble = undefined;
       }
     });
