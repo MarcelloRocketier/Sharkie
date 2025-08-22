@@ -49,6 +49,25 @@ class StatusBar extends DrawableObject {
     }
 
     /**
+     * Increases the percentage by the given amount and updates the bar.
+     * @param {number} amount - Amount to add (0–100).
+     * @returns {void}
+     */
+    increase(amount) {
+        this.percentage = Math.min(100, (this.percentage ?? 0) + amount);
+        this.setPercentage(this.percentage, this.type, this.color);
+    }
+
+    /**
+     * Sets the bar to an absolute value (alias to setPercentage for compatibility).
+     * @param {number} value - New absolute percentage (0–100).
+     * @returns {void}
+     */
+    set(value) {
+        this.setPercentage(value, this.type, this.color);
+    }
+
+    /**
      * Resolves which image index corresponds to the current percentage thresholds.
      * @returns {number} Index of the image to use.
      */

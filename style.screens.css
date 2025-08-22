@@ -1,0 +1,198 @@
+
+
+/* ===== SCREENS & OVERLAYS ===== */
+
+.start-screen-container {
+  align-items: center;
+  background-image: url('assets/img/3._Background/Dark/1.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  justify-content: center;
+  width: 100%;
+}
+
+.start-screen-header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 0 64px 0;
+}
+
+.start-screen-title {
+  color: white;
+  font-size: 72px;
+  font-weight: 100;
+  margin: 0;
+}
+
+.start-screen-body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.start-screen-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  text-align: center;
+  z-index: 20;
+}
+
+.impressum-link {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.impressum-link:hover {
+  color: #ffffff;
+  text-decoration-thickness: 2px;
+}
+
+button, .btn, .nav-btn, .close-btn, .mobile-ctrl-btn {
+  cursor: pointer;
+  user-select: none;
+}
+
+.page-footer {
+  background-color: #001f5b;
+  color: white;
+  font-family: 'LuckiestGuy', cursive;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 18px;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  position: relative;
+  z-index: 10;
+  overflow: visible;
+}
+
+.page-footer a {
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.page-footer a:hover {
+  color: #6699ff;
+}
+
+#landscape-message {
+  display: none;
+}
+
+body, html {
+  overflow-x: hidden;
+}
+
+#mobile-ctrl-left,
+#mobile-ctrl-right {
+  display: none;
+  position: fixed;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+#ctrl-btn-fin-slap,
+#ctrl-btn-bubble-trap,
+#ctrl-btn-poison-bubble-trap {
+  position: relative;
+  font-size: 0;
+}
+
+#ctrl-btn-fin-slap::after,
+#ctrl-btn-bubble-trap::after,
+#ctrl-btn-poison-bubble-trap::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'LuckiestGuy', cursive;
+  font-size: clamp(10px, 2.4vw, 16px);
+  letter-spacing: .5px;
+  color: #fff;
+  text-shadow: -1px 1px 2px rgba(0,0,0,.7);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#ctrl-btn-fin-slap img,
+#ctrl-btn-bubble-trap img,
+#ctrl-btn-poison-bubble-trap img {
+  display: none !important;
+}
+
+/* Overlay styling */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  z-index: 10000;
+}
+
+.overlay-content {
+  position: relative;
+  background: #0b1a3a;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 16px;
+  width: min(92vw, 560px);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 24px 28px;
+  box-shadow: 0 0 24px rgba(0, 80, 200, 0.6);
+  text-align: left;
+}
+
+.overlay-content h2 {
+  margin: 0 0 12px 0;
+  font-size: clamp(22px, 4vw, 32px);
+}
+
+.overlay-content p {
+  line-height: 1.6;
+  margin: 0;
+}
+
+.overlay-content button {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #001f5b, #003080);
+  border: 3px solid white;
+  border-radius: 14px;
+  color: white;
+  cursor: pointer;
+  font-family: 'LuckiestGuy', cursive;
+  font-size: clamp(14px, 2.6vw, 20px);
+  padding: 10px 18px;
+  user-select: none;
+  box-shadow: 0 0 12px rgba(0, 48, 128, 0.9);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.overlay-content button:hover {
+  background: linear-gradient(135deg, #002a83, #0042b8);
+  box-shadow: 0 0 18px rgba(0, 66, 184, 1);
+}
+
+.overlay-content button:active {
+  background: linear-gradient(135deg, #000f2f, #002060);
+  box-shadow: 0 0 6px rgba(0, 48, 128, 1) inset;
+}

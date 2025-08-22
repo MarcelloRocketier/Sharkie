@@ -405,13 +405,14 @@ class Character extends MovableObject {
 
     /**
      * Updates barrier-collision flags for the attempted movement direction.
+     * Ensures that opposite flags are never stuck simultaneously.
      * @param {string} direction - Intended direction of movement.
      * @returns {void}
      */
     checkBarrierCollisions(direction) {
-        let collidingWithBarrier = this.world.level.barriers.find(barrier => this.isColliding(barrier));
-        let collidingWithBarrierX = this.world.level.barriers.find(barrier => this.isCollidingX(barrier));
-        let collidingWithBarrierY = this.world.level.barriers.find(barrier => this.isCollidingY(barrier));
+        const collidingWithBarrier = this.world.level.barriers.find(barrier => this.isColliding(barrier));
+        const collidingWithBarrierX = this.world.level.barriers.find(barrier => this.isCollidingX(barrier));
+        const collidingWithBarrierY = this.world.level.barriers.find(barrier => this.isCollidingY(barrier));
 
         if (collidingWithBarrier) {
             this.isCollidingWithBarrier = true;
@@ -423,14 +424,20 @@ class Character extends MovableObject {
             this.isCollidingWithBarrierLeft = false;
         }
 
-        if (direction == 'right' && collidingWithBarrierX && !this.isCollidingWithBarrierLeft) {
+        if (direction === 'right' && collidingWithBarrierX) {
             this.isCollidingWithBarrierRight = true;
-        } else if (direction == 'left' && collidingWithBarrierX && !this.isCollidingWithBarrierRight) {
+            this.isCollidingWithBarrierLeft = false;
+        } else if (direction === 'left' && collidingWithBarrierX) {
             this.isCollidingWithBarrierLeft = true;
-        } else if (direction == 'up' && collidingWithBarrierY && !this.isCollidingWithBarrierDown) {
+            this.isCollidingWithBarrierRight = false;
+        }
+
+        if (direction === 'up' && collidingWithBarrierY) {
             this.isCollidingWithBarrierUp = true;
-        } else if (direction == 'down' && collidingWithBarrierY && !this.isCollidingWithBarrierUp) {
+            this.isCollidingWithBarrierDown = false;
+        } else if (direction === 'down' && collidingWithBarrierY) {
             this.isCollidingWithBarrierDown = true;
+            this.isCollidingWithBarrierUp = false;
         }
     }
 
