@@ -1,6 +1,15 @@
 /****
- * Represents a collectible coin in the game.
- * Extends MovableObject to be rendered and positioned on the canvas.
+ * Project: Sharkie 2D Game
+ * File: js/models/collectables/coin.class.js
+ * Responsibility: Defines the Coin class – collectible item increasing score when picked up.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Coin collectible.
+ * Extends MovableObject for rendering and positioning.
  */
 class Coin extends MovableObject {
     /**
