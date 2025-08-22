@@ -1,42 +1,48 @@
+/****
+ * Project: Sharkie 2D Game
+ * File: js/models/level.class.js
+ * Responsibility: Defines the Level class – container for per-level objects and data.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
 /**
  * Class representing a game level.
- * 
- * This class holds all per-level objects and gameplay-relevant data, such as background elements,
- * enemies, collectibles (coins, life, poison), barriers, and level boundaries.
- * It provides access to all items that can vary between levels, and methods to retrieve key objects.
- *
- * @property {BackgroundObject[]} backgroundObjects - Array of background elements for this level.
- * @property {Barrier[]} barriers - Array of barriers restricting movement in the level.
- * @property {Enemy[]} enemies - Array of all enemies present in this level, including EndBoss.
- * @property {Coin[]} coins - Array of coin collectibles placed in the level.
- * @property {Life[]} life - Array of life pickups in the level.
- * @property {Poison[]} poison - Array of poison pickups available in the level.
- * @property {number} totalPoison - Number of poison collectibles available in the level.
- * @property {number} collectedPoison - Number of poison collectibles collected so far.
- * @property {number} level_end_x - X coordinate marking the end of the level.
+ * Holds per-level objects and gameplay-relevant data, such as backgrounds, enemies,
+ * collectibles (coins, life, poison), barriers, and the end boundary.
  */
 class Level {
+    /** @type {BackgroundObject[]} Background elements for this level. */
     backgroundObjects = [];
+    /** @type {Barrier[]} Barriers restricting movement in the level. */
     barriers = [];
+    /** @type {Enemy[]} All enemies present in this level, including EndBoss. */
     enemies = [];
+    /** @type {Coin[]} Coin collectibles in the level. */
     coins = [];
+    /** @type {Life[]} Life pickups in the level. */
     life = [];
+    /** @type {Poison[]} Poison pickups in the level. */
     poison = [];
+    /** @type {number} Total number of poison collectibles in the level. */
     totalPoison = 0;
+    /** @type {number} Number of poison collectibles collected so far. */
     collectedPoison = 0;
-    level_end_x = 0; // x position marking the end of the level
-    endBoss = null; // cached EndBoss reference
+    /** @type {number} X coordinate marking the end of the level. */
+    level_end_x = 0; 
+    /** @type {EndBoss|null} Cached EndBoss reference for this level. */
+    endBoss = null;
 
     /**
-     * Constructor takes parameters from specific level definition files
-     * Assigns them to this level instance's properties.
-     * @param {BackgroundObject[]} backgroundObjects - Background elements for this level.
-     * @param {Coin[]} coins - Coins placed in the level.
-     * @param {Life[]} life - Life pickups in the level.
-     * @param {Poison[]} poison - Poison pickups available in the level.
-     * @param {Enemy[]} enemies - Enemies present in this level.
-     * @param {Barrier[]} barriers - Barriers restricting movement in the level.
-     * @param {number} level_end_x - X coordinate where level ends.
+     * Constructs a Level instance with the specified assets and parameters.
+     * @param {BackgroundObject[]} backgroundObjects - Background elements.
+     * @param {Coin[]} coins - Coin collectibles.
+     * @param {Life[]} life - Life pickups.
+     * @param {Poison[]} poison - Poison collectibles.
+     * @param {Enemy[]} enemies - Enemies including the EndBoss.
+     * @param {Barrier[]} barriers - Environmental barriers.
+     * @param {number} level_end_x - X coordinate where the level ends.
      */
     constructor(backgroundObjects, coins, life, poison, enemies, barriers, level_end_x) {
         this.backgroundObjects = backgroundObjects;
@@ -50,8 +56,8 @@ class Level {
     }
 
     /**
-     * Searches the enemies array and returns the EndBoss instance if found, otherwise returns undefined.
-     * @returns {EndBoss|undefined} The EndBoss enemy if present in this level, otherwise undefined.
+     * Returns the EndBoss instance for this level, if present.
+     * @returns {EndBoss|undefined} The EndBoss enemy if found, otherwise undefined.
      */
     getEndBoss() {
         return this.enemies.find(e => e instanceof EndBoss);
