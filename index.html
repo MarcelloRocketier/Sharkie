@@ -56,29 +56,11 @@
         <img src="assets/img/6._Buttons/circle-1700_128.gif" alt="Loader" />
     </div>
     <nav id="global-nav" class="nav desktop-only">
-        <button class="nav-btn" onclick="toggleSettingsMenu()" title="Settings"><img src="./assets/img/icons/settings.svg" alt="Settings" class="nav-icon"></button>
         <button class="nav-btn" onclick="toggleSound()" title="Mute/Unmute"><img src="./assets/img/icons/speaker.svg" alt="Mute/Unmute" class="nav-icon" id="sound-img"></button>
         <button id="toggle-fullscreen-btn" class="nav-btn d-none" onclick="toggleFullscreen()" title="Fullscreen On/Off"><img src="./assets/img/icons/fullscreen.svg" alt="Fullscreen On/Off" class="nav-icon"></button>
         <button class="nav-btn" onclick="toggleHelpSite()" title="Help"><img src="./assets/img/icons/help.svg" alt="Help" class="nav-icon"></button>
     </nav>
-    <div class="settings-menu-container d-none" id="settings-menu-container">
-        <button class="nav-btn close-btn" onclick="toggleSettingsMenu()">
-            <img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon" />
-        </button>
-        <div class="settings-menu-body">
-            <div class="settings-menu-heading">
-                <h2 class="settings-menu-title">SETTINGS</h2>
-            </div>
-            <div class="settings-menu-row">
-                <h2 class="settings-menu-row-title">SOUND ON</h2>
-                <input type="checkbox" class="settings-menu-checkbox" id="sound-checkbox" onchange="toggleSound()" />
-            </div>
-            <div class="settings-menu-row">
-                <h2 class="settings-menu-row-title">FULLSCREEN <span class="settings-annotation">(WHEN GAME STARTED)</span></h2>
-                <input type="checkbox" class="settings-menu-checkbox" id="fullscreen-checkbox" onchange="toggleFullscreen()" />
-            </div>
-        </div>
-    </div><div class="help-container d-none" id="help-container">
+    <div class="help-container d-none" id="help-container">
         <button class="nav-btn close-btn" onclick="toggleHelpSite()"><img src="./assets/img/icons/close.svg" alt="Close" class="nav-icon"></button>
         <div class="help-header">
             <h2 class="settings-menu-title">HELP</h2>

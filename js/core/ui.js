@@ -1,5 +1,3 @@
-
-
 /**
  * Project: Sharkie 2D Game
  * File: js/core/ui.js
@@ -10,14 +8,6 @@
  */
 
 'use strict';
-
-/**
- * Toggles the settings overlay visibility.
- * @returns {void}
- */
-function toggleSettingsMenu() {
-    document.getElementById('settings-menu-container').classList.toggle('d-none');
-}
 
 /**
  * Toggles the help overlay visibility.
@@ -73,10 +63,12 @@ function toggleFullscreen() {
 function updateUI() {
     if (soundOn) {
         document.getElementById('sound-img').src = './assets/img/icons/speaker.svg';
-        document.getElementById('sound-checkbox').checked = true;
+        const soundCheckbox = document.getElementById('sound-checkbox');
+        if (soundCheckbox) soundCheckbox.checked = true;
     } else {
         document.getElementById('sound-img').src = './assets/img/icons/mute.svg';
-        document.getElementById('sound-checkbox').checked = false;
+        const soundCheckbox = document.getElementById('sound-checkbox');
+        if (soundCheckbox) soundCheckbox.checked = false;
     }
 
     if (soundOn && document.getElementById('sound-img-mobile')) {
@@ -91,10 +83,11 @@ function updateUI() {
                 return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
             }
 
+            const fsCheckbox = document.getElementById('fullscreen-checkbox');
             if (fs_status()) {
-                document.getElementById('fullscreen-checkbox').checked = true;
+                if (fsCheckbox) fsCheckbox.checked = true;
             } else {
-                document.getElementById('fullscreen-checkbox').checked = false;
+                if (fsCheckbox) fsCheckbox.checked = false;
                 fullscreen = false;
             }
         }, 250);

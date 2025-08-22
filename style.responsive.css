@@ -1,15 +1,21 @@
-
-
-
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 992px){
   .nav { display: none; }
+
+  #mobile-ctrl-left,
+  #mobile-ctrl-right {
+    display: block !important;
+    z-index: 60;
+  }
+
+  #mobile-ctrl-left { bottom: 64px; left: 16px; position: fixed; }
+  #mobile-ctrl-right { bottom: 64px; right: 16px; position: fixed; }
 }
 
-@media (orientation: landscape) and (max-height: 500px) {
+@media (orientation: portrait) and (max-width: 992px) {
   #landscape-message {
-    display: flex;
+    display: flex !important;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.9);
@@ -20,10 +26,6 @@
     color: white;
     text-align: center;
     padding: 16px;
-  }
-  #canvas-wrapper,
-  .start-screen-container {
-    display: none !important;
   }
 }
 

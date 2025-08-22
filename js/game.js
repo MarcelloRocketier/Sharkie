@@ -32,8 +32,8 @@ if (currentLevel >= levels.length - 1) {
 }
 
     if (mobileAndTabletCheck()) {
-        document.getElementById('settings-menu-container').classList.add('scroll-enabled');
-        document.getElementById('help-container').classList.add('scroll-enabled');
+        const helpContainer = document.getElementById('help-container');
+        if (helpContainer) helpContainer.classList.add('scroll-enabled');
     }
 
     checkForLevelWin();
