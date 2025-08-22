@@ -1,14 +1,15 @@
 /**
- * Represents a visual status bar in the game.
- * Can display life, coins, or poison as a percentage.
- *
- * @extends DrawableObject
- *
- * @property {number} percentage - Current fill percentage (0-100) displayed by the bar.
- * @property {string} type - Type of the status bar ('life', 'coins', or 'poison').
- * @property {string} color - Color variant of the bar ('green', 'orange', or 'purple').
- * @property {number} width - Width of the status bar in pixels.
- * @property {number} height - Height of the status bar in pixels.
+ * Project: Sharkie 2D Game
+ * File: js/models/status-bar.class.js
+ * Responsibility: Defines the StatusBar class – visual indicator for life, coins, or poison percentages.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * StatusBar renders a percentage-based bar (life, coins, poison).
+ * Extends DrawableObject to handle rendering and image management.
  */
 class StatusBar extends DrawableObject {
     percentage;
@@ -34,10 +35,10 @@ class StatusBar extends DrawableObject {
     }
 
     /**
-     * Updates the status bar value and changes the displayed image to reflect the new percentage.
-     * @param {number} percentage - Value from 0 to 100.
-     * @param {string} type - Possible types: 'life', 'coins', or 'poison'.
-     * @param {string} color - Bar color variant: 'green', 'orange', or 'purple'.
+     * Sets the percentage and updates the bar image accordingly.
+     * @param {number} percentage - Value between 0 and 100.
+     * @param {string} type - 'life', 'coins', or 'poison'.
+     * @param {string} color - 'green', 'orange', or 'purple'.
      * @returns {void}
      */
     setPercentage(percentage, type, color) {
@@ -47,8 +48,8 @@ class StatusBar extends DrawableObject {
     }
 
     /**
-     * Returns the frame index corresponding to the percentage thresholds defined in this method.
-     * @returns {number} Index of the image to use from the loaded images array.
+     * Resolves which image index corresponds to the current percentage thresholds.
+     * @returns {number} Index of the image to use.
      */
     resolveImageIndex() {
         if (this.percentage >= 100) return 5;
