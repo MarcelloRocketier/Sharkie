@@ -1,10 +1,15 @@
 /**
- * Vertical wall barrier that blocks player and enemy movement.
- * Extends the base Barrier class.
- * @extends Barrier
- * @property {number} width - The width of the barrier in pixels.
- * @property {number} height - The height of the barrier in pixels.
- * @property {{x: number, y: number, width: number, height: number}} offset - The hitbox offset for collision detection.
+ * Project: Sharkie 2D Game
+ * File: js/models/barriers/barrier-wall.class.js
+ * Responsibility: Defines the BarrierWall class – a vertical wall barrier that blocks player and enemy movement.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Vertical wall barrier.
+ * Inherits from Barrier and represents a wall that restricts horizontal movement.
  */
 class BarrierWall extends Barrier {
     width = 200;
