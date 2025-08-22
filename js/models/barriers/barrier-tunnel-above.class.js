@@ -1,10 +1,15 @@
 /**
- * Tunnel-above barrier that blocks player and enemy movement from above.
- * Extends the base Barrier class.
- * @extends Barrier
- * @property {number} width - The width of the barrier in pixels.
- * @property {number} height - The height of the barrier in pixels.
- * @property {{x: number, y: number, width: number, height: number}} offset - The hitbox offset for collision detection.
+ * Project: Sharkie 2D Game
+ * File: js/models/barriers/barrier-tunnel-above.class.js
+ * Responsibility: Defines the BarrierTunnelAbove class – blocks player and enemy movement from above.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Tunnel-above barrier.
+ * Inherits from Barrier and represents a tunnel ceiling that restricts upward movement.
  */
 class BarrierTunnelAbove extends Barrier {
     width = 720;
