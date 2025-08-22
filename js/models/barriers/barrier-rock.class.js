@@ -1,10 +1,16 @@
 /**
- * Rock barrier used to block player and enemy movement.
- * Extends the base Barrier class.
- * @extends Barrier
- * @property {number} width - The width of the rock barrier in pixels.
- * @property {number} height - The height of the rock barrier in pixels.
- * @property {{x: number, y: number, width: number, height: number}} offset - The offset configuration for collision detection.
+ * Project: Sharkie 2D Game
+ * File: js/models/barriers/barrier-rock.class.js
+ * Responsibility: Defines the BarrierRock class – a rock obstacle that blocks player and enemy movement.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Rock barrier.
+ * Inherits from Barrier and uses a specific rock sprite.
+ * Blocks movement for both player and enemies.
  */
 class BarrierRock extends Barrier {
     width = 720;
