@@ -1,14 +1,29 @@
 /**
- * Represents a Puffer Fish enemy in the game.
- * Can move horizontally or vertically and plays swim or dead animations based on its state.
- * Extends MovableObject for rendering and movement.
+ * Project: Sharkie 2D Game
+ * File: js/models/enemies/puffer-fish.class.js
+ * Responsibility: Defines the PufferFish enemy – handles movement, collision offsets, and animation loop.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * PufferFish enemy.
+ * Can move horizontally or vertically and switches between swim/dead animations based on state.
+ * Extends MovableObject for rendering, movement, and collisions.
  */
 class PufferFish extends MovableObject {
+    /** @type {number} Default width of the puffer fish. */
     width = 100;
+    /** @type {number} Default height of the puffer fish. */
     height = 100;
+    /** @type {number} Default energy of the puffer fish. */
     energy = 5;
+    /** @type {number} Default attack power of the puffer fish. */
     attack = 5;
+    /** @type {number} Default movement speed of the puffer fish. */
     speed = 2;
+    /** @type {{x:number,y:number,width:number,height:number}} Collision box offsets. */
     offset = {
         x: 0,
         y: 3,
@@ -17,15 +32,15 @@ class PufferFish extends MovableObject {
     }
 
     /**
-     * Creates a PufferFish enemy.
-     * @param {string} color - The color variant of the puffer fish.
-     * @param {number} x - The horizontal position of the enemy.
-     * @param {number} y - The vertical position of the enemy.
-     * @param {string} direction - Movement direction, either 'horizontal' or 'vertical'.
-     * @param {number} startPoint - The start coordinate for movement.
-     * @param {number} endPoint - The end coordinate for movement.
-     * @param {number} speed - Movement speed of the enemy.
-     * @param {number} imgInitiallyMirrored - 1 to mirror image initially, 0 otherwise.
+     * Creates a PufferFish enemy instance.
+     * @param {string} color - Color variant of the puffer fish.
+     * @param {number} x - Initial horizontal position.
+     * @param {number} y - Initial vertical position.
+     * @param {string} direction - 'horizontal' or 'vertical'.
+     * @param {number} startPoint - Start coordinate for patrol movement.
+     * @param {number} endPoint - End coordinate for patrol movement.
+     * @param {number} speed - Movement speed.
+     * @param {number} imgInitiallyMirrored - 1 to mirror sprite initially, 0 otherwise.
      */
     constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         super().loadImage('./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/1._Swim_1.png');
@@ -43,14 +58,14 @@ class PufferFish extends MovableObject {
     }
 
     /**
-     * Starts the animation loop for the puffer fish.
-     * Switches between swim and dead image sets based on enemy state.
-     * @param {string} color - The color variant of the puffer fish.
-     * @param {string} direction - Movement direction, either 'horizontal' or 'vertical'.
-     * @param {number} startPoint - The start coordinate for movement.
-     * @param {number} endPoint - The end coordinate for movement.
-     * @param {number} speed - Movement speed of the enemy.
-     * @param {number} imgInitiallyMirrored - 1 to mirror image initially, 0 otherwise.
+     * Starts the animation loop for the PufferFish.
+     * Handles switching between swim and dead animations depending on state.
+     * @param {string} color - Color variant.
+     * @param {string} direction - Movement direction.
+     * @param {number} startPoint - Start coordinate for movement.
+     * @param {number} endPoint - End coordinate for movement.
+     * @param {number} speed - Movement speed.
+     * @param {number} imgInitiallyMirrored - 1 to mirror sprite initially, 0 otherwise.
      * @returns {void}
      */
     animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
