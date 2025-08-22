@@ -1,19 +1,29 @@
 /**
- * Base class for all drawable objects in the game.
- * Handles image loading, rendering, and optional debug collision frames.
- * This class should be extended by all game entities that are rendered to the canvas.
+ * Project: Sharkie 2D Game
+ * File: js/models/drawable-object.class.js
+ * Responsibility: Base class for drawable objects – handles image loading, rendering, and optional debug collision frames.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Base class for all objects that can be drawn on the canvas.
+ * Provides:
+ * - Image loading (single and multiple).
+ * - Rendering on canvas.
+ * - Optional debug collision frames for development.
  */
 class DrawableObject {
     /**
      * Position, dimensions, current image, and image cache for the drawable object.
-     * These properties define the object's placement, size, and visual representation.
-     * @type {number} x - The X coordinate of the object.
-     * @type {number} y - The Y coordinate of the object.
-     * @type {number} width - The width of the object. Default is 100.
-     * @type {number} height - The height of the object. Default is 100.
-     * @type {HTMLImageElement} img - The current image to render for the object.
-     * @type {Object.<string, HTMLImageElement>} imageCache - Cache of loaded images for animations.
-     * @type {number} currentImage - Index of the current animation frame.
+     * @property {number} x - X coordinate of the object.
+     * @property {number} y - Y coordinate of the object.
+     * @property {number} width - Width of the object (default 100).
+     * @property {number} height - Height of the object (default 100).
+     * @property {HTMLImageElement} img - Current image to render.
+     * @property {Object.<string, HTMLImageElement>} imageCache - Cache of loaded images for animations.
+     * @property {number} currentImage - Index of the current animation frame.
      */
     x;
     y;
@@ -24,7 +34,7 @@ class DrawableObject {
     currentImage = 0;
 
     /**
-     * Loads a single image and assigns it to the img property.
+     * Loads a single image and assigns it to `img`.
      * @param {string} path - Path to the image file.
      * @returns {void}
      */
@@ -34,7 +44,7 @@ class DrawableObject {
     };
 
     /**
-     * Loads multiple images into the imageCache for animation purposes.
+     * Preloads multiple images into cache for animations.
      * @param {string[]} array - Array of image paths.
      * @returns {void}
      */
@@ -47,7 +57,7 @@ class DrawableObject {
     }
 
     /**
-     * Renders the current image on the canvas context at the object's position and size.
+     * Draws the current image at object’s position and size.
      * @param {CanvasRenderingContext2D} ctx - Canvas drawing context.
      * @returns {void}
      */
@@ -61,9 +71,7 @@ class DrawableObject {
     }
 
     /**
-     * Draws a red dashed collision detection frame around the object for debugging purposes only.
-     * Only applies to specific game object types defined in `drawableTypes`.
-     * Useful for visualizing collision boundaries during development.
+     * Draws a red dashed collision box (for debugging collisions).
      * @param {CanvasRenderingContext2D} ctx - The canvas 2D rendering context.
      * @returns {void}
      */
