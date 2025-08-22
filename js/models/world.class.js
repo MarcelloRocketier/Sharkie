@@ -1,3 +1,5 @@
+// Import collision handlers
+// (Make sure collisions.js is loaded before world.class.js in index.html if no module bundler is used)
 /**
  * Project: Sharkie 2D Game
  * File: js/models/world.class.js
@@ -204,53 +206,23 @@ class World {
 
   /**
    * Collision orchestrator. Periodically runs all collision handlers and collectors.
+   * Delegates to external collision handler functions for modularity.
    * @returns {void}
    */
   checkCollisions() {
     const id = setInterval(() => {
       if (this.stopped || levelEnded || characterIsDead) return;
-      this.handleEnemyDamageOnCharacter();
+      handleCharacterVsEnemies(this);
       this.handleFinSlapOnPuffer();
-      if (this.level) this.handleBubbleVsJelly();
+      handleBubbleVsJelly(this);
       this.handleFinSlapOnEndBoss();
       this.handleBubbleVsEndBoss();
-      this.collectCoins();
-      this.collectLife();
-      this.collectPoison();
+      handlePickups(this);
+      handleEndBossIntro(this);
     }, 200);
     this.intervals.push(id);
   }
 
-  /**
-   * Handles enemy damage applied to the character when colliding (unless fin-slapping).
-   * Updates life HUD and sets `hitBy` hints for feedback.
-   * @returns {void}
-   */
-  handleEnemyDamageOnCharacter() {
-    if (this.stopped || levelEnded || characterIsDead) return;
-    if (!this.character || typeof this.character.isColliding !== 'function') return;
-    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
-
-    enemies.forEach((enemy) => {
-      if (!enemy || typeof enemy.isDead !== 'function') return;
-      if (typeof this.character.isFinSlapping === 'undefined') this.character.isFinSlapping = false;
-
-      if (this.character.isColliding(enemy) && !enemy.isDead() && !this.character.isFinSlapping) {
-        if (typeof this.character.hit === 'function') this.character.hit(enemy.attack);
-        if (this.statusBarLife && typeof this.statusBarLife.setPercentage === 'function') {
-          this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
-        }
-        if (enemy instanceof PufferFish) this.character.hitBy = 'PufferFish';
-        else if (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous) this.character.hitBy = 'JellyFish';
-        else if (enemy instanceof EndBoss) {
-          this.character.hitBy = 'EndBoss';
-          if (this.level && typeof this.level.getEndBoss === 'function') {
-            this.level.getEndBoss().isCollidingWithCharacter = true;
-          }
-        }
-      }
-    });
-  }
 
   /**
    * Applies character fin-slap to PufferFish on collision and triggers their float-away behavior.
@@ -270,34 +242,6 @@ class World {
     });
   }
 
-  /**
-   * Handles projectile (bubble) vs. jellyfish collisions. Null-safe and removes the bubble on hit.
-   * @returns {void}
-   */
-  handleBubbleVsJelly() {
-    const bubble = this.bubble;
-    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
-
-    if (!bubble || bubble.markedForDeletion || typeof bubble.isColliding !== 'function') {
-      return;
-    }
-
-    enemies.forEach((enemy) => {
-      if (!enemy) return;
-      const isJelly = (enemy instanceof JellyFishRegular) || (enemy instanceof JellyFishDangerous);
-      if (!isJelly) return;
-      if (typeof enemy.isColliding !== 'function') return;
-
-      if (bubble.isColliding(enemy)) {
-        if (typeof enemy.hit === 'function') enemy.hit(bubble.attack);
-        enemy.stopMovement = true;
-        enemy.speed = 1;
-        if (typeof enemy.floatAwayUp === 'function') enemy.floatAwayUp();
-        if (typeof bubble.pop === 'function') bubble.pop();
-        this.bubble = undefined;
-      }
-    });
-  }
 
   /**
    * Applies character fin-slap to the EndBoss on collision and updates the boss HUD.
@@ -336,51 +280,6 @@ class World {
     });
   }
 
-  /**
-   * Collects coin items, updates character counters and the coin status bar.
-   * @returns {void}
-   */
-  collectCoins() {
-    this.level.coins.slice().forEach(coin => {
-      if (this.character.isColliding(coin)) {
-        const total = this.level.coins.length + this.character.coins;
-        this.character.coins++;
-        this.statusBarCoins.setPercentage((this.character.coins / total) * 100, this.statusBarCoins.type, this.statusBarCoins.color);
-        this.level.coins.splice(this.level.coins.indexOf(coin), 1);
-      }
-    });
-  }
-
-  /**
-   * Collects life items and updates the life status bar.
-   * @returns {void}
-   */
-  collectLife() {
-    this.level.life.slice().forEach(life => {
-      if (this.character.isColliding(life)) {
-        if (this.character.energy < 90) this.character.energy += 10;
-        else if (this.character.energy < 100) this.character.energy += 5;
-        this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
-        this.level.life.splice(this.level.life.indexOf(life), 1);
-      }
-    });
-  }
-
-  /**
-   * Collects poison items, updates counters and poison status bar.
-   * @returns {void}
-   */
-  collectPoison() {
-    this.level.poison.slice().forEach(poison => {
-      if (this.character.isColliding(poison)) {
-        this.level.totalPoison = this.level.poison.length + this.level.collectedPoison;
-        this.character.poison++;
-        this.statusBarPoison.setPercentage((this.character.poison / this.level.totalPoison) * 100, this.statusBarPoison.type, this.statusBarPoison.color);
-        this.level.poison.splice(this.level.poison.indexOf(poison), 1);
-        this.level.collectedPoison += 1;
-      }
-    });
-  }
 
   /**
    * Idempotent stop of the world: cancels RAF, flips state and proceeds to teardown.
