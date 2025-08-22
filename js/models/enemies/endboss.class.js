@@ -1,7 +1,16 @@
 /**
- * Represents the final boss enemy in the game.
- * Controls animation states, AI movement, attack behavior, and sound effects.
- * Extends MovableObject for rendering, positioning, and collision detection.
+ * Project: Sharkie 2D Game
+ * File: js/models/enemies/endboss.class.js
+ * Responsibility: Final boss entity – animations, AI movement, attack behavior, sounds, and safe timer handling.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Final boss controller. Manages state machine (introduce, float, attack, hurt, dead),
+ * autonomous movement, attack windows, and audio loops. Uses safe timer utilities
+ * to avoid lingering intervals/timeouts across restarts.
  */
 class EndBoss extends MovableObject {
     world;
@@ -33,24 +42,38 @@ class EndBoss extends MovableObject {
     SPLASH_SOUND = new Audio('./assets/audio/splash.mp3');
     BITE_SOUND = new Audio('./assets/audio/bite.mp3');
     bossThemeIntervalId = null;
-    static INTRO_TO_FLOAT_DELAY = 1490; // 10ms before animation end for smooth transition
-
-    // --- timer registry to avoid lingering intervals/timeouts across level restarts ---
+    static INTRO_TO_FLOAT_DELAY = 1490; 
     timers = { intervals: [], timeouts: [] };
     _bossLoopBound = false;
 
+    /**
+     * Registers an interval and tracks its id for later cleanup.
+     * @param {Function} fn - Callback to execute.
+     * @param {number} ms - Interval in milliseconds.
+     * @returns {number} Interval id.
+     */
     setSafeInterval(fn, ms) {
         const id = setInterval(fn, ms);
         this.timers.intervals.push(id);
         return id;
     }
 
+    /**
+     * Registers a timeout and tracks its id for later cleanup.
+     * @param {Function} fn - Callback to execute.
+     * @param {number} ms - Timeout in milliseconds.
+     * @returns {number} Timeout id.
+     */
     setSafeTimeout(fn, ms) {
         const id = setTimeout(fn, ms);
         this.timers.timeouts.push(id);
         return id;
     }
 
+    /**
+     * Clears all registered timers (intervals and timeouts) for this boss instance.
+     * @returns {void}
+     */
     clearAllTimers() {
         this.timers.intervals.forEach(id => clearInterval(id));
         this.timers.timeouts.forEach(id => clearTimeout(id));
@@ -59,14 +82,15 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Creates an EndBoss instance.
-     * @param {number} x - The initial horizontal position.
-     * @param {number} y - The initial vertical position.
-     * @param {number} startX - The base X coordinate for AI movement patterns.
-     * @param {number} startY - The base Y coordinate for AI movement patterns.
+     * Creates an EndBoss instance and preloads animation frames.
+     * @param {number} x - Initial horizontal position.
+     * @param {number} y - Initial vertical position.
+     * @param {number} startX - Base X coordinate for AI movement patterns.
+     * @param {number} startY - Base Y coordinate for AI movement patterns.
+     * @returns {void}
      */
     constructor(x, y, startX, startY) {
-        super().loadImage(''); // Empty because EndBoss has introduce animation. Otherwise an image would be displayed permanently
+        super().loadImage(''); 
         this.loadImages(ENDBOSS_IMAGES.FLOATING);
         this.loadImages(ENDBOSS_IMAGES.INTRODUCE);
         this.loadImages(ENDBOSS_IMAGES.HURT);
@@ -80,8 +104,7 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Starts the EndBoss animation loop.
-     * Delegates update and AI logic to updateAnimationAndAI().
+     * Starts the EndBoss animation loop; delegates updates to `updateAnimationAndAI()`.
      * @returns {void}
      */
     animate() {
@@ -92,8 +115,7 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Updates the EndBoss animation and behavior based on its current state.
-     * Handles introduce sequence, attack, floating, hurt, and dead states.
+     * Updates animation/behavior according to current state (introduce, float, attack, hurt, dead).
      * @returns {void}
      */
     updateAnimationAndAI() {
@@ -109,11 +131,10 @@ class EndBoss extends MovableObject {
         }
         if (this.isDead()) {
             this.playAnimation(ENDBOSS_IMAGES.DEAD, 0);
-            // Only mark boss as killed once it was actually introduced
             if (this.endBossIntroduced) {
                 endBossKilled = true;
             } else {
-                endBossKilled = false; // defensive guard against premature win
+                endBossKilled = false; 
             }
             this.BOSS_THEME_SOUND.pause();
             return;
@@ -126,8 +147,7 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Executes the predefined autonomous movement sequence of the EndBoss.
-     * Movement is broken into discrete steps with waypoints.
+     * Executes the autonomous multi-step movement pattern using waypoints.
      * @returns {void}
      */
     aiMovement() {
@@ -250,18 +270,18 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Sets isCollidingWithCharacter to true until the attack animation finishes once.
+     * Opens a brief collision window and triggers attack animation once.
      * @returns {void}
      */
     attackAnimation() {
         if (this.checkAlreadyRunning) return;
         this.playBiteIfAllowed();
-        this.currentImage = 0; // start with first img of animation
+        this.currentImage = 0; 
         this.beginAttackWindow();
     }
 
     /**
-     * Plays bite sound effect if allowed.
+     * Plays the bite SFX if sound is enabled and both entities are alive.
      * @returns {void}
      */
     playBiteIfAllowed() {
@@ -272,7 +292,7 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Begins the short window where the boss is colliding with the character.
+     * Starts a short interval marking the boss as colliding; auto-clears after a timeout.
      * @returns {void}
      */
     beginAttackWindow() {
@@ -285,8 +305,8 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Ends the attack window and clears flags.
-     * @param {number} intervalId - The interval ID to clear.
+     * Ends the collision window and clears its interval.
+     * @param {number} intervalId - Interval ID created in `beginAttackWindow`.
      * @returns {void}
      */
     endAttackWindow(intervalId) {
@@ -296,7 +316,7 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Plays the EndBoss introduce animation and triggers splash sound and boss theme.
+     * Plays the introduce animation, triggers splash SFX, and transitions to floating state.
      * @returns {void}
      */
     introduceEndBoss() {
@@ -311,11 +331,11 @@ class EndBoss extends MovableObject {
     }
 
     /**
-     * Starts or maintains the boss theme loop without creating duplicate intervals.
+     * Starts/maintains the boss theme playback loop without duplicating intervals.
      * @returns {void}
      */
     startBossThemeLoop() {
-        if (this.bossThemeIntervalId) return; // already running
+        if (this.bossThemeIntervalId) return; 
         this.bossThemeIntervalId = this.setSafeInterval(() => {
             if (!this.world || this.world.stopped) {
                 this.BOSS_THEME_SOUND.pause();
@@ -349,29 +369,26 @@ class EndBoss extends MovableObject {
         return Math.random() * (max - min) + min;
     }
 
+    /**
+     * Resets boss flags, waypoints, sounds and timers to a fresh state for a new run.
+     * @returns {void}
+     */
     resetState() {
-        // stop any running timers and loops
         this.clearAllTimers();
-        // core stats and flags
         this.energy = 100;
         this.endBossTriggered = false;
         this.endBossIntroduced = false;
         this.endBossAlreadyTriggered = false;
         this.isCollidingWithCharacter = false;
-        // reset AI waypoints
         this.waypoint1 = this.waypoint2 = this.waypoint3 = false;
         this.waypoint4 = this.waypoint5 = this.waypoint6 = false;
         this.waypoint7 = false;
-        // reset position
         if (typeof this.startX === 'number') this.x = this.startX;
         if (typeof this.startY === 'number') this.y = this.startY;
-        // stop and rewind sounds
         try { this.BOSS_THEME_SOUND.pause(); this.BOSS_THEME_SOUND.currentTime = 0; } catch(e){}
         try { this.SPLASH_SOUND.pause(); this.SPLASH_SOUND.currentTime = 0; } catch(e){}
         try { this.BITE_SOUND.pause(); this.BITE_SOUND.currentTime = 0; } catch(e){}
-        // ensure global flag is fresh
         try { endBossKilled = false; } catch(e){}
-        // re-arm animation loop for the new run
         this.animate();
     }
 }
