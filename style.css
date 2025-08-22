@@ -3,7 +3,7 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100dvh;
-  background-color: #000; /* plain black outside the game area */
+  background-color: #000;
   font-family: LuckiestGuy;
   margin: 0;
   overflow: hidden;
@@ -21,7 +21,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 100dvh; /* ensure children can stretch to full viewport */
+  min-height: 100dvh;
 }
 
 .nav-btn, .close-btn {
@@ -212,7 +212,7 @@ img {
 
 #canvas-wrapper{
     position: fixed;
-  inset: 0;              /* füllt den ganzen Viewport */
+  inset: 0;
   overflow: hidden;
   display: block;
   line-height: 0;
@@ -224,12 +224,11 @@ img {
   box-shadow: 0 20px 48px rgba(0,0,0,.45), inset 0 -18px 36px rgba(0,0,0,.32);
 }
 
-/* Canvas always fills its wrapper */
 #canvas-wrapper canvas{
   display: block;
-  width: 100vw !important;   /* Viewport füllen */
+  width: 100vw !important;
   height: 100vh !important;
-  object-fit: fill;           /* erlaubt Strecken – keine Balken */
+  object-fit: fill;
   background: #000;
 }
 
@@ -243,7 +242,6 @@ img {
   z-index: 1;
 }
 
-/* Hide global top-right nav on small screens to avoid duplicates with in-canvas UI */
 @media (max-width: 992px){
   .nav{ display: none; }
 }
@@ -284,11 +282,10 @@ img {
   z-index: 2;
 }
 
-/* Attack-Buttons werden vom rechten Container layoutet (Flex-Spalte) */
 #ctrl-btn-fin-slap,
 #ctrl-btn-bubble-trap,
 #ctrl-btn-poison-bubble-trap {
-  position: static; /* wichtig: NICHT absolut, sonst überlappen sie */
+  position: static;
   z-index: 2;
 }
 
@@ -358,7 +355,6 @@ img {
   flex-direction: column;
 }
 
-/* Footer for Impressum link on Start Screen */
 .start-screen-footer {
   position: fixed;
   left: 0;
@@ -389,7 +385,7 @@ img {
   height: 100vh;
   background: rgba(0,0,0,0.85);
   backdrop-filter: blur(2px);
-  z-index: 4000; /* above mobile controls and HUD */
+  z-index: 4000;
   padding: 24px;
 }
 
@@ -628,7 +624,6 @@ img {
   text-decoration: none;
 }
 
-/* --- How-To Dialog (Startscreen) --- */
 .dialog-backdrop {
   position: fixed;
   inset: 0;
@@ -837,24 +832,21 @@ body, html {
   }
 }
 
-/* Mobile Controller Buttons - Cleaned and Responsive */
 #mobile-ctrl-left,
 #mobile-ctrl-right {
   display: none;
-  position: fixed; /* pin to viewport corners for better mobile gameplay */
+  position: fixed;
   z-index: 20;
   pointer-events: auto;
 }
 
-/* Attack-Buttons: text labels via data-label (FIN / BUB / PSN) */
 #ctrl-btn-fin-slap,
 #ctrl-btn-bubble-trap,
 #ctrl-btn-poison-bubble-trap{
-  position: relative; /* needed for ::after centering */
-  font-size: 0;       /* hide any inline text – we render via ::after */
+  position: relative;
+  font-size: 0;
 }
 
-/* Render compact label centered inside the round button */
 #ctrl-btn-fin-slap::after,
 #ctrl-btn-bubble-trap::after,
 #ctrl-btn-poison-bubble-trap::after{
@@ -947,7 +939,6 @@ height: clamp(44px, 9vmin, 72px);
     user-select: none;
   }
 
-  /* Place right-side attack buttons as a tidy column inside the canvas */
   #mobile-ctrl-right{
     right: 16px;
     left: auto;
@@ -958,7 +949,6 @@ height: clamp(44px, 9vmin, 72px);
     right: auto;
   }
 
-  /* Ensure round buttons properly center icons/labels */
   #mobile-ctrl-right .mobile-ctrl-btn,
   #mobile-ctrl-left .mobile-ctrl-btn{
     position: relative;
