@@ -1,3 +1,16 @@
+/**
+ * Project: Sharkie 2D Game
+ * File: js/templates.js
+ * Responsibility: Provides HTML template generators for screens (start, game, end, game over) and UI overlays.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Generates the HTML string for the start screen.
+ * @returns {string} HTML markup for the start screen.
+ */
 function generateStartScreenHTML() {
     return `
         <div id="start-screen" class="start-screen-container">
@@ -13,6 +26,11 @@ function generateStartScreenHTML() {
         </div>
     `;
 }
+
+/**
+ * Generates the HTML string for the main game screen, including canvas and mobile controls.
+ * @returns {string} HTML markup for the game screen.
+ */
 function generateGameHTML() {
     return `
         <div id="canvas-wrapper" class="canvas-wrapper">
@@ -128,7 +146,8 @@ function generateGameHTML() {
 }
 
 /**
- * Öffnet ein Overlay mit Spielanleitung.
+ * Creates and displays an overlay with gameplay instructions.
+ * @returns {void}
  */
 function showHowToPlay() {
     const overlay = document.createElement('div');
@@ -147,7 +166,8 @@ function showHowToPlay() {
 }
 
 /**
- * Öffnet ein Overlay mit Impressum.
+ * Creates and displays an overlay with impressum/legal information.
+ * @returns {void}
  */
 function openImpressum() {
     const overlay = document.createElement('div');
@@ -163,14 +183,16 @@ function openImpressum() {
 }
 
 /**
- * Schließt das aktuell offene Overlay.
+ * Removes the currently open overlay if one exists.
+ * @returns {void}
  */
 function closeOverlay() {
     const overlay = document.querySelector('.overlay');
     if (overlay) overlay.remove();
 }
 /**
- * Overlay: End Screen after defeating Endboss.
+ * Generates HTML for the "level completed" end screen (non-final level).
+ * @returns {string} HTML markup for the end screen.
  */
 function generateEndScreenHTML() {
   return `
@@ -187,7 +209,8 @@ function generateEndScreenHTML() {
 }
 
 /**
- * Overlay: End Screen if the last level (max level) is finished.
+ * Generates HTML for the final end screen shown after completing the last level.
+ * @returns {string} HTML markup for the max end screen.
  */
 function generateMaxEndScreenHTML() {
   return `
@@ -205,7 +228,8 @@ function generateMaxEndScreenHTML() {
 }
 
 /**
- * Overlay: Game Over Screen when Sharkie dies.
+ * Generates HTML for the game over screen when the player dies.
+ * @returns {string} HTML markup for the game over screen.
  */
 function generateGameOverScreenHTML() {
   return `

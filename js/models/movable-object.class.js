@@ -16,20 +16,30 @@
  * - Enemy death float behaviors.
  */
 class MovableObject extends DrawableObject {
+    /** @type {number} Movement speed factor (pixels per frame). */
     speed = 0.15;
+    /** @type {number} Current health/energy value. */
     energy;
+    /** @type {number} Timestamp of last received hit (ms since epoch). */
     lastHit = 0;
+    /** @type {{x:number,y:number,width:number,height:number}} Collision box offsets. */
     offset = {
         x: 0,
         y: 0,
         width: 0,
         height: 0
     }
+    /** @type {boolean} Guard to prevent overlapping attack checks. */
     checkAlreadyRunning = false;
+    /** @type {boolean} True if an animation has started. */
     animationStarted = false;
+    /** @type {boolean} True if an animation has finished. */
     animationFinished = false;
+    /** @type {boolean} Indicates if a movement waypoint has been reached. */
     waypointReached = false;
+    /** @type {boolean} If true, halts movement updates. */
     stopMovement = false;
+    /** @type {number} Current animation frame index. */
     currentImage = 0;
 
     /**

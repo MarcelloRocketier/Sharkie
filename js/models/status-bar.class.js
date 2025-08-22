@@ -12,6 +12,7 @@
  * Extends DrawableObject to handle rendering and image management.
  */
 class StatusBar extends DrawableObject {
+    /** @type {number} Current fill percentage (0–100). */
     percentage;
 
     /**
