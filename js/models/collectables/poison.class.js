@@ -1,6 +1,16 @@
+/****
+ * Project: Sharkie 2D Game
+ * File: js/models/collectables/poison.class.js
+ * Responsibility: Defines the Poison class – collectible poison used for special bubble attacks.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
 /**
- * Represents a collectible poison object in the game.
- * Extends MovableObject to allow rendering and animation.
+ * Poison collectible.
+ * Can appear in different visual styles and is consumed to enable poison bubble attacks.
+ * Extends MovableObject for rendering and animation.
  */
 class Poison extends MovableObject {
 
@@ -21,8 +31,9 @@ class Poison extends MovableObject {
     }
 
     /**
-     * Starts the poison animation by cycling through the provided image set.
-     * @param {string} type - The type of poison image set to animate.
+     * Starts the poison animation loop.
+     * Cycles through the poison image set for the given type.
+     * @param {string} type - The poison type key from POISON_IMAGES.
      * @returns {void}
      */
     animate(type) {
