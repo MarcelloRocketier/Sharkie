@@ -1,8 +1,17 @@
 /**
- * Game world controller
- * Manages all game objects, rendering and collision loops.
+ * Project: Sharkie 2D Game
+ * File: js/models/world.class.js
+ * Responsibility: Orchestrates the game world – manages objects, rendering, collisions, audio, and lifecycle.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
  */
 class World {
+  /**
+   * Game world controller. Owns the render loop, collision loops, audio loop, and HUD.
+   * Provides lifecycle controls (start/stop/teardown) and bridges the level, character and UI.
+   */
+
   canvas;
   ctx;
   camera_x = 0;
@@ -23,8 +32,9 @@ class World {
   statusBarEndBoss= new StatusBar('life',  'orange', 100, 460, 400);
 
   /**
-   * @param {HTMLCanvasElement} canvas
-   * @param {Keyboard} keyboard
+   * Create a new World instance.
+   * @param {HTMLCanvasElement} canvas - Rendering target.
+   * @param {Keyboard} keyboard - Shared keyboard state.
    */
   constructor(canvas, keyboard) {
     this.canvas = canvas;
@@ -39,7 +49,6 @@ class World {
     this.watchGameState();
     this.startAudioLoop();
 
-    // Responsive overlays (no fullscreen toggling here)
     try {
       updateScreenMessages();
       window.addEventListener('resize', updateScreenMessages);
@@ -47,18 +56,24 @@ class World {
     } catch (e) {}
   }
 
-  /** Pass world to sub-objects */
+  /**
+   * Injects the world reference into child objects (character, end boss).
+   * @returns {void}
+   */
   setWorld() {
     this.character.world = this;
     this.level.getEndBoss().world = this;
   }
 
-  /** Render loop */
+  /**
+   * Main render loop. Applies viewport scaling (Variant B), camera translation,
+   * draws world layers and HUD, then schedules the next frame.
+   * @returns {void}
+   */
   draw() {
     if (this.stopped) return;
     this.clearCanvas();
 
-    // Responsive scaling (Variant B)
     const DESIGN_WIDTH = 720;
     const DESIGN_HEIGHT = 480;
     const scaleX = this.canvas.width / DESIGN_WIDTH;
@@ -67,7 +82,6 @@ class World {
     this.ctx.save();
     this.ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
 
-    // World draw with camera
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToWorld(this.level.backgroundObjects);
     this.addObjectsToWorld(this.level.coins);
@@ -79,7 +93,6 @@ class World {
     if (this.bubble) this.addToWorld(this.bubble);
     this.ctx.translate(-this.camera_x, 0);
 
-    // HUD
     this.addToWorld(this.statusBarLife);
     this.addToWorld(this.statusBarCoins);
     this.addToWorld(this.statusBarPoison);
@@ -95,7 +108,11 @@ class World {
     }
   }
 
-  /** Draw one object, handle mirror */
+  /**
+   * Draws a single movable/renderable object, handling optional horizontal mirroring.
+   * @param {*} mo - Object with a `draw(ctx)` method and optional `imgMirrored` flag.
+   * @returns {void}
+   */
   addToWorld(mo) {
     if (!mo || typeof mo.draw !== 'function') return;
     if (mo.imgMirrored) this.flipImage(mo);
@@ -103,7 +120,11 @@ class World {
     if (mo.imgMirrored) this.undoFlipImage(mo);
   }
 
-  /** Draw list of objects */
+  /**
+   * Draws a list of objects (null-safe).
+   * @param {Array<*>} list - Objects to render.
+   * @returns {void}
+   */
   addObjectsToWorld(list) {
     if (!Array.isArray(list)) return;
     list.forEach((o) => {
@@ -112,24 +133,39 @@ class World {
     });
   }
 
-  /** Clear frame */
+  /**
+   * Clears the current frame on the canvas context.
+   * @returns {void}
+   */
   clearCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  /** Mirror helpers */
+  /**
+   * Applies a horizontal flip transform before drawing a mirrored sprite.
+   * @param {*} mo - Object providing `x` and `width`.
+   * @returns {void}
+   */
   flipImage(mo) {
     this.ctx.save();
     this.ctx.translate(mo.width, 0);
     this.ctx.scale(-1, 1);
     mo.x = -mo.x;
   }
+  /**
+   * Restores coordinates and canvas state after a mirrored draw.
+   * @param {*} mo - Object previously flipped.
+   * @returns {void}
+   */
   undoFlipImage(mo) {
     mo.x = -mo.x;
     this.ctx.restore();
   }
 
-  /** Keep music state in sync with game flags */
+  /**
+   * Keeps background music in sync with world/boss state. Starts an interval and stores its id.
+   * @returns {void}
+   */
   startAudioLoop() {
     const id = setInterval(() => {
       if (this.stopped) {
@@ -154,7 +190,10 @@ class World {
     this.intervals.push(id);
   }
 
-  /** Periodically stop world when end/game-over flags are set */
+  /**
+   * Monitors global end/game-over flags and stops the world when necessary.
+   * @returns {void}
+   */
   watchGameState() {
     const id = setInterval(() => {
       if (this.stopped) return;
@@ -163,7 +202,10 @@ class World {
     this.intervals.push(id);
   }
 
-  /** Collisions main loop (thin orchestrator) */
+  /**
+   * Collision orchestrator. Periodically runs all collision handlers and collectors.
+   * @returns {void}
+   */
   checkCollisions() {
     const id = setInterval(() => {
       if (this.stopped || levelEnded || characterIsDead) return;
@@ -179,6 +221,11 @@ class World {
     this.intervals.push(id);
   }
 
+  /**
+   * Handles enemy damage applied to the character when colliding (unless fin-slapping).
+   * Updates life HUD and sets `hitBy` hints for feedback.
+   * @returns {void}
+   */
   handleEnemyDamageOnCharacter() {
     if (this.stopped || levelEnded || characterIsDead) return;
     if (!this.character || typeof this.character.isColliding !== 'function') return;
@@ -205,6 +252,10 @@ class World {
     });
   }
 
+  /**
+   * Applies character fin-slap to PufferFish on collision and triggers their float-away behavior.
+   * @returns {void}
+   */
   handleFinSlapOnPuffer() {
     const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
     if (!this.character || typeof this.character.isColliding !== 'function') return;
@@ -219,12 +270,14 @@ class World {
     });
   }
 
+  /**
+   * Handles projectile (bubble) vs. jellyfish collisions. Null-safe and removes the bubble on hit.
+   * @returns {void}
+   */
   handleBubbleVsJelly() {
-    // Null-safe bubble vs jellyfish collision handling
     const bubble = this.bubble;
     const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
 
-    // if no bubble or bubble cannot collide, stop early
     if (!bubble || bubble.markedForDeletion || typeof bubble.isColliding !== 'function') {
       return;
     }
@@ -246,6 +299,10 @@ class World {
     });
   }
 
+  /**
+   * Applies character fin-slap to the EndBoss on collision and updates the boss HUD.
+   * @returns {void}
+   */
   handleFinSlapOnEndBoss() {
     if (this.stopped || levelEnded || characterIsDead) return;
     this.level.enemies.forEach(enemy => {
@@ -256,6 +313,10 @@ class World {
     });
   }
 
+  /**
+   * Handles projectile (bubble) vs. EndBoss collisions and updates the boss HUD on hit.
+   * @returns {void}
+   */
   handleBubbleVsEndBoss() {
     if (this.stopped || levelEnded || characterIsDead) return;
     const bubble = this.bubble;
@@ -275,6 +336,10 @@ class World {
     });
   }
 
+  /**
+   * Collects coin items, updates character counters and the coin status bar.
+   * @returns {void}
+   */
   collectCoins() {
     this.level.coins.slice().forEach(coin => {
       if (this.character.isColliding(coin)) {
@@ -286,6 +351,10 @@ class World {
     });
   }
 
+  /**
+   * Collects life items and updates the life status bar.
+   * @returns {void}
+   */
   collectLife() {
     this.level.life.slice().forEach(life => {
       if (this.character.isColliding(life)) {
@@ -297,6 +366,10 @@ class World {
     });
   }
 
+  /**
+   * Collects poison items, updates counters and poison status bar.
+   * @returns {void}
+   */
   collectPoison() {
     this.level.poison.slice().forEach(poison => {
       if (this.character.isColliding(poison)) {
@@ -309,12 +382,13 @@ class World {
     });
   }
 
-  /** Idempotent stop */
+  /**
+   * Idempotent stop of the world: cancels RAF, flips state and proceeds to teardown.
+   * @returns {void}
+   */
   stop() {
     if (this.stopped) return;
-    // Debug: log stop event
     console.log('[World] stop() called');
-    // Cancel the animation frame if it exists
     if (this.animationFrameId !== null && typeof cancelAnimationFrame === 'function') {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -323,39 +397,36 @@ class World {
     this.teardown();
   }
 
-  /** Cleanup loops, audio and listeners */
+  /**
+   * Cleans up timers, audio, listeners and transient references so a fresh World can start.
+   * @returns {void}
+   */
   teardown() {
-    // Debug: log teardown event
     console.log('[World] teardown() called');
-    // Clear all intervals
     if (Array.isArray(this.intervals)) {
       this.intervals.forEach(id => clearInterval(id));
       this.intervals = [];
     }
-    // Cancel animation frame if exists
     if (this.animationFrameId !== null && typeof cancelAnimationFrame === 'function') {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-    // Pause and reset audio
     if (this.MAIN_SOUND && typeof this.MAIN_SOUND.pause === 'function') {
       this.MAIN_SOUND.pause();
       this.MAIN_SOUND.currentTime = 0;
     }
-    // Remove listeners
     try {
       window.removeEventListener('resize', updateScreenMessages);
       window.removeEventListener('orientationchange', updateScreenMessages);
     } catch (e) {}
-    // Reset bubble reference to prevent lingering objects
     this.bubble = undefined;
-    // Reset stopped flag to allow reinitialization if needed
     this.stopped = false;
   }
 }
 
 /**
- * Overlay state updater (fullscreen/orientation hints)
+ * Updates responsive overlay visibility (fullscreen/rotate hints) based on device/orientation.
+ * @returns {void}
  */
 function updateScreenMessages() {
   const fullscreenMessage = document.getElementById('fullscreen-message');
