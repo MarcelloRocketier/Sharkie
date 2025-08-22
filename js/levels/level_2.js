@@ -1,14 +1,26 @@
 /**
- * Configuration and initialization of Level 2 in the Sharkie game.
- * Defines background layers, collectible items, enemies, barriers, and the level end position.
+ * Project: Sharkie 2D Game
+ * File: js/levels/level_2.js
+ * Responsibility: Defines and initializes the second level – backgrounds, collectibles, enemies, barriers, and endpoint.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Level 2 configuration instance.
+ * Contains backgrounds, coins, life pickups, poison pickups, enemies, barriers and the level end coordinate.
  * @type {Level}
  */
-// Instantiate a new level object
 const level_2 = new Level(
 
     /**
-     * Background layers for Level 2.
-     * Each BackgroundObject is defined by: scene, section (1|2), index (0–4), and levelSection (0+).
+     * Background objects for Level 2.
+     * Each BackgroundObject(scene, section, index, levelSection):
+     *  - scene: Identifier for background style (e.g., 'dark')
+     *  - section: 1 or 2 (alternating background sections)
+     *  - index: 0–4 (tile index in section)
+     *  - levelSection: 0+ (horizontal section, each ~719px)
      */
     [
         new BackgroundObject('dark', 1, 0, 0),
@@ -43,8 +55,8 @@ const level_2 = new Level(
     ],
 
     /**
-     * Coin collectibles with (x, y) positions.
-     * @type {Coin[]}
+     * Coin collectibles.
+     * Each Coin(x, y) defines its position.
      */
     [
         new Coin(548, 252),
@@ -56,8 +68,8 @@ const level_2 = new Level(
     ],
 
     /**
-     * Life pickups that restore character energy.
-     * @type {Life[]}
+     * Life collectibles to restore character health.
+     * Each Life(x, y) defines its position.
      */
     [
         new Life(976, 52),
@@ -65,8 +77,8 @@ const level_2 = new Level(
     ],
 
     /**
-     * Poison collectibles used for special attacks.
-     * @type {Poison[]}
+     * Poison collectibles for special attacks.
+     * Each Poison(type, x, y) defines sprite type and position.
      */
     [
         new Poison('dark_right', 96, 412),
@@ -75,8 +87,11 @@ const level_2 = new Level(
     ],
 
     /**
-     * Enemy entities for Level 2 with their movement parameters.
-     * @type {(PufferFish|JellyFishRegular|JellyFishDangerous|EndBoss)[]}
+     * Enemy entities in Level 2.
+     * - PufferFish(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored)
+     * - JellyFishRegular(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored)
+     * - JellyFishDangerous(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored)
+     * - EndBoss(x, y, startX, startY)
      */
     [
         new JellyFishDangerous('pink', 400, 100, 'vertical', 100, 240, 0.5, 0),
@@ -89,8 +104,8 @@ const level_2 = new Level(
     ],
 
     /**
-     * Environmental barriers that restrict player/enemy movement.
-     * @type {(BarrierTunnelAbove|BarrierTunnelBelow|BarrierRock|BarrierWall)[]}
+     * Barriers restricting movement.
+     * Each instance defines coordinates and type.
      */
     [
         new BarrierRock(300, 290),
@@ -100,8 +115,7 @@ const level_2 = new Level(
     ],
 
     /**
-     * Level end position in pixels (x coordinate).
-     * @type {number}
+     * Horizontal coordinate at which Level 2 ends.
      */
     3000
 
