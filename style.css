@@ -328,7 +328,7 @@ img {
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh; /* fill full viewport height to avoid black bar */
+  min-height: 100dvh;
   justify-content: center;
   width: 100%;
 }
@@ -361,7 +361,7 @@ img {
   right: 0;
   bottom: 16px;
   text-align: center;
-  z-index: 20; /* above background but below dialogs */
+  z-index: 20;
 }
 .impressum-link {
   font-size: 14px;
