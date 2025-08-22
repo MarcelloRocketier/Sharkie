@@ -3,7 +3,7 @@
  * File: js/models/barriers/barrier-tunnel-above.class.js
  * Responsibility: Defines the BarrierTunnelAbove class – blocks player and enemy movement from above.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

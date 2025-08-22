@@ -3,7 +3,7 @@
  * File: js/models/character.class.js
  * Responsibility: Player character model – movement, animation state, attacks, sounds, timers, and boss trigger.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 /**

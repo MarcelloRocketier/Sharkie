@@ -3,7 +3,7 @@
  * File: js/models/collectables/coin.class.js
  * Responsibility: Defines the Coin class – collectible item increasing score when picked up.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

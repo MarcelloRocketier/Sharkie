@@ -3,7 +3,7 @@
  * File: js/models/keyboard.class.js
  * Responsibility: Defines the Keyboard class – tracks real-time keyboard input states for the game.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

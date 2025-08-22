@@ -3,7 +3,7 @@
  * File: js/models/enemies/puffer-fish.class.js
  * Responsibility: Defines the PufferFish enemy – handles movement, collision offsets, and animation loop.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

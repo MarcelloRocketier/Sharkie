@@ -3,7 +3,7 @@
  * File: js/templates.js
  * Responsibility: Provides HTML template generators for screens (start, game, end, game over) and UI overlays.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

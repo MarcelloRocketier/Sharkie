@@ -3,7 +3,7 @@
  * File: js/models/drawable-object.class.js
  * Responsibility: Base class for drawable objects – handles image loading, rendering, and optional debug collision frames.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

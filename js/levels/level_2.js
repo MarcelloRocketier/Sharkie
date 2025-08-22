@@ -3,7 +3,7 @@
  * File: js/levels/level_2.js
  * Responsibility: Defines and initializes the second level – backgrounds, collectibles, enemies, barriers, and endpoint.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

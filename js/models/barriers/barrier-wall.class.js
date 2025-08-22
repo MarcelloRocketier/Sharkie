@@ -3,7 +3,7 @@
  * File: js/models/barriers/barrier-wall.class.js
  * Responsibility: Defines the BarrierWall class – a vertical wall barrier that blocks player and enemy movement.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

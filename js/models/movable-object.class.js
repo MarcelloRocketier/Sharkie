@@ -3,7 +3,7 @@
  * File: js/models/movable-object.class.js
  * Responsibility: Base class for all movable objects – handles movement, collision detection, animation, and death behaviors.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

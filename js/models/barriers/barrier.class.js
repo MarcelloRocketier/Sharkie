@@ -3,7 +3,7 @@
  * File: js/models/barriers/barrier.class.js
  * Responsibility: Base class for barriers – inherited by specific barrier types (wall, tunnel, rock).
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

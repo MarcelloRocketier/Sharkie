@@ -3,7 +3,7 @@
  * File: js/models/barriers/barrier-tunnel-below.class.js
  * Responsibility: Defines the BarrierTunnelBelow class – blocks player and enemy movement from below.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

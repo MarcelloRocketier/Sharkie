@@ -3,7 +3,7 @@
  * File: js/models/level.class.js
  * Responsibility: Defines the Level class – container for per-level objects and data.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

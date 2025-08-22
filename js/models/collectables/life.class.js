@@ -3,7 +3,7 @@
  * File: js/models/collectables/life.class.js
  * Responsibility: Defines the Life class – collectible item restoring player health when picked up.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

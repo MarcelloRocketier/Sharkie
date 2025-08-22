@@ -3,7 +3,7 @@
  * File: js/levels/level_1.js
  * Responsibility: Defines and initializes the first level – backgrounds, collectibles, enemies, barriers, and endpoint.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 /**

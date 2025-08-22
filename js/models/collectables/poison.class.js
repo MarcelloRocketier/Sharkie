@@ -3,7 +3,7 @@
  * File: js/models/collectables/poison.class.js
  * Responsibility: Defines the Poison class – collectible poison used for special bubble attacks.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

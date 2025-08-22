@@ -3,7 +3,7 @@
  * File: js/models/barriers/barrier-rock.class.js
  * Responsibility: Defines the BarrierRock class – a rock obstacle that blocks player and enemy movement.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

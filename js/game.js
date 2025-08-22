@@ -3,7 +3,7 @@
  * File: js/game.js
  * Responsibility: Global game state, initialization, UI wiring, keyboard/touch controls, and localStorage persistence.
  * Notes: Formal documentation only – no functional changes.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

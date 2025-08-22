@@ -3,7 +3,7 @@
  * File: js/models/enemies/endboss.class.js
  * Responsibility: Final boss entity – animations, AI movement, attack behavior, sounds, and safe timer handling.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

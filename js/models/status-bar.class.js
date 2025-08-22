@@ -3,7 +3,7 @@
  * File: js/models/status-bar.class.js
  * Responsibility: Defines the StatusBar class – visual indicator for life, coins, or poison percentages.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

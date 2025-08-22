@@ -3,7 +3,7 @@
  * File: js/models/world.class.js
  * Responsibility: Orchestrates the game world – manages objects, rendering, collisions, audio, and lifecycle.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 class World {

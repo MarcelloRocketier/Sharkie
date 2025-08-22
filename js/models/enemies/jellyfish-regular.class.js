@@ -3,7 +3,7 @@
  * File: js/models/enemies/jellyfish-regular.class.js
  * Responsibility: Defines the regular jellyfish enemy – movement logic and swim/dead animations.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 

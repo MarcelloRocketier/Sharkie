@@ -3,7 +3,7 @@
  * File: js/models/enemies/jellyfish-dangerous.class.js
  * Responsibility: Defines the dangerous jellyfish enemy – higher attack damage, movement logic, swim/dead animations.
  * Notes: Documentation-only changes. No logic is modified.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 
