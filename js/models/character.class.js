@@ -1,5 +1,14 @@
 /**
- * Game character object
+ * Project: Sharkie 2D Game
+ * File: js/models/character.class.js
+ * Responsibility: Player character model – movement, animation state, attacks, sounds, timers, and boss trigger.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+/**
+ * Player character controller. Manages movement, animation FSM, attack actions, SFX, and safe-timer utilities.
+ * Owns touch-controls flags and updates HUD via the world.
  */
 class Character extends MovableObject {
     world;
@@ -57,9 +66,18 @@ class Character extends MovableObject {
     BUBBLING_SOUND = new Audio('./assets/audio/bubbling.mp3');
     LIFE_SOUND = new Audio('./assets/audio/health.mp3');
 
-    // --- Safe timer management (prevents zombie intervals/timeouts across restarts) ---
+    /**
+     * Safe timer management to prevent zombie intervals/timeouts across restarts.
+     * @type {{type: ('i'|'t'), id: number}[]}
+     */
     timers = [];
 
+    /**
+     * Registers an interval that auto-noops when the world is stopped and tracks its id for cleanup.
+     * @param {Function} fn - Callback to execute.
+     * @param {number} ms - Interval in milliseconds.
+     * @returns {number} Interval id.
+     */
     setSafeInterval(fn, ms) {
         const id = setInterval(() => {
             if (this.world && this.world.stopped) return;
@@ -69,6 +87,12 @@ class Character extends MovableObject {
         return id;
     }
 
+    /**
+     * Registers a timeout that auto-noops when the world is stopped and tracks its id for cleanup.
+     * @param {Function} fn - Callback to execute.
+     * @param {number} ms - Timeout in milliseconds.
+     * @returns {number} Timeout id.
+     */
     setSafeTimeout(fn, ms) {
         const id = setTimeout(() => {
             if (this.world && this.world.stopped) return;
@@ -78,6 +102,10 @@ class Character extends MovableObject {
         return id;
     }
 
+    /**
+     * Clears all registered timers (intervals and timeouts).
+     * @returns {void}
+     */
     clearAllTimers() {
         this.timers.forEach(t => {
             if (t.type === 'i') clearInterval(t.id);
@@ -86,6 +114,9 @@ class Character extends MovableObject {
         this.timers = [];
     }
 
+    /**
+     * Construct a new character and preload all required animation frames and sounds.
+     */
     constructor() {
         super();
         this.loadImage('./assets/img/1._Sharkie/1._Idle/1.png');
@@ -105,7 +136,8 @@ class Character extends MovableObject {
         this.touchEvents();
     }
     /**
-     * Handles animation state updates for the character.
+     * Starts periodic animation-state updates and attack handling.
+     * @returns {void}
      */
     animate() {
         this.setSafeInterval(() => {
@@ -117,7 +149,8 @@ class Character extends MovableObject {
         }, 100);
     }
     /**
-     * Updates the animation state based on character status and input.
+     * Updates the animation state based on health, hits, idling and movement input.
+     * @returns {void}
      */
     updateAnimationState() {
         if (this.isDead() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
@@ -142,9 +175,9 @@ class Character extends MovableObject {
     }
     /**
      * Handles character attack actions based on keyboard and touch controls.
+     * @returns {void}
      */
     handleAttacks() {
-        // Keyboard controls
         if (this.world.keyboard.SPACE && !this.isDead()) {
             this.finSlapAttack();
             this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
@@ -155,7 +188,6 @@ class Character extends MovableObject {
             this.bubbleTrapAttackPoison();
             this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
         }
-        // Touch controls
         if (this.touchCtrlFinSlapStart && !this.isDead()) {
             this.finSlapAttack();
             this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
@@ -168,7 +200,8 @@ class Character extends MovableObject {
         }
     }
     /**
-     * Handles character movement input events from keyboard and touch controls.
+     * Polls input for movement, applies limits/barriers, and updates camera.
+     * @returns {void}
      */
     characterEvents() {
         this.setSafeInterval(() => {
@@ -201,10 +234,11 @@ class Character extends MovableObject {
     }
     /**
      * Handles movement input for a given direction from keyboard and touch.
-     * @param {string} direction - The movement direction ('up', 'down', 'left', 'right')
-     * @param {string} keyboardKey - The keyboard key name (e.g., 'UP', 'RIGHT')
-     * @param {string} touchKey - The touch control boolean name (e.g., 'touchCtrlUpStart')
-     * @param {function} limitCheck - Function to check if movement is allowed
+     * @param {string} direction - 'up' | 'down' | 'left' | 'right'.
+     * @param {string} keyboardKey - Keyboard flag name on `this.world.keyboard` (e.g., 'UP').
+     * @param {string} touchKey - Touch flag name on the character (e.g., 'touchCtrlUpStart').
+     * @param {Function} limitCheck - Returns true if movement is allowed in this frame.
+     * @returns {void}
      */
     handleMovementInput(direction, keyboardKey, touchKey, limitCheck) {
         if (this.world.keyboard[keyboardKey] && limitCheck()) {
@@ -215,6 +249,10 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Binds touch button listeners and maps them to character touch flags.
+     * @returns {void}
+     */
     touchEvents() {
         const ctrlUp = document.getElementById('ctrl-btn-up');
         const ctrlRight = document.getElementById('ctrl-btn-right');
@@ -240,17 +278,19 @@ class Character extends MovableObject {
         ctrlPoisonBubbleTrap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', false));
     }
     /**
-     * Generic handler for touch controls
-     * @param {string} startFlag - property name for touch start boolean
-     * @param {string} endFlag - property name for touch end boolean
-     * @param {boolean} isStart - whether this is a start or end event
+     * Generic toggle for touch control flags.
+     * @param {string} startFlag - Property name for touch start boolean.
+     * @param {string} endFlag - Property name for touch end boolean.
+     * @param {boolean} isStart - True when touch starts, false when it ends.
+     * @returns {void}
      */
     handleTouchControl(startFlag, endFlag, isStart) {
         this[startFlag] = isStart;
         this[endFlag] = !isStart;
     }
     /**
-     * Handles playing character sounds based on various game events.
+     * Drives all character-related sound effects in a lightweight loop.
+     * @returns {void}
      */
     characterSounds() {
         this.setSafeInterval(() => {
@@ -264,7 +304,8 @@ class Character extends MovableObject {
         }, 1000 / 60);
     }
     /**
-     * Plays swim sound when movement keys are pressed.
+     * Plays/maintains the swim sound while movement keys are pressed.
+     * @returns {void}
      */
     handleSwimSound() {
         if (this.world.keyboard.LEFT || this.world.keyboard.RIGHT || this.world.keyboard.UP || this.world.keyboard.DOWN) {
@@ -273,7 +314,8 @@ class Character extends MovableObject {
         }
     }
     /**
-     * Plays death sound when character dies, only once.
+     * Plays the death sound exactly once when the character dies.
+     * @returns {void}
      */
     handleDeathSound() {
         if (this.isDead() && !this.isAlreadyDead) {
@@ -282,7 +324,8 @@ class Character extends MovableObject {
         }
     }
     /**
-     * Plays slap and bubble trap sounds for attacks and enemy bubble collisions.
+     * Triggers slap and bubble SFX for attacks and projectile-enemy collisions.
+     * @returns {void}
      */
     handleSlapBubbleSounds() {
         if (this.isFinSlapping) {
@@ -301,7 +344,8 @@ class Character extends MovableObject {
         });
     }
     /**
-     * Plays hurt or electric zap sound when colliding with enemies.
+     * Plays context-sensitive hurt/zap sounds on enemy collision.
+     * @returns {void}
      */
     handleEnemyCollisionSounds() {
         this.world.level.enemies.forEach(enemy => {
@@ -315,7 +359,8 @@ class Character extends MovableObject {
         });
     }
     /**
-     * Plays item pickup sounds for coins, poison, and life.
+     * Plays pickup sounds for coins, poison, and life items on collision.
+     * @returns {void}
      */
     handleItemPickupSounds() {
         this.world.level.coins.forEach(coin => {
@@ -335,6 +380,11 @@ class Character extends MovableObject {
         });
     }
 
+    /**
+     * Applies one-tick movement in the given direction respecting barrier flags.
+     * @param {string} direction - 'up' | 'down' | 'left' | 'right'.
+     * @returns {void}
+     */
     moveCharacter(direction) {
         this.lastMove = new Date().getTime();
 
@@ -353,6 +403,11 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Updates barrier-collision flags for the attempted movement direction.
+     * @param {string} direction - Intended direction of movement.
+     * @returns {void}
+     */
     checkBarrierCollisions(direction) {
         let collidingWithBarrier = this.world.level.barriers.find(barrier => this.isColliding(barrier));
         let collidingWithBarrierX = this.world.level.barriers.find(barrier => this.isCollidingX(barrier));
@@ -379,22 +434,31 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Checks if the character has been idle long enough to trigger long-idle animation.
+     * @returns {boolean}
+     */
     isLongIdle() {
         let timePassed = new Date().getTime() - this.lastMove;
         timePassed = timePassed / 1000;
         return timePassed > this.secondsUntilLongIdle;
     }
 
+    /**
+     * Initiates a fin slap attack and schedules key release.
+     * @returns {void}
+     */
     finSlapAttack() {
         this.activateKey('SPACE', 600, () => this.isFinSlapping = false);
         this.lastMove = new Date().getTime();
         this.isFinSlapping = true;
     }
     /**
-     * Activates a key for a set duration
-     * @param {string} key - key property to activate (e.g., 'SPACE')
-     * @param {number} duration - duration in ms
-     * @param {function} onEnd - optional callback after end
+     * Activates a key flag for a limited duration, then clears it.
+     * @param {string} key - Keyboard flag to toggle (e.g., 'SPACE').
+     * @param {number} duration - Duration in milliseconds.
+     * @param {Function} [onEnd] - Optional callback when the key is released.
+     * @returns {void}
      */
     activateKey(key, duration, onEnd) {
         if (!this.checkAlreadyRunning) {
@@ -412,12 +476,20 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Initiates a normal bubble trap attack.
+     * @returns {void}
+     */
     bubbleTrapAttack() {
         this.activateKey('D', 600, () => this.isBubbleTrapping = false);
         this.lastMove = new Date().getTime();
         this.isBubbleTrapping = true;
         this.spawnBubble(false);
     }
+    /**
+     * Initiates a poison bubble trap attack (consumes poison if available).
+     * @returns {void}
+     */
     bubbleTrapAttackPoison() {
         this.activateKey('F', 600, () => this.isBubbleTrapping = false);
         this.lastMove = new Date().getTime();
@@ -425,8 +497,9 @@ class Character extends MovableObject {
         this.spawnBubble(true);
     }
     /**
-     * Spawns a bubble or poison bubble after a delay
-     * @param {boolean} isPoison - true for poison bubble, false for normal
+     * Spawns a bubble projectile after a short delay.
+     * @param {boolean} [isPoison=false] - True to spawn poison bubble, false for normal.
+     * @returns {void}
      */
     spawnBubble(isPoison = false) {
         if (!this.checkAlreadyRunning) {
@@ -446,7 +519,8 @@ class Character extends MovableObject {
         }
     }
     /**
-     * Triggers the EndBoss when exceeding the x coordinate minus the triggerDistance
+     * Periodically checks the character position to trigger the EndBoss intro when in range.
+     * @returns {void}
      */
     triggerEndboss() {
         this.setSafeInterval(() => {
