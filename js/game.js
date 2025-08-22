@@ -1,7 +1,10 @@
 /**
- * @file game.js
- * @description
- * Manages global game state, initialization, user interface handling, keyboard and touch controls, and localStorage persistence for the Sharkie game.
+ * Project: Sharkie 2D Game
+ * File: js/game.js
+ * Responsibility: Global game state, initialization, UI wiring, keyboard/touch controls, and localStorage persistence.
+ * Notes: Formal documentation only – no functional changes.
+ * Author: <Your Name>
+ * License: MIT (or project license)
  */
 
 'use strict';
@@ -44,12 +47,13 @@ let screenTimeoutId = null;
 let viewportListenersBound = false;
 let mobileControlsBound = false;
 
-// Load saved game settings from localStorage
 loadFromLocalStorage();
 
 
 /**
- * Initializes the game, preloads assets, loads settings, updates the UI, and sets up device-specific features.
+ * Bootstraps the application: preloads assets, loads settings, registers mobile scroll behavior,
+ * schedules win/death checks and renders the start screen.
+ * @returns {void}
  */
 function init() {
     const content = document.getElementById('content');
@@ -74,6 +78,12 @@ if (currentLevel >= levels.length - 1) {
     renderStartScreen();
 }
 
+/**
+ * Displays a loading screen while the document transitions from `interactive` to `complete`.
+ * Purely visual; has no gameplay side effects.
+ * @returns {void}
+ */
+
 document.onreadystatechange = () => {
     let state = document.readyState;
 
@@ -90,7 +100,9 @@ document.onreadystatechange = () => {
 
 /**
  * Preloads all required images for the game.
+ * @returns {void}
  */
+
 function preload() {
     const groups = [
         SHARKIE_IMAGES.IDLE,
@@ -144,7 +156,9 @@ function preload() {
 /**
  * Preloads an array of image URLs.
  * @param {string[]} array - Array of image URLs to preload.
+ * @returns {void}
  */
+
 function preloadImages(array) {
     for (let i = 0; i < array.length; i++) {
         preloadImage(array[i]);
@@ -154,15 +168,16 @@ function preloadImages(array) {
 /**
  * Preloads a single image by URL.
  * @param {string} url - The image URL to preload.
+ * @returns {void}
  */
+
 function preloadImage(url) {
     const img = new Image();
     img.src = url;
 }
 
-// Map für Tastencodes zu Key-Flags
 const KEY_MAP = { 32:'SPACE', 37:'LEFT', 38:'UP', 39:'RIGHT', 40:'DOWN', 68:'D', 70:'F' };
-// Keyboard-Events
+
 window.addEventListener('keydown', (e) => { const k = KEY_MAP[e.keyCode]; if (k) keyboard[k] = true; });
 window.addEventListener('keyup',   (e) => { const k = KEY_MAP[e.keyCode]; if (k) keyboard[k] = false; });
 
@@ -180,15 +195,15 @@ window.mobileAndTabletCheck = function() {
 };
 
 /**
- * Adjusts the canvas-wrapper size to maintain 16:9 aspect ratio
- * and fit maximally into the current viewport.
+ * Resizes the canvas wrapper and internal canvas resolution to fill the viewport (Variant B: no letterboxing).
+ * @returns {void}
  */
+
 function fitCanvasToViewport() {
     const wrapper = document.getElementById('canvas-wrapper');
     const cv = document.getElementById('canvas');
     if (!wrapper) return;
 
-    // Fill viewport (Variant B)
     wrapper.style.top = '0';
     wrapper.style.left = '0';
     wrapper.style.right = '0';
@@ -202,7 +217,6 @@ function fitCanvasToViewport() {
     wrapper.style.height = `${vh}px`;
 
     if (cv) {
-        // Set internal canvas resolution and CSS size to viewport
         cv.width = vw;
         cv.height = vh;
         cv.style.width = '100vw';
@@ -211,32 +225,33 @@ function fitCanvasToViewport() {
 }
 
 /**
- * Centralizes resetting run-state flags and clearing timers/intervals.
+ * Resets transient run-state flags and clears any pending timers/intervals from a previous run.
+ * @returns {void}
  */
+
 function resetGameFlagsAndTimers() {
-    // fresh run-state flags
     endBossKilled = false;
     characterIsDead = false;
     levelEnded = false;
-    // clear any pending timeouts/intervals from a previous run
     if (screenTimeoutId) { clearTimeout(screenTimeoutId); screenTimeoutId = null; }
     if (winCheckIntervalId) { clearInterval(winCheckIntervalId); winCheckIntervalId = null; }
 }
 
 /**
- * Starts the game by rendering the game UI, initializing the world, and setting up controls.
+ * Renders the game UI, initializes a fresh World instance, binds viewport listeners (once),
+ * and (re)arms the periodic win/death check.
+ * @returns {void}
  */
+
 function startGame() {
     const content = document.getElementById('content');
     content.innerHTML = generateGameHTML();
     fitCanvasToViewport();
     resetGameFlagsAndTimers();
 
-    // Recompute maxLevelReached based on the current level
     if (typeof currentLevel !== 'number' || currentLevel < 0) currentLevel = 0;
     maxLevelReached = (currentLevel >= levels.length - 1);
 
-    // Re-arm the win/death check loop fresh
     checkForLevelWin();
 
     if (!viewportListenersBound) {
@@ -251,16 +266,13 @@ function startGame() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
 
-    // Ensure EndBoss starts fresh on each level start
     if (world && world.level) {
         const boss = world.level.endBoss || (typeof world.level.getEndBoss === 'function' ? world.level.getEndBoss() : null);
         if (boss) {
-            // make sure boss has the correct world ref
             boss.world = world;
             if (typeof boss.resetState === 'function') {
                 boss.resetState();
             } else {
-                // Fallback reset if method not present
                 boss.energy = 100;
                 boss.endBossTriggered = false;
                 boss.endBossIntroduced = false;
@@ -276,7 +288,6 @@ function startGame() {
         }
     }
 
-    // Safety kick for the draw loop
     if (world && typeof world.draw === 'function') {
         try { requestAnimationFrame(() => world.draw()); } catch(e){}
     }
@@ -291,23 +302,31 @@ function startGame() {
 }
 
 /**
- * Renders the start screen UI.
+ * Renders the start screen HTML and syncs the UI state.
+ * @returns {void}
  */
+
 function renderStartScreen() {
     const content = document.getElementById('content');
     content.innerHTML = generateStartScreenHTML();
     updateUI();
 }
 
+/**
+ * Periodically checks for win/lose conditions and transitions to the appropriate screen.
+ * Uses guards to avoid duplicate intervals and ensures each end-state is handled only once.
+ * @returns {void}
+ */
+
 function checkForLevelWin() {
-    if (winCheckIntervalId) return; // prevent duplicate intervals
+    if (winCheckIntervalId) return; 
     winCheckIntervalId = setInterval(() => {
         const isLastLevel = (typeof currentLevel === 'number') && (currentLevel >= levels.length - 1);
         const boss = world && world.level ? (world.level.endBoss || (typeof world.level.getEndBoss === 'function' ? world.level.getEndBoss() : null)) : null;
         const bossIntroduced = !!(boss && boss.endBossIntroduced);
 
         if (!levelEnded && endBossKilled && bossIntroduced && !isLastLevel) {
-            levelEnded = true; // prevent multiple schedules
+            levelEnded = true;
             if (world && typeof world.stop === 'function') world.stop();
             clearInterval(winCheckIntervalId); winCheckIntervalId = null;
 
@@ -331,7 +350,6 @@ function checkForLevelWin() {
                 }
                 if (soundOn) { try { WIN_SOUND.currentTime = 0; WIN_SOUND.play(); } catch(e){} }
 
-                // Reset to level 1 for a fresh start
                 try {
                     currentLevel = 0;
                     maxLevelReached = false;
@@ -356,8 +374,10 @@ function checkForLevelWin() {
 }
 
 /**
- * Saves the current game state to localStorage.
+ * Persists minimal game state (currentLevel, soundOn) to localStorage.
+ * @returns {void}
  */
+
 function saveToLocalStorage() {
     let currentLevelAsString = JSON.stringify(currentLevel);
     localStorage.setItem('currentLevel', currentLevelAsString);
@@ -367,16 +387,18 @@ function saveToLocalStorage() {
 }
 
 /**
- * Loads the game state from localStorage, including current level and sound settings.
+ * Restores minimal game state (currentLevel, soundOn) from localStorage with sanity checks.
+ * Falls back to defaults on malformed values.
+ * @returns {void}
  */
+
 function loadFromLocalStorage() {
     let currentLevelAsString = localStorage.getItem('currentLevel');
     currentLevel = JSON.parse(currentLevelAsString);
 
-    // Prüfe, ob currentLevel gültig ist (0 <= currentLevel < levels.length)
     if (typeof currentLevel !== 'number' || currentLevel < 0 || currentLevel >= levels.length) {
         currentLevel = 0;
-        saveToLocalStorage();  // Setze den Wert im LocalStorage zurück
+        saveToLocalStorage();  
     }
 
     let soundOnAsString = localStorage.getItem('soundOn');
@@ -385,21 +407,25 @@ function loadFromLocalStorage() {
 }
 
 /**
- * Restarts the current level, resetting relevant game state and stopping sounds.
+ * Restarts the current level while preserving global options. Stops active world, resets timers and input.
+ * @returns {void}
  */
+
 function restartLevel() {
     resetGameFlagsAndTimers();
     try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
     try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
     if (world && typeof world.stop === 'function') world.stop();
-    world = null; // ensure old instance is gone before creating a new one
+    world = null; 
     keyboard = new Keyboard();
     startGame();
 }
 
 /**
- * Advances to the next level if available, resets flags, stops sounds, saves state, and starts the game.
+ * Proceeds to the next level (if any). Ensures a clean transition by resetting timers, sounds, and input.
+ * @returns {void}
  */
+
 function nextLevel() {
     if (!maxLevelReached && currentLevel < levels.length - 1) {
         resetGameFlagsAndTimers();
@@ -411,15 +437,17 @@ function nextLevel() {
         try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
         saveToLocalStorage();
         if (world && typeof world.stop === 'function') world.stop();
-        world = null; // drop old world instance
+        world = null; 
         keyboard = new Keyboard();
         startGame();
     }
 }
 
 /**
- * Restarts the game from the first level, resetting all progress and stopping sounds.
+ * Resets campaign progress to level 0 and restarts with a clean world.
+ * @returns {void}
  */
+
 function restartGame() {
     resetGameFlagsAndTimers();
     currentLevel = 0;
@@ -428,28 +456,34 @@ function restartGame() {
     try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
     saveToLocalStorage();
     if (world && typeof world.stop === 'function') world.stop();
-    world = null; // ensure a clean fresh world
+    world = null; 
     keyboard = new Keyboard();
     startGame();
 }
 
 /**
- * Toggles the visibility of the settings menu.
+ * Toggles the settings overlay visibility.
+ * @returns {void}
  */
+
 function toggleSettingsMenu() {
     document.getElementById('settings-menu-container').classList.toggle('d-none');
 }
 
 /**
- * Toggles the visibility of the help site.
+ * Toggles the help overlay visibility.
+ * @returns {void}
  */
+
 function toggleHelpSite() {
     document.getElementById('help-container').classList.toggle('d-none');
 }
 
 /**
- * Toggles sound on or off, updates icons, and saves state.
+ * Toggles sound state, updates relevant icons, and persists the new state.
+ * @returns {void}
  */
+
 function toggleSound() {
     soundOn = !soundOn;
 
@@ -465,8 +499,10 @@ function toggleSound() {
 }
 
 /**
- * Toggles fullscreen mode and updates the UI and saved state.
+ * Requests or exits fullscreen and mirrors the state in UI and localStorage.
+ * @returns {void}
  */
+
 function toggleFullscreen() {
     fullscreen = !fullscreen;
 
@@ -484,8 +520,11 @@ function toggleFullscreen() {
 }
 
 /**
- * Updates the UI elements for sound and fullscreen status.
+ * Mirrors `soundOn` and fullscreen state to icons/checkboxes.
+ * Registers a single fullscreen watcher interval.
+ * @returns {void}
  */
+
 function updateUI() {
     if (soundOn) {
         document.getElementById('sound-img').src = './assets/img/icons/speaker.svg';
@@ -501,7 +540,6 @@ function updateUI() {
         document.getElementById('sound-img-mobile').src = './assets/img/icons/mute.svg';
     }
 
-    // Update fullscreen checkbox every 250ms (register once)
     if (!fullscreenIntervalId) {
         fullscreenIntervalId = setInterval(() => {
             function fs_status() {
@@ -519,8 +557,10 @@ function updateUI() {
 }
 
 /**
- * Sets up touch event handlers for mobile controls to update the keyboard object.
+ * Binds touch handlers for mobile controls once and updates the shared `keyboard` flags.
+ * @returns {void}
  */
+
 function setupMobileControls() {
     if (mobileControlsBound) return;
     document.getElementById('ctrl-btn-up').addEventListener('touchstart', () => keyboard.UP = true);
