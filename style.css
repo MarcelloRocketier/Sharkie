@@ -816,12 +816,6 @@ button, .btn, .nav-btn, .close-btn, .mobile-ctrl-btn {
   display: none;
 }
 
-@media (orientation: portrait) and (max-width: 992px) {
-  #landscape-message {
-    display: flex !important;
-  }
-}
-
 body, html {
   overflow-x: hidden;
 }
@@ -842,14 +836,14 @@ body, html {
 
 #ctrl-btn-fin-slap,
 #ctrl-btn-bubble-trap,
-#ctrl-btn-poison-bubble-trap{
+#ctrl-btn-poison-bubble-trap {
   position: relative;
   font-size: 0;
 }
 
 #ctrl-btn-fin-slap::after,
 #ctrl-btn-bubble-trap::after,
-#ctrl-btn-poison-bubble-trap::after{
+#ctrl-btn-poison-bubble-trap::after {
   content: attr(data-label);
   position: absolute;
   inset: 0;
@@ -867,7 +861,7 @@ body, html {
 
 #ctrl-btn-fin-slap img,
 #ctrl-btn-bubble-trap img,
-#ctrl-btn-poison-bubble-trap img{
+#ctrl-btn-poison-bubble-trap img {
   display: none !important;
 }
 

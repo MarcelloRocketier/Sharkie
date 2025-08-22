@@ -1,8 +1,16 @@
 /**
- * Represents a bubble projectile that moves diagonally across the screen.
- * The Bubble can float either up-left or up-right depending on its direction.
- * Used primarily for attack mechanics in the game.
- * @extends MovableObject
+ * Project: Sharkie 2D Game
+ * File: js/models/bubble.class.js
+ * Responsibility: Defines the Bubble class – a projectile that moves diagonally and is used in attack mechanics.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Marcel Reyes Langenhorst>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Bubble projectile.
+ * Floats diagonally upward in either left or right direction.
+ * Extends MovableObject for rendering and positioning.
  */
 class Bubble extends MovableObject {
     width = 50;
