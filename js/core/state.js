@@ -5,7 +5,7 @@
  * File: js/core/state.js
  * Responsibility: Holds global game state flags, constants, and shared objects.
  * Notes: Extracted from game.js to reduce file size and centralize state.
- * Author: <Your Name>
+ * Author: <Marcel Reyes Langenhorst>
  * License: MIT (or project license)
  */
 
