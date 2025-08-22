@@ -1,25 +1,19 @@
 /**
+ * Project: Sharkie 2D Game
+ * File: js/models/movable-object.class.js
+ * Responsibility: Base class for all movable objects – handles movement, collision detection, animation, and death behaviors.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
  * Base class for all objects that can move in the game world.
- * Includes background elements which are also movable.
- * Manages collision detection, animation control, and basic enemy death behaviors.
- *
- * @class
- * @extends DrawableObject
- *
- * @property {number} speed - The movement speed of the object.
- * @property {number} energy - The current energy or health of the object.
- * @property {number} lastHit - Timestamp (in ms) when the object was last hit.
- * @property {Object} offset - Collision offset for the object.
- * @property {number} offset.x - X offset for collision detection.
- * @property {number} offset.y - Y offset for collision detection.
- * @property {number} offset.width - Width offset for collision detection.
- * @property {number} offset.height - Height offset for collision detection.
- * @property {boolean} checkAlreadyRunning - Flag for ongoing checks.
- * @property {boolean} animationStarted - Whether animation has started.
- * @property {boolean} animationFinished - Whether animation has finished.
- * @property {boolean} waypointReached - Whether a movement waypoint has been reached.
- * @property {boolean} stopMovement - Whether movement is currently stopped.
- * @property {number} currentImage - Current animation frame index.
+ * Extends DrawableObject for rendering and provides:
+ * - Movement control (horizontal/vertical).
+ * - Collision detection.
+ * - Animation handling.
+ * - Enemy death float behaviors.
  */
 class MovableObject extends DrawableObject {
     speed = 0.15;
@@ -39,12 +33,12 @@ class MovableObject extends DrawableObject {
     currentImage = 0;
 
     /**
-     * Move the object either horizontally or vertically between two points.
+     * Moves object horizontally or vertically between start and end coordinates.
      * 
-     * @param {'horizontal'|'vertical'} direction - Direction of movement: 'horizontal' or 'vertical'.
+     * @param {'horizontal'|'vertical'} direction - Direction of movement.
      * @param {number} startPoint - Coordinate where movement starts.
      * @param {number} endPoint - Coordinate where movement ends.
-     * @param {number} speed - Movement speed per frame in pixels.
+     * @param {number} speed - Movement speed per frame.
      * @returns {void}
      */
     move(direction, startPoint, endPoint, speed) {
@@ -72,16 +66,16 @@ class MovableObject extends DrawableObject {
     };
 
     /**
-     * Plays animation frames for the object.
+     * Plays animation frames from given image list either once or in a loop.
      * 
-     * @param {Array<string>} images - Array of image paths for animation frames.
-     * @param {number} loop - 0 to play once and stop, 1 to loop continuously.
+     * @param {Array<string>} images - Array of image paths.
+     * @param {number} loop - 0 to play once, 1 to loop continuously.
      * @returns {void}
      */
     playAnimation(images, loop) {
         if (loop === 0 && !this.animationFinished) {
             if (!this.animationStarted) {
-                this.currentImage = 0; // Reset animation to the first frame
+                this.currentImage = 0;
             }
             this.animationStarted = true;
             this.updateFrame(images);
@@ -97,9 +91,9 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Updates the current animation frame by advancing the frame index and updating the displayed image.
+     * Advances current animation frame and updates displayed image.
      * 
-     * @param {Array<string>} images - Array of image paths for animation frames.
+     * @param {Array<string>} images - Array of image paths.
      * @returns {void}
      */
     updateFrame(images) {
@@ -109,9 +103,9 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks for collision with another object, considering offsets.
+     * Detects collision with another movable object, using offsets.
      * 
-     * @param {MovableObject} movableObject - The other object to check collision against.
+     * @param {MovableObject} movableObject - Object to check collision against.
      * @returns {boolean} True if collision detected, false otherwise.
      */
     isColliding(movableObject) {
@@ -122,11 +116,10 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks collision on the x-axis between this object and another.
-     * This method detects collisions restricted to the horizontal axis for more granular collision handling.
+     * Detects collision along the x-axis only.
      * 
-     * @param {MovableObject} movableObject - The other object to check collision against.
-     * @returns {boolean} True if collision detected on the x-axis, false otherwise.
+     * @param {MovableObject} movableObject - Object to check collision against.
+     * @returns {boolean} True if collision detected on x-axis, false otherwise.
      */
     isCollidingX(movableObject) {
         if (this.y + this.height - this.offset.height - 3 > movableObject.y + movableObject.offset.y &&
@@ -137,11 +130,10 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks collision on the y-axis between this object and another.
-     * This method detects collisions restricted to the vertical axis for more granular collision handling.
+     * Detects collision along the y-axis only.
      * 
-     * @param {MovableObject} movableObject - The other object to check collision against.
-     * @returns {boolean} True if collision detected on the y-axis, false otherwise.
+     * @param {MovableObject} movableObject - Object to check collision against.
+     * @returns {boolean} True if collision detected on y-axis, false otherwise.
      */
     isCollidingY(movableObject) {
         if (this.x + this.width - this.offset.width - 3 > movableObject.x + movableObject.offset.x &&
@@ -152,9 +144,9 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Decreases energy when hit by an attack.
+     * Reduces energy by attack value; updates lastHit timestamp if still alive.
      * 
-     * @param {number} attack - Amount of damage to subtract from energy.
+     * @param {number} attack - Damage amount.
      * @returns {void}
      */
     hit(attack) {
@@ -168,10 +160,9 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Moves a dead enemy diagonally away as a post-death floating animation (used for PufferFish).
-     * If otherDirection is true, moves right and up; otherwise moves left and up.
+     * Post-death floating animation: drifts diagonally up (direction depends on flag).
      * 
-     * @param {boolean} otherDirection - Direction flag for floating movement.
+     * @param {boolean} otherDirection - Flag for direction.
      * @returns {void}
      */
     floatAway(otherDirection) {
@@ -187,7 +178,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Moves a dead enemy straight up as a post-death floating animation (used for Jellyfish).
+     * Post-death floating animation: drifts straight up.
      * 
      * @returns {void}
      */
@@ -198,9 +189,9 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Returns true if the character was hit less than 1 second ago.
+     * Checks if object was hit within the last second.
      * 
-     * @returns {boolean} True if hurt within the last second, false otherwise.
+     * @returns {boolean} True if hurt within last second, false otherwise.
      */
     isHurt() {
         let timePassed = (Date.now() - this.lastHit) / 1000;
@@ -208,9 +199,9 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Returns true if energy has reached zero.
+     * Checks if energy is zero.
      * 
-     * @returns {boolean} True if energy is zero, false otherwise.
+     * @returns {boolean} True if dead, false otherwise.
      */
     isDead() {
         return this.energy === 0;
