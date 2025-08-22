@@ -1,13 +1,27 @@
 /**
- * Represents a regular jellyfish enemy in the game.
- * Can move horizontally or vertically and switches between swim and dead animations.
+ * Project: Sharkie 2D Game
+ * File: js/models/enemies/jellyfish-regular.class.js
+ * Responsibility: Defines the regular jellyfish enemy – movement logic and swim/dead animations.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Regular Jellyfish enemy.
+ * Moves horizontally or vertically and switches animations based on life state.
  * Extends MovableObject for rendering and movement.
  */
 class JellyFishRegular extends MovableObject {
+    /** @type {number} Width of the jellyfish. */
     width = 100;
+    /** @type {number} Height of the jellyfish. */
     height = 100;
+    /** @type {number} Health points of the jellyfish. */
     energy = 5;
+    /** @type {number} Attack strength of the jellyfish. */
     attack = 10;
+    /** @type {{x:number,y:number,width:number,height:number}} Collision box offsets. */
     offset = {
         x: 0,
         y: 5,
@@ -16,15 +30,15 @@ class JellyFishRegular extends MovableObject {
     }
 
     /**
-     * Creates a regular jellyfish enemy.
-     * @param {string} color - Color variant of the jellyfish (e.g., 'lila', 'yellow', 'green', 'pink').
-     * @param {number} x - Horizontal starting position.
-     * @param {number} y - Vertical starting position.
+     * Creates a regular jellyfish enemy instance.
+     * @param {string} color - Color variant ('lila', 'yellow', etc.).
+     * @param {number} x - Initial x coordinate.
+     * @param {number} y - Initial y coordinate.
      * @param {string} direction - Movement direction ('horizontal' or 'vertical').
-     * @param {number} startPoint - Starting coordinate for movement.
-     * @param {number} endPoint - Ending coordinate for movement.
+     * @param {number} startPoint - Start coordinate for patrol movement.
+     * @param {number} endPoint - End coordinate for patrol movement.
      * @param {number} speed - Movement speed.
-     * @param {number} imgInitiallyMirrored - 1 if initially mirrored, 0 otherwise (relevant for horizontal movement).
+     * @param {number} imgInitiallyMirrored - 1 if sprite should be mirrored initially, otherwise 0.
      */
     constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         super().loadImage('./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Lila_1.png');
@@ -43,12 +57,12 @@ class JellyFishRegular extends MovableObject {
     }
 
     /**
-     * Starts the jellyfish animation loop.
-     * Switches between swim and dead frames based on the enemy's state.
-     * @param {string} color - Color variant of the jellyfish (e.g., 'lila', 'yellow', 'green', 'pink').
-     * @param {string} direction - Movement direction ('horizontal' or 'vertical').
-     * @param {number} startPoint - Starting coordinate for movement.
-     * @param {number} endPoint - Ending coordinate for movement.
+     * Starts the animation loop.
+     * Plays swim or dead animation depending on state.
+     * @param {string} color - Color variant.
+     * @param {string} direction - Movement direction.
+     * @param {number} startPoint - Start coordinate.
+     * @param {number} endPoint - End coordinate.
      * @param {number} speed - Movement speed.
      * @param {number} imgInitiallyMirrored - 1 if initially mirrored, 0 otherwise.
      * @returns {void}
