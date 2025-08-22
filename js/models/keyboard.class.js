@@ -1,7 +1,16 @@
 /**
- * Represents the current state of keyboard inputs for the game.
- * Each property is a boolean indicating whether the corresponding key is pressed.
- * @class
+ * Project: Sharkie 2D Game
+ * File: js/models/keyboard.class.js
+ * Responsibility: Defines the Keyboard class – tracks real-time keyboard input states for the game.
+ * Notes: Documentation-only changes. No logic is modified.
+ * Author: <Your Name>
+ * License: MIT (or project license)
+ */
+
+/**
+ * Keyboard state container.
+ * Each property corresponds to a key binding used in the game.
+ * Flags are set/unset by event listeners in game.js and used by the World/Character classes.
  */
 class Keyboard {
     /** @type {boolean} True if the left arrow key is pressed. */
