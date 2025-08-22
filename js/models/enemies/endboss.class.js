@@ -35,6 +35,29 @@ class EndBoss extends MovableObject {
     bossThemeIntervalId = null;
     static INTRO_TO_FLOAT_DELAY = 1490; // 10ms before animation end for smooth transition
 
+    // --- timer registry to avoid lingering intervals/timeouts across level restarts ---
+    timers = { intervals: [], timeouts: [] };
+    _bossLoopBound = false;
+
+    setSafeInterval(fn, ms) {
+        const id = setInterval(fn, ms);
+        this.timers.intervals.push(id);
+        return id;
+    }
+
+    setSafeTimeout(fn, ms) {
+        const id = setTimeout(fn, ms);
+        this.timers.timeouts.push(id);
+        return id;
+    }
+
+    clearAllTimers() {
+        this.timers.intervals.forEach(id => clearInterval(id));
+        this.timers.timeouts.forEach(id => clearTimeout(id));
+        this.timers = { intervals: [], timeouts: [] };
+        this.bossThemeIntervalId = null;
+    }
+
     /**
      * Creates an EndBoss instance.
      * @param {number} x - The initial horizontal position.
@@ -62,7 +85,10 @@ class EndBoss extends MovableObject {
      * @returns {void}
      */
     animate() {
-        setInterval(() => this.updateAnimationAndAI(), 150);
+        this.setSafeInterval(() => {
+            if (this.world && this.world.stopped) return;
+            this.updateAnimationAndAI();
+        }, 150);
     }
 
     /**
@@ -83,7 +109,12 @@ class EndBoss extends MovableObject {
         }
         if (this.isDead()) {
             this.playAnimation(ENDBOSS_IMAGES.DEAD, 0);
-            endBossKilled = true;
+            // Only mark boss as killed once it was actually introduced
+            if (this.endBossIntroduced) {
+                endBossKilled = true;
+            } else {
+                endBossKilled = false; // defensive guard against premature win
+            }
             this.BOSS_THEME_SOUND.pause();
             return;
         }
@@ -249,8 +280,8 @@ class EndBoss extends MovableObject {
             this.isCollidingWithCharacter = true;
             this.checkAlreadyRunning = true;
         };
-        const intervalId = setInterval(tick, 100);
-        setTimeout(() => this.endAttackWindow(intervalId), 600);
+        const intervalId = this.setSafeInterval(tick, 100);
+        this.setSafeTimeout(() => this.endAttackWindow(intervalId), 600);
     }
 
     /**
@@ -273,7 +304,7 @@ class EndBoss extends MovableObject {
         this.endBossAlreadyTriggered = true;
         if (soundOn) this.SPLASH_SOUND.play();
         this.startBossThemeLoop();
-        setTimeout(() => {
+        this.setSafeTimeout(() => {
             this.endBossTriggered = false;
             this.endBossIntroduced = true;
         }, EndBoss.INTRO_TO_FLOAT_DELAY);
@@ -285,19 +316,27 @@ class EndBoss extends MovableObject {
      */
     startBossThemeLoop() {
         if (this.bossThemeIntervalId) return; // already running
-        this.bossThemeIntervalId = setInterval(() => {
-            if (soundOn && !this.world.character.isDead() && !this.isDead()) {
-                this.BOSS_THEME_SOUND.play();
-                this.world.MAIN_SOUND.pause();
-                this.BOSS_THEME_SOUND.addEventListener('ended', function() {
-                    this.currentTime = 0;
-                    this.play();
-                }, false);
+        this.bossThemeIntervalId = this.setSafeInterval(() => {
+            if (!this.world || this.world.stopped) {
+                this.BOSS_THEME_SOUND.pause();
+                this.BOSS_THEME_SOUND.currentTime = 0;
+                return;
+            }
+            if (soundOn && this.world && this.world.character && !this.world.character.isDead() && !this.isDead()) {
+                try { this.BOSS_THEME_SOUND.play(); } catch(e){}
+                if (this.world.MAIN_SOUND) this.world.MAIN_SOUND.pause();
             } else {
                 this.BOSS_THEME_SOUND.pause();
                 this.BOSS_THEME_SOUND.currentTime = 0;
             }
         }, 1000 / 60);
+        if (!this._bossLoopBound) {
+            this._bossLoopBound = true;
+            this.BOSS_THEME_SOUND.addEventListener('ended', function() {
+                this.currentTime = 0;
+                try { this.play(); } catch(e){}
+            }, false);
+        }
     }
 
     /**
@@ -308,5 +347,31 @@ class EndBoss extends MovableObject {
      */
     getRandomSpeedFactor(min, max) {
         return Math.random() * (max - min) + min;
+    }
+
+    resetState() {
+        // stop any running timers and loops
+        this.clearAllTimers();
+        // core stats and flags
+        this.energy = 100;
+        this.endBossTriggered = false;
+        this.endBossIntroduced = false;
+        this.endBossAlreadyTriggered = false;
+        this.isCollidingWithCharacter = false;
+        // reset AI waypoints
+        this.waypoint1 = this.waypoint2 = this.waypoint3 = false;
+        this.waypoint4 = this.waypoint5 = this.waypoint6 = false;
+        this.waypoint7 = false;
+        // reset position
+        if (typeof this.startX === 'number') this.x = this.startX;
+        if (typeof this.startY === 'number') this.y = this.startY;
+        // stop and rewind sounds
+        try { this.BOSS_THEME_SOUND.pause(); this.BOSS_THEME_SOUND.currentTime = 0; } catch(e){}
+        try { this.SPLASH_SOUND.pause(); this.SPLASH_SOUND.currentTime = 0; } catch(e){}
+        try { this.BITE_SOUND.pause(); this.BITE_SOUND.currentTime = 0; } catch(e){}
+        // ensure global flag is fresh
+        try { endBossKilled = false; } catch(e){}
+        // re-arm animation loop for the new run
+        this.animate();
     }
 }

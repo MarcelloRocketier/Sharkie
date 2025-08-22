@@ -173,47 +173,50 @@ function closeOverlay() {
  * Overlay: End Screen after defeating Endboss.
  */
 function generateEndScreenHTML() {
-    return `
-        <div id="end-screen" class="overlay">
-            <div class="overlay-content">
-                <h2>Level Completed!</h2>
-                <p>Congratulations! You defeated the Endboss.</p>
-                <button onclick="restartLevel()">Restart Level</button>
-                <button onclick="nextLevel()">Next Level</button>
-                <button onclick="closeOverlay()">Close</button>
-            </div>
-        </div>
-    `;
+  return `
+    <div class="end-screen-container">
+      <div class="end-screen-header">
+        <img class="end-screen-img" src="assets/img/6._Buttons/Titles/You_Win/2.png" alt="Level Completed" />
+      </div>
+      <div class="end-screen-body">
+        <button class="btn" onclick="restartLevel()">Restart Level</button>
+        <button class="btn" onclick="nextLevel()">Next Level</button>
+      </div>
+    </div>
+  `;
 }
 
 /**
  * Overlay: End Screen if the last level (max level) is finished.
  */
 function generateMaxEndScreenHTML() {
-    return `
-        <div id="max-end-screen" class="overlay">
-            <div class="overlay-content">
-                <h2>Game Completed!</h2>
-                <p>You have beaten all levels of Sharkie. Well done!</p>
-                <button onclick="restartGame()">Play Again</button>
-                <button onclick="closeOverlay()">Close</button>
-            </div>
-        </div>
-    `;
+  return `
+    <div class="end-screen-container">
+      <div class="end-screen-header">
+        <img class="end-screen-img" src="assets/img/6._Buttons/Titles/You_Win/2.png" alt="Game Completed" />
+      </div>
+      <div class="end-screen-body">
+        <h2 class="max-level-heading">You beat all levels!</h2>
+        <button class="btn" onclick="restartGame()">Play Again</button>
+        <button class="btn" onclick="(function(){ try { currentLevel = 0; maxLevelReached = false; saveToLocalStorage(); } catch(e){} renderStartScreen(); })()">Back to Menu</button>
+      </div>
+    </div>
+  `;
 }
 
 /**
  * Overlay: Game Over Screen when Sharkie dies.
  */
 function generateGameOverScreenHTML() {
-    return `
-        <div id="game-over-screen" class="overlay">
-            <div class="overlay-content">
-                <h2>Game Over</h2>
-                <p>Sharkie has been defeated. Try again!</p>
-                <button onclick="restartLevel()">Restart Level</button>
-                <button onclick="closeOverlay()">Close</button>
-            </div>
-        </div>
-    `;
+  return `
+    <div class="end-screen-container">
+      <div class="end-screen-header">
+        <img class="end-screen-img" src="assets/img/6._Buttons/Titles/Game_Over/5.png" alt="Game Over" />
+      </div>
+      <div class="end-screen-body">
+        <button class="btn" onclick="restartLevel()">Retry Level</button>
+        <button class="btn" onclick="restartGame()">Restart Game</button>
+      </div>
+    </div>
+  `;
 }

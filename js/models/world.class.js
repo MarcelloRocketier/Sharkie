@@ -31,6 +31,8 @@ class World {
     this.keyboard = keyboard;
     this.ctx = canvas.getContext('2d');
 
+    this.stopped = false;
+
     this.setWorld();
     this.draw();
     this.checkCollisions();
@@ -81,17 +83,21 @@ class World {
     this.addToWorld(this.statusBarLife);
     this.addToWorld(this.statusBarCoins);
     this.addToWorld(this.statusBarPoison);
-    if (this.level.getEndBoss().endBossIntroduced) {
+    const ebForHud = (this.level && typeof this.level.getEndBoss === 'function') ? this.level.getEndBoss() : null;
+    if (ebForHud && ebForHud.endBossIntroduced) {
       this.addToWorld(this.statusBarEndBoss);
     }
 
     this.ctx.restore();
 
-    this.animationFrameId = requestAnimationFrame(() => this.draw());
+    if (!this.stopped) {
+      this.animationFrameId = requestAnimationFrame(() => this.draw());
+    }
   }
 
   /** Draw one object, handle mirror */
   addToWorld(mo) {
+    if (!mo || typeof mo.draw !== 'function') return;
     if (mo.imgMirrored) this.flipImage(mo);
     mo.draw(this.ctx);
     if (mo.imgMirrored) this.undoFlipImage(mo);
@@ -99,7 +105,11 @@ class World {
 
   /** Draw list of objects */
   addObjectsToWorld(list) {
-    list.forEach(o => this.addToWorld(o));
+    if (!Array.isArray(list)) return;
+    list.forEach((o) => {
+      if (!o) return;
+      this.addToWorld(o);
+    });
   }
 
   /** Clear frame */
@@ -127,8 +137,8 @@ class World {
         this.MAIN_SOUND.currentTime = 0;
         return;
       }
-      const eb = this.level.getEndBoss();
-      const canPlay = soundOn && !eb.endBossAlreadyTriggered && !levelEnded && !characterIsDead;
+      const eb = (this.level && typeof this.level.getEndBoss === 'function') ? this.level.getEndBoss() : null;
+      const canPlay = soundOn && (!eb || !eb.endBossAlreadyTriggered) && !levelEnded && !characterIsDead;
       if (canPlay) {
         if (this.MAIN_SOUND.paused) {
           this.MAIN_SOUND.play().catch(() => {});
@@ -171,26 +181,40 @@ class World {
 
   handleEnemyDamageOnCharacter() {
     if (this.stopped || levelEnded || characterIsDead) return;
-    this.level.enemies.forEach(enemy => {
+    if (!this.character || typeof this.character.isColliding !== 'function') return;
+    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
+
+    enemies.forEach((enemy) => {
+      if (!enemy || typeof enemy.isDead !== 'function') return;
+      if (typeof this.character.isFinSlapping === 'undefined') this.character.isFinSlapping = false;
+
       if (this.character.isColliding(enemy) && !enemy.isDead() && !this.character.isFinSlapping) {
-        this.character.hit(enemy.attack);
-        this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
+        if (typeof this.character.hit === 'function') this.character.hit(enemy.attack);
+        if (this.statusBarLife && typeof this.statusBarLife.setPercentage === 'function') {
+          this.statusBarLife.setPercentage(this.character.energy, this.statusBarLife.type, this.statusBarLife.color);
+        }
         if (enemy instanceof PufferFish) this.character.hitBy = 'PufferFish';
         else if (enemy instanceof JellyFishRegular || enemy instanceof JellyFishDangerous) this.character.hitBy = 'JellyFish';
         else if (enemy instanceof EndBoss) {
           this.character.hitBy = 'EndBoss';
-          this.level.getEndBoss().isCollidingWithCharacter = true;
+          if (this.level && typeof this.level.getEndBoss === 'function') {
+            this.level.getEndBoss().isCollidingWithCharacter = true;
+          }
         }
       }
     });
   }
 
   handleFinSlapOnPuffer() {
-    this.level.enemies.forEach(enemy => {
+    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
+    if (!this.character || typeof this.character.isColliding !== 'function') return;
+
+    enemies.forEach((enemy) => {
+      if (!enemy) return;
       if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof PufferFish) {
-        enemy.hit(this.character.attack);
+        if (typeof enemy.hit === 'function') enemy.hit(this.character.attack);
         enemy.stopMovement = true;
-        enemy.floatAway(this.character.imgMirrored);
+        if (typeof enemy.floatAway === 'function') enemy.floatAway(this.character.imgMirrored);
       }
     });
   }
@@ -234,11 +258,18 @@ class World {
 
   handleBubbleVsEndBoss() {
     if (this.stopped || levelEnded || characterIsDead) return;
-    if (!this.bubble) return;
-    this.level.enemies.forEach(enemy => {
-      if (enemy instanceof EndBoss && this.bubble.isColliding(enemy)) {
-        enemy.hit(this.bubble.attack);
-        this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
+    const bubble = this.bubble;
+    if (!bubble || typeof bubble.isColliding !== 'function') return;
+
+    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
+    enemies.forEach((enemy) => {
+      if (!(enemy instanceof EndBoss)) return;
+      if (!bubble || typeof bubble.isColliding !== 'function') return;
+      if (bubble.isColliding(enemy)) {
+        if (typeof enemy.hit === 'function') enemy.hit(bubble.attack);
+        if (this.statusBarEndBoss && typeof this.statusBarEndBoss.setPercentage === 'function' && this.level && typeof this.level.getEndBoss === 'function') {
+          this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
+        }
         this.bubble = undefined;
       }
     });
@@ -281,24 +312,45 @@ class World {
   /** Idempotent stop */
   stop() {
     if (this.stopped) return;
+    // Debug: log stop event
+    console.log('[World] stop() called');
+    // Cancel the animation frame if it exists
+    if (this.animationFrameId !== null && typeof cancelAnimationFrame === 'function') {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
     this.stopped = true;
     this.teardown();
   }
 
   /** Cleanup loops, audio and listeners */
   teardown() {
-    this.intervals.forEach(id => clearInterval(id));
-    this.intervals = [];
-    if (this.animationFrameId) {
+    // Debug: log teardown event
+    console.log('[World] teardown() called');
+    // Clear all intervals
+    if (Array.isArray(this.intervals)) {
+      this.intervals.forEach(id => clearInterval(id));
+      this.intervals = [];
+    }
+    // Cancel animation frame if exists
+    if (this.animationFrameId !== null && typeof cancelAnimationFrame === 'function') {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-    this.MAIN_SOUND.pause();
-    this.MAIN_SOUND.currentTime = 0;
+    // Pause and reset audio
+    if (this.MAIN_SOUND && typeof this.MAIN_SOUND.pause === 'function') {
+      this.MAIN_SOUND.pause();
+      this.MAIN_SOUND.currentTime = 0;
+    }
+    // Remove listeners
     try {
       window.removeEventListener('resize', updateScreenMessages);
       window.removeEventListener('orientationchange', updateScreenMessages);
     } catch (e) {}
+    // Reset bubble reference to prevent lingering objects
+    this.bubble = undefined;
+    // Reset stopped flag to allow reinitialization if needed
+    this.stopped = false;
   }
 }
 

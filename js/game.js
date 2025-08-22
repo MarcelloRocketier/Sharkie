@@ -39,6 +39,8 @@ let GAME_OVER_SOUND = new Audio('./assets/audio/game_over.mp3');
 let loading = true;
 /** @type {number|null} */
 let fullscreenIntervalId = null;
+let winCheckIntervalId = null;
+let screenTimeoutId = null;
 let viewportListenersBound = false;
 let mobileControlsBound = false;
 
@@ -209,12 +211,34 @@ function fitCanvasToViewport() {
 }
 
 /**
+ * Centralizes resetting run-state flags and clearing timers/intervals.
+ */
+function resetGameFlagsAndTimers() {
+    // fresh run-state flags
+    endBossKilled = false;
+    characterIsDead = false;
+    levelEnded = false;
+    // clear any pending timeouts/intervals from a previous run
+    if (screenTimeoutId) { clearTimeout(screenTimeoutId); screenTimeoutId = null; }
+    if (winCheckIntervalId) { clearInterval(winCheckIntervalId); winCheckIntervalId = null; }
+}
+
+/**
  * Starts the game by rendering the game UI, initializing the world, and setting up controls.
  */
 function startGame() {
     const content = document.getElementById('content');
     content.innerHTML = generateGameHTML();
     fitCanvasToViewport();
+    resetGameFlagsAndTimers();
+
+    // Recompute maxLevelReached based on the current level
+    if (typeof currentLevel !== 'number' || currentLevel < 0) currentLevel = 0;
+    maxLevelReached = (currentLevel >= levels.length - 1);
+
+    // Re-arm the win/death check loop fresh
+    checkForLevelWin();
+
     if (!viewportListenersBound) {
         window.addEventListener('resize', fitCanvasToViewport);
         window.addEventListener('orientationchange', fitCanvasToViewport);
@@ -226,6 +250,36 @@ function startGame() {
 
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
+
+    // Ensure EndBoss starts fresh on each level start
+    if (world && world.level) {
+        const boss = world.level.endBoss || (typeof world.level.getEndBoss === 'function' ? world.level.getEndBoss() : null);
+        if (boss) {
+            // make sure boss has the correct world ref
+            boss.world = world;
+            if (typeof boss.resetState === 'function') {
+                boss.resetState();
+            } else {
+                // Fallback reset if method not present
+                boss.energy = 100;
+                boss.endBossTriggered = false;
+                boss.endBossIntroduced = false;
+                boss.endBossAlreadyTriggered = false;
+                boss.isCollidingWithCharacter = false;
+                boss.waypoint1 = boss.waypoint2 = boss.waypoint3 = false;
+                boss.waypoint4 = boss.waypoint5 = boss.waypoint6 = false;
+                boss.waypoint7 = false;
+                if (typeof boss.startX === 'number') boss.x = boss.startX;
+                if (typeof boss.startY === 'number') boss.y = boss.startY;
+                try { endBossKilled = false; } catch(e){}
+            }
+        }
+    }
+
+    // Safety kick for the draw loop
+    if (world && typeof world.draw === 'function') {
+        try { requestAnimationFrame(() => world.draw()); } catch(e){}
+    }
 
     if (window.mobileAndTabletCheck()) {
         document.getElementById('mobile-ctrl-left').classList.remove('d-none');
@@ -245,32 +299,52 @@ function renderStartScreen() {
     updateUI();
 }
 
-/**
- * Periodically checks for level win, game over, or max level, and updates the screen accordingly.
- */
 function checkForLevelWin() {
-    setInterval(() => {
-        if (!levelEnded && endBossKilled && !maxLevelReached) {
+    if (winCheckIntervalId) return; // prevent duplicate intervals
+    winCheckIntervalId = setInterval(() => {
+        const isLastLevel = (typeof currentLevel === 'number') && (currentLevel >= levels.length - 1);
+        const boss = world && world.level ? (world.level.endBoss || (typeof world.level.getEndBoss === 'function' ? world.level.getEndBoss() : null)) : null;
+        const bossIntroduced = !!(boss && boss.endBossIntroduced);
+
+        if (!levelEnded && endBossKilled && bossIntroduced && !isLastLevel) {
             levelEnded = true; // prevent multiple schedules
-            setTimeout(() => {
+            if (world && typeof world.stop === 'function') world.stop();
+            clearInterval(winCheckIntervalId); winCheckIntervalId = null;
+
+            screenTimeoutId = setTimeout(() => {
                 const content = document.getElementById('content');
                 if (typeof generateEndScreenHTML === 'function') {
                     content.innerHTML = generateEndScreenHTML();
                 }
                 if (soundOn) { try { WIN_SOUND.currentTime = 0; WIN_SOUND.play(); } catch(e){} }
             }, 3000);
-        } else if (!levelEnded && endBossKilled && maxLevelReached) {
+
+        } else if (!levelEnded && endBossKilled && bossIntroduced && isLastLevel) {
             levelEnded = true;
-            setTimeout(() => {
+            if (world && typeof world.stop === 'function') world.stop();
+            clearInterval(winCheckIntervalId); winCheckIntervalId = null;
+
+            screenTimeoutId = setTimeout(() => {
                 const content = document.getElementById('content');
                 if (typeof generateMaxEndScreenHTML === 'function') {
                     content.innerHTML = generateMaxEndScreenHTML();
                 }
                 if (soundOn) { try { WIN_SOUND.currentTime = 0; WIN_SOUND.play(); } catch(e){} }
+
+                // Reset to level 1 for a fresh start
+                try {
+                    currentLevel = 0;
+                    maxLevelReached = false;
+                    saveToLocalStorage();
+                } catch (e) {}
             }, 3000);
+
         } else if (!levelEnded && characterIsDead) {
             levelEnded = true;
-            setTimeout(() => {
+            if (world && typeof world.stop === 'function') world.stop();
+            clearInterval(winCheckIntervalId); winCheckIntervalId = null;
+
+            screenTimeoutId = setTimeout(() => {
                 const content = document.getElementById('content');
                 if (typeof generateGameOverScreenHTML === 'function') {
                     content.innerHTML = generateGameOverScreenHTML();
@@ -278,7 +352,7 @@ function checkForLevelWin() {
                 if (soundOn) { try { GAME_OVER_SOUND.currentTime = 0; GAME_OVER_SOUND.play(); } catch(e){} }
             }, 3000);
         }
-    }, 250)
+    }, 250);
 }
 
 /**
@@ -307,17 +381,19 @@ function loadFromLocalStorage() {
 
     let soundOnAsString = localStorage.getItem('soundOn');
     soundOn = JSON.parse(soundOnAsString);
+    if (soundOn === null || typeof soundOn !== 'boolean') soundOn = true;
 }
 
 /**
  * Restarts the current level, resetting relevant game state and stopping sounds.
  */
 function restartLevel() {
-    levelEnded = false;
-    characterIsDead = false;
-    endBossKilled = false;
+    resetGameFlagsAndTimers();
     try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
     try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
+    if (world && typeof world.stop === 'function') world.stop();
+    world = null; // ensure old instance is gone before creating a new one
+    keyboard = new Keyboard();
     startGame();
 }
 
@@ -326,18 +402,17 @@ function restartLevel() {
  */
 function nextLevel() {
     if (!maxLevelReached && currentLevel < levels.length - 1) {
+        resetGameFlagsAndTimers();
         currentLevel++;
         if (currentLevel >= levels.length - 1) {
             maxLevelReached = true;
         }
-        // reset run-state flags so the new level is interactive
-        levelEnded = false;
-        characterIsDead = false;
-        endBossKilled = false;
-        // stop any sounds from previous screen
         try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
         try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
         saveToLocalStorage();
+        if (world && typeof world.stop === 'function') world.stop();
+        world = null; // drop old world instance
+        keyboard = new Keyboard();
         startGame();
     }
 }
@@ -346,14 +421,15 @@ function nextLevel() {
  * Restarts the game from the first level, resetting all progress and stopping sounds.
  */
 function restartGame() {
+    resetGameFlagsAndTimers();
     currentLevel = 0;
     maxLevelReached = false;
-    levelEnded = false;
-    characterIsDead = false;
-    endBossKilled = false;
     try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
     try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
     saveToLocalStorage();
+    if (world && typeof world.stop === 'function') world.stop();
+    world = null; // ensure a clean fresh world
+    keyboard = new Keyboard();
     startGame();
 }
 

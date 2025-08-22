@@ -16,15 +16,16 @@
  * @property {number} level_end_x - X coordinate marking the end of the level.
  */
 class Level {
-    backgroundObjects;
-    barriers;
-    enemies;
-    coins = 0;
-    life = 0;
-    poison = 0;
+    backgroundObjects = [];
+    barriers = [];
+    enemies = [];
+    coins = [];
+    life = [];
+    poison = [];
     totalPoison = 0;
     collectedPoison = 0;
-    level_end_x; // x position marking the end of the level
+    level_end_x = 0; // x position marking the end of the level
+    endBoss = null; // cached EndBoss reference
 
     /**
      * Constructor takes parameters from specific level definition files
@@ -45,7 +46,7 @@ class Level {
         this.enemies = enemies;
         this.barriers = barriers;
         this.level_end_x = level_end_x;
-        this.getEndBoss();
+        this.endBoss = this.getEndBoss();
     }
 
     /**

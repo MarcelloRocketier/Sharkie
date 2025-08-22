@@ -57,6 +57,35 @@ class Character extends MovableObject {
     BUBBLING_SOUND = new Audio('./assets/audio/bubbling.mp3');
     LIFE_SOUND = new Audio('./assets/audio/health.mp3');
 
+    // --- Safe timer management (prevents zombie intervals/timeouts across restarts) ---
+    timers = [];
+
+    setSafeInterval(fn, ms) {
+        const id = setInterval(() => {
+            if (this.world && this.world.stopped) return;
+            fn();
+        }, ms);
+        this.timers.push({ type: 'i', id });
+        return id;
+    }
+
+    setSafeTimeout(fn, ms) {
+        const id = setTimeout(() => {
+            if (this.world && this.world.stopped) return;
+            fn();
+        }, ms);
+        this.timers.push({ type: 't', id });
+        return id;
+    }
+
+    clearAllTimers() {
+        this.timers.forEach(t => {
+            if (t.type === 'i') clearInterval(t.id);
+            else clearTimeout(t.id);
+        });
+        this.timers = [];
+    }
+
     constructor() {
         super();
         this.loadImage('./assets/img/1._Sharkie/1._Idle/1.png');
@@ -79,13 +108,13 @@ class Character extends MovableObject {
      * Handles animation state updates for the character.
      */
     animate() {
-        setInterval(() => {
+        this.setSafeInterval(() => {
             this.updateAnimationState();
         }, 200);
 
-        setInterval(() => {
+        this.setSafeInterval(() => {
             this.handleAttacks();
-        }, 100)
+        }, 100);
     }
     /**
      * Updates the animation state based on character status and input.
@@ -94,9 +123,11 @@ class Character extends MovableObject {
         if (this.isDead() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
             this.playAnimation(SHARKIE_IMAGES.DIE_POISONED, 0);
             characterIsDead = true;
+            this.clearAllTimers();
         } else if (this.isDead() && this.hitBy == 'JellyFish') {
             this.playAnimation(SHARKIE_IMAGES.DIE_ELECTRIC_SHOCK, 0);
             characterIsDead = true;
+            this.clearAllTimers();
         } else if (this.isHurt() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
             this.playAnimation(SHARKIE_IMAGES.HURT_POISONED, 1);
         } else if (this.isHurt() && this.hitBy == 'JellyFish') {
@@ -140,7 +171,7 @@ class Character extends MovableObject {
      * Handles character movement input events from keyboard and touch controls.
      */
     characterEvents() {
-        setInterval(() => {
+        this.setSafeInterval(() => {
             this.handleMovementInput(
                 'up',
                 'UP',
@@ -166,7 +197,7 @@ class Character extends MovableObject {
                 () => this.x > 0 && !this.isDead() && !this.world.level.getEndBoss().isDead()
             );
             this.world.camera_x = -this.x;
-        }, 1000 / 60)
+        }, 1000 / 60);
     }
     /**
      * Handles movement input for a given direction from keyboard and touch.
@@ -222,7 +253,7 @@ class Character extends MovableObject {
      * Handles playing character sounds based on various game events.
      */
     characterSounds() {
-        setInterval(() => {
+        this.setSafeInterval(() => {
             if (soundOn) {
                 this.handleSwimSound();
                 this.handleDeathSound();
@@ -230,7 +261,7 @@ class Character extends MovableObject {
                 this.handleEnemyCollisionSounds();
                 this.handleItemPickupSounds();
             }
-        }, 1000 / 60)
+        }, 1000 / 60);
     }
     /**
      * Plays swim sound when movement keys are pressed.
@@ -400,7 +431,8 @@ class Character extends MovableObject {
     spawnBubble(isPoison = false) {
         if (!this.checkAlreadyRunning) {
             let otherDirection = this.imgMirrored === true;
-            setTimeout(() => {
+            this.setSafeTimeout(() => {
+                if (this.isDead() || (this.world && this.world.stopped)) return;
                 if (isPoison) {
                     if (this.poison > 0) {
                         this.world.bubble = new PoisonBubble(this.x + this.offset.bubbleX, this.y + this.offset.bubbleY, otherDirection);
@@ -417,9 +449,11 @@ class Character extends MovableObject {
      * Triggers the EndBoss when exceeding the x coordinate minus the triggerDistance
      */
     triggerEndboss() {
-        setInterval(() => {
-            if (this.x > (this.world.level.getEndBoss().x - this.world.level.getEndBoss().triggerDistance) && !this.world.level.getEndBoss().endBossAlreadyTriggered) {
-                this.world.level.getEndBoss().endBossTriggered = true;
+        this.setSafeInterval(() => {
+            const eb = this.world && this.world.level && typeof this.world.level.getEndBoss === 'function' ? this.world.level.getEndBoss() : null;
+            if (!eb) return;
+            if (this.x > (eb.x - eb.triggerDistance) && !eb.endBossAlreadyTriggered) {
+                eb.endBossTriggered = true;
             }
         }, 100);
     }
