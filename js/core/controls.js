@@ -1,5 +1,3 @@
-
-
 /**
  * Project: Sharkie 2D Game
  * File: js/core/controls.js
@@ -29,25 +27,25 @@ window.addEventListener('keyup',   (e) => {
  */
 function setupMobileControls() {
     if (mobileControlsBound) return;
-    document.getElementById('ctrl-btn-up').addEventListener('touchstart', () => keyboard.UP = true);
-    document.getElementById('ctrl-btn-up').addEventListener('touchend', () => keyboard.UP = false);
-
-    document.getElementById('ctrl-btn-right').addEventListener('touchstart', () => keyboard.RIGHT = true);
-    document.getElementById('ctrl-btn-right').addEventListener('touchend', () => keyboard.RIGHT = false);
-
-    document.getElementById('ctrl-btn-down').addEventListener('touchstart', () => keyboard.DOWN = true);
-    document.getElementById('ctrl-btn-down').addEventListener('touchend', () => keyboard.DOWN = false);
-
-    document.getElementById('ctrl-btn-left').addEventListener('touchstart', () => keyboard.LEFT = true);
-    document.getElementById('ctrl-btn-left').addEventListener('touchend', () => keyboard.LEFT = false);
-
-    document.getElementById('ctrl-btn-fin-slap').addEventListener('touchstart', () => keyboard.SPACE = true);
-    document.getElementById('ctrl-btn-fin-slap').addEventListener('touchend', () => keyboard.SPACE = false);
-
-    document.getElementById('ctrl-btn-bubble-trap').addEventListener('touchstart', () => keyboard.D = true);
-    document.getElementById('ctrl-btn-bubble-trap').addEventListener('touchend', () => keyboard.D = false);
-
-    document.getElementById('ctrl-btn-poison-bubble-trap').addEventListener('touchstart', () => keyboard.F = true);
-    document.getElementById('ctrl-btn-poison-bubble-trap').addEventListener('touchend', () => keyboard.F = false);
+    _bindTouchToKey('ctrl-btn-up', 'UP');
+    _bindTouchToKey('ctrl-btn-right', 'RIGHT');
+    _bindTouchToKey('ctrl-btn-down', 'DOWN');
+    _bindTouchToKey('ctrl-btn-left', 'LEFT');
+    _bindTouchToKey('ctrl-btn-fin-slap', 'SPACE');
+    _bindTouchToKey('ctrl-btn-bubble-trap', 'D');
+    _bindTouchToKey('ctrl-btn-poison-bubble-trap', 'F');
     mobileControlsBound = true;
+}
+
+/**
+ * Binds touchstart and touchend events on a control button to a keyboard flag.
+ * @param {string} elementId - The DOM id of the control button element.
+ * @param {string} keyFlag - The keyboard flag property to toggle.
+ * @returns {void}
+ */
+function _bindTouchToKey(elementId, keyFlag) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.addEventListener('touchstart', () => keyboard[keyFlag] = true);
+    el.addEventListener('touchend', () => keyboard[keyFlag] = false);
 }

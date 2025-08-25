@@ -28,17 +28,29 @@ class PoisonBubble extends MovableObject {
      * @returns {void}
      */
     float() {
+        if (this.otherDirection) this._adjustStartPosition();
+        setInterval(() => this._moveStep(), 1000 / 60);
+    }
+
+    /**
+     * Adjusts the starting position when the bubble is fired to the left.
+     * @returns {void}
+     */
+    _adjustStartPosition() {
+        this.x -= 200; // Adjust bubble start position when character faces right
+    }
+
+    /**
+     * Executes one movement step for the poison bubble depending on direction.
+     * @returns {void}
+     */
+    _moveStep() {
         if (this.otherDirection) {
-            this.x -= 200; // Adjust bubble start position when character faces right
+            this.x -= this.speed;
+            this.y -= this.speed;
+        } else {
+            this.x += this.speed;
+            this.y -= this.speed;
         }
-        setInterval(() => {
-            if (this.otherDirection) { // Moves bubble diagonally up-left
-                this.x -= this.speed;
-                this.y -= this.speed;
-            } else { // Moves bubble diagonally up-right
-                this.x += this.speed;
-                this.y -= this.speed;
-            }
-        }, 1000 / 60);
     }
 }

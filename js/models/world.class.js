@@ -286,7 +286,6 @@ class World {
     this.intervals.push(id);
   }
 
-
   /**
    * Applies character fin-slap to PufferFish on collision and triggers their float-away behavior.
    * @returns {void}
@@ -294,7 +293,6 @@ class World {
   handleFinSlapOnPuffer() {
     const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
     if (!this.character || typeof this.character.isColliding !== 'function') return;
-
     enemies.forEach((enemy) => {
       if (!enemy) return;
       if (this.character.isColliding(enemy) && this.character.isFinSlapping && enemy instanceof PufferFish) {
@@ -304,7 +302,6 @@ class World {
       }
     });
   }
-
 
   /**
    * Applies character fin-slap to the EndBoss on collision and updates the boss HUD.
@@ -353,14 +350,12 @@ class World {
     });
   }
 
-
   /**
    * Idempotent stop of the world: cancels RAF, flips state and proceeds to teardown.
    * @returns {void}
    */
   stop() {
     if (this.stopped) return;
-    console.log('[World] stop() called');
     this._cancelAnimationFrame();
     this.stopped = true;
     this.teardown();
@@ -382,7 +377,6 @@ class World {
    * @returns {void}
    */
   teardown() {
-    console.log('[World] teardown() called');
     this._clearIntervals();
     this._cancelAnimationFrame();
     this._resetAudio();
@@ -435,10 +429,8 @@ function updateScreenMessages() {
   const isMobile   = (typeof mobileAndTabletCheck === 'function') ? mobileAndTabletCheck() : false;
   const isPortrait = window.matchMedia('(orientation: portrait)').matches;
   const isNarrow   = window.innerWidth <= 992;
-
   if (fullscreenMessage) fullscreenMessage.classList.toggle('d-none', !(!isMobile && isNarrow));
   if (landscapeMessage)  landscapeMessage.classList.toggle('d-none', !(isMobile && isPortrait));
-
   const rotateOverlay = document.getElementById('rotate-overlay');
   if (rotateOverlay) rotateOverlay.classList.toggle('d-none', !(isMobile && isPortrait));
 }

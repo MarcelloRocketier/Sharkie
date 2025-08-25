@@ -119,31 +119,48 @@ class EndBoss extends MovableObject {
      * @returns {void}
      */
     updateAnimationAndAI() {
+        if (this._shouldFloat()) return;
+        if (this._shouldPlayHurt()) return;
+        if (this._shouldDie()) return;
+        if (this.endBossTriggered) return this.introduceEndBoss();
+        if (this.isCollidingWithCharacter) this._playAttackCycle();
+    }
+
+    /** Handles floating state logic. */
+    _shouldFloat() {
         if (this.endBossIntroduced && !this.isHurt() && !this.isDead() && !this.isCollidingWithCharacter) {
             this.playAnimation(ENDBOSS_IMAGES.FLOATING, 1);
             if (!this.world.character.isDead()) this.aiMovement();
             else this.BOSS_THEME_SOUND.pause();
-            return;
+            return true;
         }
+        return false;
+    }
+
+    /** Handles hurt state logic. */
+    _shouldPlayHurt() {
         if (this.isHurt() && !this.isDead()) {
             this.playAnimation(ENDBOSS_IMAGES.HURT, 1);
-            return;
+            return true;
         }
+        return false;
+    }
+
+    /** Handles death state logic. */
+    _shouldDie() {
         if (this.isDead()) {
             this.playAnimation(ENDBOSS_IMAGES.DEAD, 0);
-            if (this.endBossIntroduced) {
-                endBossKilled = true;
-            } else {
-                endBossKilled = false; 
-            }
+            endBossKilled = this.endBossIntroduced;
             this.BOSS_THEME_SOUND.pause();
-            return;
+            return true;
         }
-        if (this.endBossTriggered) return this.introduceEndBoss();
-        if (this.isCollidingWithCharacter) {
-            this.attackAnimation();
-            this.playAnimation(ENDBOSS_IMAGES.ATTACK, 0);
-        }
+        return false;
+    }
+
+    /** Handles attack animation when colliding with character. */
+    _playAttackCycle() {
+        this.attackAnimation();
+        this.playAnimation(ENDBOSS_IMAGES.ATTACK, 0);
     }
 
     /**
@@ -335,28 +352,38 @@ class EndBoss extends MovableObject {
      * @returns {void}
      */
     startBossThemeLoop() {
-        if (this.bossThemeIntervalId) return; 
-        this.bossThemeIntervalId = this.setSafeInterval(() => {
-            if (!this.world || this.world.stopped) {
-                this.BOSS_THEME_SOUND.pause();
-                this.BOSS_THEME_SOUND.currentTime = 0;
-                return;
-            }
-            if (soundOn && this.world && this.world.character && !this.world.character.isDead() && !this.isDead()) {
-                try { this.BOSS_THEME_SOUND.play(); } catch(e){}
-                if (this.world.MAIN_SOUND) this.world.MAIN_SOUND.pause();
-            } else {
-                this.BOSS_THEME_SOUND.pause();
-                this.BOSS_THEME_SOUND.currentTime = 0;
-            }
-        }, 1000 / 60);
-        if (!this._bossLoopBound) {
-            this._bossLoopBound = true;
-            this.BOSS_THEME_SOUND.addEventListener('ended', function() {
-                this.currentTime = 0;
-                try { this.play(); } catch(e){}
-            }, false);
+        if (this.bossThemeIntervalId) return;
+        this.bossThemeIntervalId = this.setSafeInterval(() => this._bossThemeTick(), 1000 / 60);
+        if (!this._bossLoopBound) this._bindBossThemeEnd();
+    }
+
+    /** Performs one tick of the boss theme loop. */
+    _bossThemeTick() {
+        if (!this.world || this.world.stopped) {
+            this._resetBossTheme();
+            return;
         }
+        if (soundOn && this.world.character && !this.world.character.isDead() && !this.isDead()) {
+            try { this.BOSS_THEME_SOUND.play(); } catch(e){}
+            if (this.world.MAIN_SOUND) this.world.MAIN_SOUND.pause();
+        } else {
+            this._resetBossTheme();
+        }
+    }
+
+    /** Resets boss theme audio to start. */
+    _resetBossTheme() {
+        this.BOSS_THEME_SOUND.pause();
+        this.BOSS_THEME_SOUND.currentTime = 0;
+    }
+
+    /** Binds looping behavior for when the boss theme ends. */
+    _bindBossThemeEnd() {
+        this._bossLoopBound = true;
+        this.BOSS_THEME_SOUND.addEventListener('ended', function() {
+            this.currentTime = 0;
+            try { this.play(); } catch(e){}
+        }, false);
     }
 
     /**
@@ -375,6 +402,15 @@ class EndBoss extends MovableObject {
      */
     resetState() {
         this.clearAllTimers();
+        this._resetBossFlags();
+        this._resetBossPosition();
+        this._resetBossAudio();
+        try { endBossKilled = false; } catch(e){}
+        this.animate();
+    }
+
+    /** Resets boss state flags and energy. */
+    _resetBossFlags() {
         this.energy = 100;
         this.endBossTriggered = false;
         this.endBossIntroduced = false;
@@ -383,13 +419,19 @@ class EndBoss extends MovableObject {
         this.waypoint1 = this.waypoint2 = this.waypoint3 = false;
         this.waypoint4 = this.waypoint5 = this.waypoint6 = false;
         this.waypoint7 = false;
+    }
+
+    /** Resets boss position to start coordinates if defined. */
+    _resetBossPosition() {
         if (typeof this.startX === 'number') this.x = this.startX;
         if (typeof this.startY === 'number') this.y = this.startY;
+    }
+
+    /** Resets boss audio playback. */
+    _resetBossAudio() {
         try { this.BOSS_THEME_SOUND.pause(); this.BOSS_THEME_SOUND.currentTime = 0; } catch(e){}
         try { this.SPLASH_SOUND.pause(); this.SPLASH_SOUND.currentTime = 0; } catch(e){}
         try { this.BITE_SOUND.pause(); this.BITE_SOUND.currentTime = 0; } catch(e){}
-        try { endBossKilled = false; } catch(e){}
-        this.animate();
     }
 
     /**

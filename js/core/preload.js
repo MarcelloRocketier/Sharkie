@@ -1,5 +1,3 @@
-
-
 /**
  * Project: Sharkie 2D Game
  * File: js/core/preload.js
@@ -16,7 +14,16 @@
  * @returns {void}
  */
 function preload() {
-    const groups = [
+    const groups = _collectImageGroups();
+    groups.forEach(preloadImages);
+}
+
+/**
+ * Collects arrays of images grouped by entity for preloading.
+ * @returns {Array<string[]>}
+ */
+function _collectImageGroups() {
+    return [
         SHARKIE_IMAGES.IDLE,
         SHARKIE_IMAGES.LONG_IDLE,
         SHARKIE_IMAGES.SWIM,
@@ -62,7 +69,6 @@ function preload() {
         POISON_IMAGES.IMAGES.dark_left,
         POISON_IMAGES.IMAGES.dark_right
     ];
-    groups.forEach(preloadImages);
 }
 
 /**

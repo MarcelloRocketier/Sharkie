@@ -220,6 +220,15 @@ function handlePickups(world) {
   if (!world || world.stopped) return;
   const char = world.character;
   if (!char) return;
+  _handleAllPickups(world, char);
+}
+
+/**
+ * Checks all pickup types for collisions.
+ * @param {World} world
+ * @param {Character} char
+ */
+function _handleAllPickups(world, char) {
   _checkCoinPickups(world, char);
   _checkLifePickups(world, char);
   _checkPoisonPickups(world, char);

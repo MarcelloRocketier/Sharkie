@@ -53,27 +53,43 @@ class MovableObject extends DrawableObject {
      */
     move(direction, startPoint, endPoint, speed) {
         setInterval(() => {
-            if (!this.stopMovement) {
-                if (direction === 'horizontal') {
-                    if (this.x > endPoint) {
-                        this.waypointReached = true;
-                        this.imgMirrored = false;
-                    } else if (this.x < startPoint) {
-                        this.waypointReached = false;
-                        this.imgMirrored = true;
-                    }
-                    this.x += this.waypointReached ? -speed : speed;
-                } else if (direction === 'vertical') {
-                    if (this.y > endPoint) {
-                        this.waypointReached = true;
-                    } else if (this.y < startPoint) {
-                        this.waypointReached = false;
-                    }
-                    this.y += this.waypointReached ? -speed : speed;
-                }
-            }
+            if (this.stopMovement) return;
+            if (direction === 'horizontal') this._moveHorizontal(startPoint, endPoint, speed);
+            else if (direction === 'vertical') this._moveVertical(startPoint, endPoint, speed);
         }, 1000 / 60);
-    };
+    }
+
+    /**
+     * Handles horizontal movement with waypoint toggling.
+     * @param {number} startPoint
+     * @param {number} endPoint
+     * @param {number} speed
+     */
+    _moveHorizontal(startPoint, endPoint, speed) {
+        if (this.x > endPoint) {
+            this.waypointReached = true;
+            this.imgMirrored = false;
+        } else if (this.x < startPoint) {
+            this.waypointReached = false;
+            this.imgMirrored = true;
+        }
+        this.x += this.waypointReached ? -speed : speed;
+    }
+
+    /**
+     * Handles vertical movement with waypoint toggling.
+     * @param {number} startPoint
+     * @param {number} endPoint
+     * @param {number} speed
+     */
+    _moveVertical(startPoint, endPoint, speed) {
+        if (this.y > endPoint) {
+            this.waypointReached = true;
+        } else if (this.y < startPoint) {
+            this.waypointReached = false;
+        }
+        this.y += this.waypointReached ? -speed : speed;
+    }
 
     /**
      * Plays animation frames from given image list either once or in a loop.
@@ -84,20 +100,33 @@ class MovableObject extends DrawableObject {
      */
     playAnimation(images, loop) {
         if (loop === 0 && !this.animationFinished) {
-            if (!this.animationStarted) {
-                this.currentImage = 0;
-            }
-            this.animationStarted = true;
-            this.updateFrame(images);
-
-            if (this.currentImage === images.length) {
-                this.animationFinished = true;
-                this.animationStarted = false;
-            }
+            this._playOnce(images);
         } else if (loop === 1) {
-            this.updateFrame(images);
-            this.animationFinished = false;
+            this._playLoop(images);
         }
+    }
+
+    /**
+     * Plays animation frames once until finished.
+     * @param {Array<string>} images
+     */
+    _playOnce(images) {
+        if (!this.animationStarted) this.currentImage = 0;
+        this.animationStarted = true;
+        this.updateFrame(images);
+        if (this.currentImage === images.length) {
+            this.animationFinished = true;
+            this.animationStarted = false;
+        }
+    }
+
+    /**
+     * Continuously loops animation frames.
+     * @param {Array<string>} images
+     */
+    _playLoop(images) {
+        this.updateFrame(images);
+        this.animationFinished = false;
     }
 
     /**

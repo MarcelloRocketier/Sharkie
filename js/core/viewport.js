@@ -31,23 +31,44 @@ function fitCanvasToViewport() {
     const wrapper = document.getElementById('canvas-wrapper');
     const cv = document.getElementById('canvas');
     if (!wrapper) return;
+    _resetWrapperStyles(wrapper);
+    _resizeWrapper(wrapper);
+    _resizeCanvas(cv);
+}
 
+/**
+ * Resets wrapper positioning styles.
+ * @param {HTMLElement} wrapper
+ */
+function _resetWrapperStyles(wrapper) {
     wrapper.style.top = '0';
     wrapper.style.left = '0';
     wrapper.style.right = '0';
     wrapper.style.bottom = '0';
     wrapper.style.transform = 'none';
+}
 
+/**
+ * Resizes the wrapper to viewport size.
+ * @param {HTMLElement} wrapper
+ */
+function _resizeWrapper(wrapper) {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-
     wrapper.style.width = `${vw}px`;
     wrapper.style.height = `${vh}px`;
+}
 
-    if (cv) {
-        cv.width = vw;
-        cv.height = vh;
-        cv.style.width = '100vw';
-        cv.style.height = '100vh';
-    }
+/**
+ * Resizes the canvas element to fill viewport.
+ * @param {HTMLCanvasElement|null} cv
+ */
+function _resizeCanvas(cv) {
+    if (!cv) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    cv.width = vw;
+    cv.height = vh;
+    cv.style.width = '100vw';
+    cv.style.height = '100vh';
 }

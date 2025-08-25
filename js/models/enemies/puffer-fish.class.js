@@ -44,17 +44,40 @@ class PufferFish extends MovableObject {
      */
     constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         super().loadImage('./assets/img/2._Enemy/1._Puffer_Fish_(3_Color_Options)/1._Swim/1._Swim_1.png');
+        this._initImages(color);
+        this._initPosition(x, y);
+        this._setMirroring(imgInitiallyMirrored);
+        this.animate(color, direction, startPoint, endPoint, speed);
+    }
+
+    /**
+     * Loads swim and dead image sets for the selected color.
+     * @param {string} color
+     * @returns {void}
+     */
+    _initImages(color) {
         this.loadImages(PUFFER_FISH_IMAGES.SWIM[color]);
         this.loadImages(PUFFER_FISH_IMAGES.DEAD[color]);
+    }
+
+    /**
+     * Initializes position.
+     * @param {number} x
+     * @param {number} y
+     * @returns {void}
+     */
+    _initPosition(x, y) {
         this.x = x;
         this.y = y;
+    }
 
-        if (imgInitiallyMirrored == 1) {
-            this.imgMirrored = true;
-        } else {
-            this.imgMirrored = false;
-        }
-        this.animate(color, direction, startPoint, endPoint, speed);
+    /**
+     * Sets initial horizontal mirroring.
+     * @param {number} imgInitiallyMirrored - 1 to mirror sprite initially, 0 otherwise.
+     * @returns {void}
+     */
+    _setMirroring(imgInitiallyMirrored) {
+        this.imgMirrored = (imgInitiallyMirrored == 1);
     }
 
     /**

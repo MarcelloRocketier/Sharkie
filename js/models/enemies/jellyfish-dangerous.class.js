@@ -42,18 +42,32 @@ class JellyFishDangerous extends MovableObject {
      */
     constructor(color, x, y, direction, startPoint, endPoint, speed, imgInitiallyMirrored) {
         super().loadImage('./assets/img/2._Enemy/2._Jellyfish/Regular_Damage/Lila_1.png');
+        this._initImages(color);
+        this._initPosition(x, y, imgInitiallyMirrored);
+        this.animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored);
+    }
+
+    /**
+     * Loads swim and dead image sets for this jellyfish color.
+     * @param {string} color
+     * @returns {void}
+     */
+    _initImages(color) {
         this.loadImages(JELLYFISH_DANGEROUS_IMAGES.SWIM[color]);
         this.loadImages(JELLYFISH_DANGEROUS_IMAGES.DEAD[color]);
+    }
+
+    /**
+     * Initializes position and mirroring of the sprite.
+     * @param {number} x
+     * @param {number} y
+     * @param {number} imgInitiallyMirrored
+     * @returns {void}
+     */
+    _initPosition(x, y, imgInitiallyMirrored) {
         this.x = x;
         this.y = y;
-
-        if (imgInitiallyMirrored == 1) {
-            this.imgMirrored = true;
-        } else {
-            this.imgMirrored = false;
-        }
-
-        this.animate(color, direction, startPoint, endPoint, speed, imgInitiallyMirrored);
+        this.imgMirrored = (imgInitiallyMirrored == 1);
     }
 
     /**

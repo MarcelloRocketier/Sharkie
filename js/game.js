@@ -291,13 +291,10 @@ function checkForLevelWin() {
  */
 
 function restartLevel() {
-    resetGameFlagsAndTimers();
-    try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
-    try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
-    if (world && typeof world.stop === 'function') world.stop();
-    world = null; 
-    keyboard = new Keyboard();
-    startGame();
+  resetGameFlagsAndTimers();
+  _resetWinAndGameOverSounds();
+  _resetWorldAndKeyboard();
+  startGame();
 }
 
 /**
@@ -306,20 +303,14 @@ function restartLevel() {
  */
 
 function nextLevel() {
-    if (!maxLevelReached && currentLevel < levels.length - 1) {
-        resetGameFlagsAndTimers();
-        currentLevel++;
-        if (currentLevel >= levels.length - 1) {
-            maxLevelReached = true;
-        }
-        try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
-        try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
-        saveToLocalStorage();
-        if (world && typeof world.stop === 'function') world.stop();
-        world = null; 
-        keyboard = new Keyboard();
-        startGame();
-    }
+  if (maxLevelReached || currentLevel >= levels.length - 1) return;
+  resetGameFlagsAndTimers();
+  currentLevel++;
+  if (currentLevel >= levels.length - 1) maxLevelReached = true;
+  _resetWinAndGameOverSounds();
+  saveToLocalStorage();
+  _resetWorldAndKeyboard();
+  startGame();
 }
 
 /**
@@ -328,14 +319,30 @@ function nextLevel() {
  */
 
 function restartGame() {
-    resetGameFlagsAndTimers();
-    currentLevel = 0;
-    maxLevelReached = false;
-    try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
-    try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
-    saveToLocalStorage();
-    if (world && typeof world.stop === 'function') world.stop();
-    world = null; 
-    keyboard = new Keyboard();
-    startGame();
+  resetGameFlagsAndTimers();
+  currentLevel = 0;
+  maxLevelReached = false;
+  _resetWinAndGameOverSounds();
+  saveToLocalStorage();
+  _resetWorldAndKeyboard();
+  startGame();
+}
+
+/**
+ * Pauses and resets win and game over sounds.
+ * @returns {void}
+ */
+function _resetWinAndGameOverSounds() {
+  try { WIN_SOUND.pause(); WIN_SOUND.currentTime = 0; } catch(e){}
+  try { GAME_OVER_SOUND.pause(); GAME_OVER_SOUND.currentTime = 0; } catch(e){}
+}
+
+/**
+ * Stops the current world if running and resets keyboard input.
+ * @returns {void}
+ */
+function _resetWorldAndKeyboard() {
+  if (world && typeof world.stop === 'function') world.stop();
+  world = null;
+  keyboard = new Keyboard();
 }
