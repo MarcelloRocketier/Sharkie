@@ -1,4 +1,4 @@
-/**
+/** 
  * Project: Sharkie 2D Game
  * File: js/world/collisions.js
  * Responsibility: Collision handling and pickups for World; extracted from world.class.js.
@@ -99,31 +99,58 @@ function handleCharacterVsEnemies(world) {
   if (!world || world.stopped) return;
   const char = world.character;
   if (!char || (typeof char.isDead === 'function' && char.isDead())) return;
+  _checkEnemyCollisions(world, char);
+  _checkBossCollision(world, char);
+}
 
+/**
+ * Checks collisions with regular enemies and applies damage.
+ * @param {World} world
+ * @param {Character} char
+ */
+function _checkEnemyCollisions(world, char) {
   const enemies = getEnemies(world);
-
   enemies.forEach((e) => {
     if (!e) return;
+    const neutralized = e && e.neutralized && (!e.neutralizedUntil || e.neutralizedUntil > Date.now());
+    if (neutralized) return;
     if (objectsCollide(char, e) && !(typeof char.isHurt === 'function' && char.isHurt())) {
-      try {
-        if (typeof PufferFish !== 'undefined' && e instanceof PufferFish) char.hitBy = 'PufferFish';
-        else if ((typeof JellyFishRegular !== 'undefined' && e instanceof JellyFishRegular) ||
-                 (typeof JellyFishDangerous !== 'undefined' && e instanceof JellyFishDangerous)) char.hitBy = 'JellyFish';
-        else if (typeof EndBoss !== 'undefined' && e instanceof EndBoss) char.hitBy = 'EndBoss';
-        else char.hitBy = 'Enemy';
-
-        char.hit(e.attack ?? 5);
-        if (world.statusBarLife && typeof world.statusBarLife.set === 'function') {
-          world.statusBarLife.setPercentage(
-            (char.energy / 100) * 100,
-            world.statusBarLife.type,
-            world.statusBarLife.color
-          );
-        }
-      } catch(_) {}
+      _applyEnemyHit(char, e, world);
     }
   });
+}
 
+/**
+ * Applies damage and statusBar update for a collision with a given enemy.
+ * @param {Character} char
+ * @param {Object} enemy
+ * @param {World} world
+ */
+function _applyEnemyHit(char, enemy, world) {
+  try {
+    if (typeof PufferFish !== 'undefined' && enemy instanceof PufferFish) char.hitBy = 'PufferFish';
+    else if ((typeof JellyFishRegular !== 'undefined' && enemy instanceof JellyFishRegular) ||
+             (typeof JellyFishDangerous !== 'undefined' && enemy instanceof JellyFishDangerous)) char.hitBy = 'JellyFish';
+    else if (typeof EndBoss !== 'undefined' && enemy instanceof EndBoss) char.hitBy = 'EndBoss';
+    else char.hitBy = 'Enemy';
+
+    char.hit(enemy.attack ?? 5);
+    if (world.statusBarLife && typeof world.statusBarLife.set === 'function') {
+      world.statusBarLife.setPercentage(
+        (char.energy / 100) * 100,
+        world.statusBarLife.type,
+        world.statusBarLife.color
+      );
+    }
+  } catch(_) {}
+}
+
+/**
+ * Checks collision with the end boss and applies damage.
+ * @param {World} world
+ * @param {Character} char
+ */
+function _checkBossCollision(world, char) {
   const boss = world.level?.endBoss;
   if (boss && objectsCollide(char, boss) && !(typeof char.isHurt === 'function' && char.isHurt())) {
     try {
@@ -141,27 +168,44 @@ function handleCharacterVsEnemies(world) {
 }
 
 /**
- * Handles bubble projectiles colliding with jellyfish.
+ * Handles bubble projectiles colliding with jellyfish (applies damage via hit()).
  * Boss damage stays in boss-specific logic to avoid duplicates.
  * @param {World} world
  * @returns {void}
  */
 function handleBubbleVsJelly(world) {
   if (!world || world.stopped) return;
+  const bubbles = _gatherBubbles(world);
+  const jelly = getJellyfish(world);
+  _applyBubbleHitsOnJelly(bubbles, jelly);
+}
 
-  const bubbles = Array.isArray(world.bubbles) ? world.bubbles.slice() : [];
-  if (world.bubble) bubbles.push(world.bubble);
+/**
+ * Collects all active bubbles (array + single current bubble).
+ * @param {World} world
+ * @returns {Array<Object>}
+ */
+function _gatherBubbles(world) {
+  const arr = Array.isArray(world.bubbles) ? world.bubbles.slice() : [];
+  if (world.bubble) arr.push(world.bubble);
+  return arr;
+}
 
-  const jellyfishAll = getJellyfish(world);
-
-  bubbles.forEach((bubble) => {
-    if (!bubble) return;
-
+/**
+ * Applies bubble hits to all jellyfish; calls hit(damage) if available.
+ * @param {Array<Object>} bubbles
+ * @param {Array<Object>} jellyfishAll
+ * @returns {void}
+ */
+function _applyBubbleHitsOnJelly(bubbles, jellyfishAll) {
+  bubbles.forEach((b) => {
+    if (!b) return;
     jellyfishAll.forEach((j) => {
       if (!j) return;
-      if (objectsCollide(bubble, j)) {
-        tryKillEnemy(j);
-        tryRemoveBubble(bubble);
+      if (objectsCollide(b, j)) {
+        if (typeof j.hit === 'function') { try { j.hit(b.attack ?? 20); } catch(_){} } else { tryKillEnemy(j); }
+        try { j.neutralized = true; j.neutralizedUntil = Date.now() + 3000; } catch(_){ }
+        tryRemoveBubble(b);
       }
     });
   });
@@ -176,7 +220,13 @@ function handlePickups(world) {
   if (!world || world.stopped) return;
   const char = world.character;
   if (!char) return;
+  _checkCoinPickups(world, char);
+  _checkLifePickups(world, char);
+  _checkPoisonPickups(world, char);
+}
 
+/** Handles coin pickups. */
+function _checkCoinPickups(world, char) {
   getCoins(world).forEach((c) => {
     if (!c || c.collected) return;
     if (objectsCollide(char, c)) {
@@ -185,7 +235,10 @@ function handlePickups(world) {
       removeFromArray(world.level && world.level.coins, c);
     }
   });
+}
 
+/** Handles life pickups. */
+function _checkLifePickups(world, char) {
   getLifes(world).forEach((l) => {
     if (!l || l.collected) return;
     if (objectsCollide(char, l)) {
@@ -201,13 +254,16 @@ function handlePickups(world) {
       removeFromArray(world.level && world.level.life, l);
     }
   });
+}
 
+/** Handles poison pickups. */
+function _checkPoisonPickups(world, char) {
   getPoisons(world).forEach((p) => {
     if (!p || p.collected) return;
     if (objectsCollide(char, p)) {
       tryCollectItem(p, world);
+      char.poison = (typeof char.poison === 'number' ? char.poison : 0) + 1;
       try { world.statusBarPoison?.increase?.(1); } catch(_){ }
-      try { if (typeof world.addPoison === 'function') world.addPoison(1); } catch(_){ }
       removeFromArray(world.level && world.level.poison, p);
     }
   });

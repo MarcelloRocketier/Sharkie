@@ -79,4 +79,28 @@ class PufferFish extends MovableObject {
             }
         }, 250)
     }
+
+    /**
+     * Applies damage to this puffer fish and triggers death if energy <= 0.
+     * Ignores hits while neutralized.
+     * @param {number} dmg - The amount of damage to apply.
+     * @returns {void}
+     */
+    hit(dmg) {
+        if (this.neutralized && (!this.neutralizedUntil || this.neutralizedUntil > Date.now())) {
+            return;
+        }
+        this.energy -= dmg;
+        if (this.energy <= 0) {
+            this.energy = 0;
+        }
+    }
+
+    /**
+     * Returns true if the puffer fish is dead (energy <= 0).
+     * @returns {boolean}
+     */
+    isDead() {
+        return this.energy <= 0;
+    }
 }

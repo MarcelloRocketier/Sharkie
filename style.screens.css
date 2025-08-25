@@ -95,14 +95,6 @@ body, html {
   overflow-x: hidden;
 }
 
-#mobile-ctrl-left,
-#mobile-ctrl-right {
-  display: none;
-  position: fixed;
-  z-index: 20;
-  pointer-events: auto;
-}
-
 #ctrl-btn-fin-slap,
 #ctrl-btn-bubble-trap,
 #ctrl-btn-poison-bubble-trap {
@@ -195,86 +187,10 @@ body, html {
   box-shadow: 0 0 6px rgba(0, 48, 128, 1) inset;
 }
 
-.settings-menu-container {
-  align-items: center;
-  background-image: url('assets/img/3._Background/Dark/1.png');
-  background-position: center;
-  background-size: cover;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  left: 0;
-  min-height: 100vh;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 4;
-}
-
 .close-btn {
   position: absolute;
   right: 16px;
   top: 16px;
-}
-
-.settings-menu-heading {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 32px;
-}
-
-.settings-menu-title {
-  border-bottom: 6px solid white;
-  color: white;
-  font-size: 56px;
-  margin: 0;
-  padding: 0 32px;
-}
-
-.settings-menu-title::before,
-.help-header h2::before {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 6px;
-  background: white;
-  margin-bottom: 8px;
-}
-
-.settings-menu-body {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 32px;
-  padding-top: 32px;
-}
-
-.settings-menu-row {
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  display: flex;
-  gap: 16px;
-  margin: 0 16px 16px 16px;
-  padding: 4px 16px;
-}
-
-.doubled-row { align-items: unset; flex-direction: column; }
-
-.settings-menu-sub-row { display: flex; gap: 16px; }
-
-.settings-menu-row-title { color: white; font-size: 36px; margin: 0; }
-
-.settings-annotation { color: white; font-size: 22px; text-shadow: none; }
-
-.settings-menu-checkbox { height: 32px; width: 32px; }
-
-.debugLevelNr-select {
-  color: #494949;
-  font-size: 24px;
-  font-weight: 700;
-  height: 36px;
-  width: 48px;
 }
 
 .help-container {
@@ -299,6 +215,15 @@ body, html {
   justify-content: center;
   margin: 24px 0 32px 0;
   padding-top: 64px;
+}
+
+.help-header h2::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 6px;
+  background: white;
+  margin-bottom: 8px;
 }
 
 .help-body { align-items: center; display: flex; flex-direction: column; justify-content: center; }

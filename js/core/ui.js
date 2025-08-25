@@ -61,35 +61,48 @@ function toggleFullscreen() {
  * @returns {void}
  */
 function updateUI() {
+    _updateSoundUI();
+    _updateMobileSoundUI();
+    _ensureFullscreenWatcher();
+}
+
+/**
+ * Updates desktop sound icons and checkbox state.
+ * @returns {void}
+ */
+function _updateSoundUI() {
+    const soundImg = document.getElementById('sound-img');
+    const soundCheckbox = document.getElementById('sound-checkbox');
     if (soundOn) {
-        document.getElementById('sound-img').src = './assets/img/icons/speaker.svg';
-        const soundCheckbox = document.getElementById('sound-checkbox');
+        if (soundImg) soundImg.src = './assets/img/icons/speaker.svg';
         if (soundCheckbox) soundCheckbox.checked = true;
     } else {
-        document.getElementById('sound-img').src = './assets/img/icons/mute.svg';
-        const soundCheckbox = document.getElementById('sound-checkbox');
+        if (soundImg) soundImg.src = './assets/img/icons/mute.svg';
         if (soundCheckbox) soundCheckbox.checked = false;
     }
+}
 
-    if (soundOn && document.getElementById('sound-img-mobile')) {
-        document.getElementById('sound-img-mobile').src = './assets/img/icons/speaker.svg';
-    } else if (!soundOn && document.getElementById('sound-img-mobile')) {
-        document.getElementById('sound-img-mobile').src = './assets/img/icons/mute.svg';
-    }
+/**
+ * Updates mobile sound icon state.
+ * @returns {void}
+ */
+function _updateMobileSoundUI() {
+    const mobileImg = document.getElementById('sound-img-mobile');
+    if (!mobileImg) return;
+    if (soundOn) mobileImg.src = './assets/img/icons/speaker.svg';
+    else mobileImg.src = './assets/img/icons/mute.svg';
+}
 
-    if (!fullscreenIntervalId) {
-        fullscreenIntervalId = setInterval(() => {
-            function fs_status() {
-                return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
-            }
-
-            const fsCheckbox = document.getElementById('fullscreen-checkbox');
-            if (fs_status()) {
-                if (fsCheckbox) fsCheckbox.checked = true;
-            } else {
-                if (fsCheckbox) fsCheckbox.checked = false;
-                fullscreen = false;
-            }
-        }, 250);
-    }
+/**
+ * Ensures a fullscreen status watcher interval is registered.
+ * @returns {void}
+ */
+function _ensureFullscreenWatcher() {
+    if (fullscreenIntervalId) return;
+    fullscreenIntervalId = setInterval(() => {
+        const fsActive = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+        const fsCheckbox = document.getElementById('fullscreen-checkbox');
+        if (fsCheckbox) fsCheckbox.checked = fsActive;
+        if (!fsActive) fullscreen = false;
+    }, 250);
 }

@@ -153,19 +153,53 @@ class Character extends MovableObject {
      * @returns {void}
      */
     updateAnimationState() {
+        if (this._handleDeathAnimation()) return;
+        if (this._handleHurtAnimation()) return;
+        this._handleMoveOrIdleAnimation();
+    }
+
+    /**
+     * Handles death animations and state finalization.
+     * @returns {boolean} True if a death animation was applied.
+     */
+    _handleDeathAnimation() {
         if (this.isDead() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
             this.playAnimation(SHARKIE_IMAGES.DIE_POISONED, 0);
             characterIsDead = true;
             this.clearAllTimers();
-        } else if (this.isDead() && this.hitBy == 'JellyFish') {
+            return true;
+        }
+        if (this.isDead() && this.hitBy == 'JellyFish') {
             this.playAnimation(SHARKIE_IMAGES.DIE_ELECTRIC_SHOCK, 0);
             characterIsDead = true;
             this.clearAllTimers();
-        } else if (this.isHurt() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handles hurt animations depending on the enemy type.
+     * @returns {boolean} True if a hurt animation was applied.
+     */
+    _handleHurtAnimation() {
+        if (this.isHurt() && (this.hitBy == 'PufferFish' || this.hitBy == 'EndBoss')) {
             this.playAnimation(SHARKIE_IMAGES.HURT_POISONED, 1);
-        } else if (this.isHurt() && this.hitBy == 'JellyFish') {
+            return true;
+        }
+        if (this.isHurt() && this.hitBy == 'JellyFish') {
             this.playAnimation(SHARKIE_IMAGES.HURT_ELECTRIC_SHOCK, 1);
-        } else if (this.world.keyboard.LEFT || this.world.keyboard.UP || this.world.keyboard.RIGHT || this.world.keyboard.DOWN) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Chooses between swim, long-idle, or idle animations.
+     * @returns {void}
+     */
+    _handleMoveOrIdleAnimation() {
+        if (this.world.keyboard.LEFT || this.world.keyboard.UP || this.world.keyboard.RIGHT || this.world.keyboard.DOWN) {
             this.playAnimation(SHARKIE_IMAGES.SWIM, 1);
         } else if (this.isLongIdle()) {
             this.playAnimation(SHARKIE_IMAGES.LONG_IDLE, 1);
@@ -178,6 +212,15 @@ class Character extends MovableObject {
      * @returns {void}
      */
     handleAttacks() {
+        this._handleKeyboardAttacks();
+        this._handleTouchAttacks();
+    }
+
+    /**
+     * Handles attack input from keyboard.
+     * @returns {void}
+     */
+    _handleKeyboardAttacks() {
         if (this.world.keyboard.SPACE && !this.isDead()) {
             this.finSlapAttack();
             this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
@@ -188,6 +231,13 @@ class Character extends MovableObject {
             this.bubbleTrapAttackPoison();
             this.playAnimation(SHARKIE_IMAGES.BUBBLE_TRAP, 0);
         }
+    }
+
+    /**
+     * Handles attack input from touch controls.
+     * @returns {void}
+     */
+    _handleTouchAttacks() {
         if (this.touchCtrlFinSlapStart && !this.isDead()) {
             this.finSlapAttack();
             this.playAnimation(SHARKIE_IMAGES.FIN_SLAP, 0);
@@ -204,33 +254,19 @@ class Character extends MovableObject {
      * @returns {void}
      */
     characterEvents() {
-        this.setSafeInterval(() => {
-            this.handleMovementInput(
-                'up',
-                'UP',
-                'touchCtrlUpStart',
-                () => this.y > -135 && !this.isDead() && !this.world.level.getEndBoss().isDead()
-            );
-            this.handleMovementInput(
-                'right',
-                'RIGHT',
-                'touchCtrlRightStart',
-                () => this.x < this.world.level.level_end_x && !this.isDead() && !this.world.level.getEndBoss().isDead()
-            );
-            this.handleMovementInput(
-                'down',
-                'DOWN',
-                'touchCtrlDownStart',
-                () => this.y < 240 && !this.isDead() && !this.world.level.getEndBoss().isDead()
-            );
-            this.handleMovementInput(
-                'left',
-                'LEFT',
-                'touchCtrlLeftStart',
-                () => this.x > 0 && !this.isDead() && !this.world.level.getEndBoss().isDead()
-            );
-            this.world.camera_x = -this.x;
-        }, 1000 / 60);
+        this.setSafeInterval(() => this._tickMovementFrame(), 1000 / 60);
+    }
+
+    /**
+     * Executes one movement frame: reads input, applies limits/barriers, updates camera.
+     * @returns {void}
+     */
+    _tickMovementFrame() {
+        this.handleMovementInput('up', 'UP', 'touchCtrlUpStart', () => this.y > -135 && !this.isDead() && !this.world.level.getEndBoss().isDead());
+        this.handleMovementInput('right', 'RIGHT', 'touchCtrlRightStart', () => this.x < this.world.level.level_end_x && !this.isDead() && !this.world.level.getEndBoss().isDead());
+        this.handleMovementInput('down', 'DOWN', 'touchCtrlDownStart', () => this.y < 240 && !this.isDead() && !this.world.level.getEndBoss().isDead());
+        this.handleMovementInput('left', 'LEFT', 'touchCtrlLeftStart', () => this.x > 0 && !this.isDead() && !this.world.level.getEndBoss().isDead());
+        this.world.camera_x = -this.x;
     }
     /**
      * Handles movement input for a given direction from keyboard and touch.
@@ -254,28 +290,27 @@ class Character extends MovableObject {
      * @returns {void}
      */
     touchEvents() {
-        const ctrlUp = document.getElementById('ctrl-btn-up');
-        const ctrlRight = document.getElementById('ctrl-btn-right');
-        const ctrlDown = document.getElementById('ctrl-btn-down');
-        const ctrlLeft = document.getElementById('ctrl-btn-left');
-        const ctrlFinSlap = document.getElementById('ctrl-btn-fin-slap');
-        const ctrlBubbleTrap = document.getElementById('ctrl-btn-bubble-trap');
-        const ctrlPoisonBubbleTrap = document.getElementById('ctrl-btn-poison-bubble-trap');
+        this._bindTouch('ctrl-btn-up', 'touchCtrlUpStart', 'touchCtrlUpEnd');
+        this._bindTouch('ctrl-btn-right', 'touchCtrlRightStart', 'touchCtrlRightEnd');
+        this._bindTouch('ctrl-btn-down', 'touchCtrlDownStart', 'touchCtrlDownEnd');
+        this._bindTouch('ctrl-btn-left', 'touchCtrlLeftStart', 'touchCtrlLeftEnd');
+        this._bindTouch('ctrl-btn-fin-slap', 'touchCtrlFinSlapStart', 'touchCtrlFinSlapEnd');
+        this._bindTouch('ctrl-btn-bubble-trap', 'touchCtrlBubbleTrapStart', 'touchCtrlBubbleTrapEnd');
+        this._bindTouch('ctrl-btn-poison-bubble-trap', 'touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd');
+    }
 
-        ctrlUp.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlUpStart', 'touchCtrlUpEnd', true));
-        ctrlUp.addEventListener('touchend', () => this.handleTouchControl('touchCtrlUpStart', 'touchCtrlUpEnd', false));
-        ctrlRight.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlRightStart', 'touchCtrlRightEnd', true));
-        ctrlRight.addEventListener('touchend', () => this.handleTouchControl('touchCtrlRightStart', 'touchCtrlRightEnd', false));
-        ctrlDown.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlDownStart', 'touchCtrlDownEnd', true));
-        ctrlDown.addEventListener('touchend', () => this.handleTouchControl('touchCtrlDownStart', 'touchCtrlDownEnd', false));
-        ctrlLeft.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlLeftStart', 'touchCtrlLeftEnd', true));
-        ctrlLeft.addEventListener('touchend', () => this.handleTouchControl('touchCtrlLeftStart', 'touchCtrlLeftEnd', false));
-        ctrlFinSlap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlFinSlapStart', 'touchCtrlFinSlapEnd', true));
-        ctrlFinSlap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlFinSlapStart', 'touchCtrlFinSlapEnd', false));
-        ctrlBubbleTrap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlBubbleTrapStart', 'touchCtrlBubbleTrapEnd', true));
-        ctrlBubbleTrap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlBubbleTrapStart', 'touchCtrlBubbleTrapEnd', false));
-        ctrlPoisonBubbleTrap.addEventListener('touchstart', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', true));
-        ctrlPoisonBubbleTrap.addEventListener('touchend', () => this.handleTouchControl('touchCtrlPoisonBubbleTrapStart', 'touchCtrlPoisonBubbleTrapEnd', false));
+    /**
+     * Binds touchstart/touchend to toggle the given start/end flags.
+     * @param {string} elementId - DOM id of the button element.
+     * @param {string} startFlag - Character flag for touch start.
+     * @param {string} endFlag - Character flag for touch end.
+     * @returns {void}
+     */
+    _bindTouch(elementId, startFlag, endFlag) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.addEventListener('touchstart', () => this.handleTouchControl(startFlag, endFlag, true));
+        el.addEventListener('touchend', () => this.handleTouchControl(startFlag, endFlag, false));
     }
     /**
      * Generic toggle for touch control flags.
@@ -387,17 +422,30 @@ class Character extends MovableObject {
      */
     moveCharacter(direction) {
         this.lastMove = new Date().getTime();
-
         this.checkBarrierCollisions(direction);
+        this._applyMovementIfFree(direction);
+    }
 
-        if (direction == 'up' && !this.isCollidingWithBarrierUp) {
+    /**
+     * Applies directional movement if the corresponding barrier flag is not set.
+     * @param {string} direction - 'up' | 'down' | 'left' | 'right'.
+     * @returns {void}
+     */
+    _applyMovementIfFree(direction) {
+        if (direction === 'up' && !this.isCollidingWithBarrierUp) {
             this.y -= this.speed;
-        } else if (direction == 'right' && !this.isCollidingWithBarrierRight) {
+            return;
+        }
+        if (direction === 'right' && !this.isCollidingWithBarrierRight) {
             this.x += this.speed;
             this.imgMirrored = false;
-        } else if (direction == 'down' && !this.isCollidingWithBarrierDown) {
+            return;
+        }
+        if (direction === 'down' && !this.isCollidingWithBarrierDown) {
             this.y += this.speed;
-        } else if (direction == 'left' && !this.isCollidingWithBarrierLeft) {
+            return;
+        }
+        if (direction === 'left' && !this.isCollidingWithBarrierLeft) {
             this.x -= this.speed;
             this.imgMirrored = true;
         }
@@ -410,20 +458,38 @@ class Character extends MovableObject {
      * @returns {void}
      */
     checkBarrierCollisions(direction) {
-        const collidingWithBarrier = this.world.level.barriers.find(barrier => this.isColliding(barrier));
-        const collidingWithBarrierX = this.world.level.barriers.find(barrier => this.isCollidingX(barrier));
-        const collidingWithBarrierY = this.world.level.barriers.find(barrier => this.isCollidingY(barrier));
+        const cAll = this.world.level.barriers.find(b => this.isColliding(b));
+        const cX = this.world.level.barriers.find(b => this.isCollidingX(b));
+        const cY = this.world.level.barriers.find(b => this.isCollidingY(b));
+        this._resetBarrierFlags(cAll);
+        this._updateHorizontalBarrierFlags(direction, cX);
+        this._updateVerticalBarrierFlags(direction, cY);
+    }
 
+    /**
+     * Resets or sets general barrier flags based on overall collision.
+     * @param {object|undefined} collidingWithBarrier - Truthy when any collision occurs.
+     * @returns {void}
+     */
+    _resetBarrierFlags(collidingWithBarrier) {
         if (collidingWithBarrier) {
             this.isCollidingWithBarrier = true;
-        } else {
-            this.isCollidingWithBarrier = false;
-            this.isCollidingWithBarrierUp = false;
-            this.isCollidingWithBarrierRight = false;
-            this.isCollidingWithBarrierDown = false;
-            this.isCollidingWithBarrierLeft = false;
+            return;
         }
+        this.isCollidingWithBarrier = false;
+        this.isCollidingWithBarrierUp = false;
+        this.isCollidingWithBarrierRight = false;
+        this.isCollidingWithBarrierDown = false;
+        this.isCollidingWithBarrierLeft = false;
+    }
 
+    /**
+     * Updates left/right barrier flags for the attempted horizontal movement.
+     * @param {string} direction - Intended direction ('left'|'right'|...).
+     * @param {object|undefined} collidingWithBarrierX - Truthy when an X-collision occurs.
+     * @returns {void}
+     */
+    _updateHorizontalBarrierFlags(direction, collidingWithBarrierX) {
         if (direction === 'right' && collidingWithBarrierX) {
             this.isCollidingWithBarrierRight = true;
             this.isCollidingWithBarrierLeft = false;
@@ -431,7 +497,15 @@ class Character extends MovableObject {
             this.isCollidingWithBarrierLeft = true;
             this.isCollidingWithBarrierRight = false;
         }
+    }
 
+    /**
+     * Updates up/down barrier flags for the attempted vertical movement.
+     * @param {string} direction - Intended direction ('up'|'down'|...).
+     * @param {object|undefined} collidingWithBarrierY - Truthy when a Y-collision occurs.
+     * @returns {void}
+     */
+    _updateVerticalBarrierFlags(direction, collidingWithBarrierY) {
         if (direction === 'up' && collidingWithBarrierY) {
             this.isCollidingWithBarrierUp = true;
             this.isCollidingWithBarrierDown = false;

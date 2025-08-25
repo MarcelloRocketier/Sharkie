@@ -75,15 +75,42 @@ class World {
   draw() {
     if (this.stopped) return;
     this.clearCanvas();
+    const { scaleX, scaleY } = this._computeScale(720, 480);
+    this._beginScaledFrame(scaleX, scaleY);
+    this._renderLevelObjects();
+    this._renderHUD();
+    this._endScaledFrame();
+    this._scheduleNextFrame();
+  }
 
-    const DESIGN_WIDTH = 720;
-    const DESIGN_HEIGHT = 480;
-    const scaleX = this.canvas.width / DESIGN_WIDTH;
-    const scaleY = this.canvas.height / DESIGN_HEIGHT;
+  /**
+   * Computes canvas scale factors relative to a design resolution.
+   * @param {number} designWidth
+   * @param {number} designHeight
+   * @returns {{scaleX:number, scaleY:number}}
+   */
+  _computeScale(designWidth, designHeight) {
+    const scaleX = this.canvas.width / designWidth;
+    const scaleY = this.canvas.height / designHeight;
+    return { scaleX, scaleY };
+  }
 
+  /**
+   * Begins a scaled frame by saving context and applying transform.
+   * @param {number} scaleX
+   * @param {number} scaleY
+   * @returns {void}
+   */
+  _beginScaledFrame(scaleX, scaleY) {
     this.ctx.save();
     this.ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+  }
 
+  /**
+   * Renders world layers, character, and bubble respecting the camera.
+   * @returns {void}
+   */
+  _renderLevelObjects() {
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToWorld(this.level.backgroundObjects);
     this.addObjectsToWorld(this.level.coins);
@@ -94,17 +121,33 @@ class World {
     this.addToWorld(this.character);
     if (this.bubble) this.addToWorld(this.bubble);
     this.ctx.translate(-this.camera_x, 0);
+  }
 
+  /**
+   * Renders HUD/status bars and conditionally the end boss bar.
+   * @returns {void}
+   */
+  _renderHUD() {
     this.addToWorld(this.statusBarLife);
     this.addToWorld(this.statusBarCoins);
     this.addToWorld(this.statusBarPoison);
     const ebForHud = (this.level && typeof this.level.getEndBoss === 'function') ? this.level.getEndBoss() : null;
-    if (ebForHud && ebForHud.endBossIntroduced) {
-      this.addToWorld(this.statusBarEndBoss);
-    }
+    if (ebForHud && ebForHud.endBossIntroduced) this.addToWorld(this.statusBarEndBoss);
+  }
 
+  /**
+   * Restores context after a scaled frame.
+   * @returns {void}
+   */
+  _endScaledFrame() {
     this.ctx.restore();
+  }
 
+  /**
+   * Schedules the next animation frame if not stopped.
+   * @returns {void}
+   */
+  _scheduleNextFrame() {
     if (!this.stopped) {
       this.animationFrameId = requestAnimationFrame(() => this.draw());
     }
@@ -170,26 +213,46 @@ class World {
    */
   startAudioLoop() {
     const id = setInterval(() => {
-      if (this.stopped) {
-        this.MAIN_SOUND.pause();
-        this.MAIN_SOUND.currentTime = 0;
-        return;
-      }
-      const eb = (this.level && typeof this.level.getEndBoss === 'function') ? this.level.getEndBoss() : null;
-      const canPlay = soundOn && (!eb || !eb.endBossAlreadyTriggered) && !levelEnded && !characterIsDead;
-      if (canPlay) {
-        if (this.MAIN_SOUND.paused) {
-          this.MAIN_SOUND.play().catch(() => {});
-          this.MAIN_SOUND.addEventListener('ended', function onEnd() {
-            this.currentTime = 0; this.play().catch(() => {});
-          }, { once: true });
-        }
+      if (this._shouldStopAudio()) return this._resetMainSound();
+      const eb = this.level?.getEndBoss?.();
+      if (this._shouldPlayMainSound(eb)) {
+        this._playOrLoopMainSound();
       } else {
-        this.MAIN_SOUND.pause();
-        this.MAIN_SOUND.currentTime = 0;
+        this._resetMainSound();
       }
     }, 1000 / 30);
     this.intervals.push(id);
+  }
+
+  /** Checks if audio should stop due to world state. */
+  _shouldStopAudio() {
+    return this.stopped;
+  }
+
+  /** Pauses and resets the main soundtrack. */
+  _resetMainSound() {
+    if (!this.MAIN_SOUND) return;
+    this.MAIN_SOUND.pause();
+    this.MAIN_SOUND.currentTime = 0;
+  }
+
+  /**
+   * Determines if main sound should play given end boss state and globals.
+   * @param {EndBoss|undefined} eb
+   * @returns {boolean}
+   */
+  _shouldPlayMainSound(eb) {
+    return soundOn && (!eb || !eb.endBossAlreadyTriggered) && !levelEnded && !characterIsDead;
+  }
+
+  /** Plays main sound if paused and rebinds loop-on-end. */
+  _playOrLoopMainSound() {
+    if (this.MAIN_SOUND.paused) {
+      this.MAIN_SOUND.play().catch(() => {});
+      this.MAIN_SOUND.addEventListener('ended', function onEnd() {
+        this.currentTime = 0; this.play().catch(() => {});
+      }, { once: true });
+    }
   }
 
   /**
@@ -263,17 +326,27 @@ class World {
    */
   handleBubbleVsEndBoss() {
     if (this.stopped || levelEnded || characterIsDead) return;
-    const bubble = this.bubble;
-    if (!bubble || typeof bubble.isColliding !== 'function') return;
+    if (!this._validBubble()) return;
+    this._checkEndBossBubbleHits();
+  }
 
-    const enemies = (this.level && Array.isArray(this.level.enemies)) ? this.level.enemies : [];
-    enemies.forEach((enemy) => {
+  /** Validates bubble existence and collision function. */
+  _validBubble() {
+    return this.bubble && typeof this.bubble.isColliding === 'function';
+  }
+
+  /** Iterates enemies and applies bubble hits to EndBoss, updates HUD. */
+  _checkEndBossBubbleHits() {
+    const enemies = Array.isArray(this.level?.enemies) ? this.level.enemies : [];
+    enemies.forEach(enemy => {
       if (!(enemy instanceof EndBoss)) return;
-      if (!bubble || typeof bubble.isColliding !== 'function') return;
-      if (bubble.isColliding(enemy)) {
-        if (typeof enemy.hit === 'function') enemy.hit(bubble.attack);
-        if (this.statusBarEndBoss && typeof this.statusBarEndBoss.setPercentage === 'function' && this.level && typeof this.level.getEndBoss === 'function') {
-          this.statusBarEndBoss.setPercentage((this.level.getEndBoss().energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
+      if (this.bubble?.isColliding(enemy)) {
+        if (typeof enemy.hit === 'function') enemy.hit(this.bubble.attack);
+        if (this.statusBarEndBoss && typeof this.statusBarEndBoss.setPercentage === 'function') {
+          const eb = this.level?.getEndBoss?.();
+          if (eb) {
+            this.statusBarEndBoss.setPercentage((eb.energy / 200) * 100, this.statusBarEndBoss.type, this.statusBarEndBoss.color);
+          }
         }
         this.bubble = undefined;
       }
@@ -288,12 +361,20 @@ class World {
   stop() {
     if (this.stopped) return;
     console.log('[World] stop() called');
+    this._cancelAnimationFrame();
+    this.stopped = true;
+    this.teardown();
+  }
+
+  /**
+   * Cancels a scheduled animation frame if present.
+   * @returns {void}
+   */
+  _cancelAnimationFrame() {
     if (this.animationFrameId !== null && typeof cancelAnimationFrame === 'function') {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-    this.stopped = true;
-    this.teardown();
   }
 
   /**
@@ -302,24 +383,45 @@ class World {
    */
   teardown() {
     console.log('[World] teardown() called');
+    this._clearIntervals();
+    this._cancelAnimationFrame();
+    this._resetAudio();
+    this._removeEventListeners();
+    this.bubble = undefined;
+    this.stopped = false;
+  }
+
+  /**
+   * Clears all active intervals.
+   * @returns {void}
+   */
+  _clearIntervals() {
     if (Array.isArray(this.intervals)) {
       this.intervals.forEach(id => clearInterval(id));
       this.intervals = [];
     }
-    if (this.animationFrameId !== null && typeof cancelAnimationFrame === 'function') {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+  }
+
+  /**
+   * Resets audio playback to initial state.
+   * @returns {void}
+   */
+  _resetAudio() {
     if (this.MAIN_SOUND && typeof this.MAIN_SOUND.pause === 'function') {
       this.MAIN_SOUND.pause();
       this.MAIN_SOUND.currentTime = 0;
     }
+  }
+
+  /**
+   * Removes resize/orientation listeners for screen messages.
+   * @returns {void}
+   */
+  _removeEventListeners() {
     try {
       window.removeEventListener('resize', updateScreenMessages);
       window.removeEventListener('orientationchange', updateScreenMessages);
     } catch (e) {}
-    this.bubble = undefined;
-    this.stopped = false;
   }
 }
 

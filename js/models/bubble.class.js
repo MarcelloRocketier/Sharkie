@@ -16,13 +16,14 @@ class Bubble extends MovableObject {
     width = 50;
     height = 50;
     speed = 1.02;
-    attack = 10;
+    attack = 20;
 
     /**
      * Creates a new Bubble instance.
      * @param {number} startX - The initial X coordinate of the bubble.
      * @param {number} startY - The initial Y coordinate of the bubble.
      * @param {boolean} otherDirection - Indicates if the bubble should float to the left instead of the right.
+     * @property {number} attack - The damage value this bubble inflicts (default 20).
      */
     constructor(startX, startY, otherDirection) {
         super().loadImage('./assets/img/1._Sharkie/4._Attack/Bubble_Trap/Bubble.png');

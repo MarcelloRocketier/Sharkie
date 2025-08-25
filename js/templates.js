@@ -1,4 +1,4 @@
-/**
+/****
  * Project: Sharkie 2D Game
  * File: js/templates.js
  * Responsibility: Provides HTML template generators for screens (start, game, end, game over) and UI overlays.
@@ -175,7 +175,16 @@ function openImpressum() {
     overlay.innerHTML = `
         <div class="overlay-content">
             <h2>Impressum</h2>
-            <p>Dies ist ein Portfolio-Projekt (Sharkie) im Rahmen der Developer Akademie.</p>
+            <p>
+              Angaben gemäß § 5 TMG<br><br>
+              Marcel Reyes Langenhorst<br>
+              Parallelweg 67<br>
+              59269 Beckum<br><br>
+              Telefon: 0176 62529651<br>
+              E-Mail: <a href="mailto:marcelreyeslangenhorst@gmail.com">marcelreyeslangenhorst@gmail.com</a><br><br>
+              Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br>
+              Marcel Reyes Langenhorst, gleiche Anschrift
+            </p>
             <button onclick="closeOverlay()">Close</button>
         </div>
     `;

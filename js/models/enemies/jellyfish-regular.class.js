@@ -78,4 +78,27 @@ class JellyFishRegular extends MovableObject {
             }
         }, 250)
     }
+
+    /**
+     * Applies damage to this jellyfish and triggers death if energy <= 0.
+     * @param {number} dmg - The amount of damage to apply.
+     * @returns {void}
+     */
+    hit(dmg) {
+        if (this.neutralized && (!this.neutralizedUntil || this.neutralizedUntil > Date.now())) {
+            return;
+        }
+        this.energy -= dmg;
+        if (this.energy <= 0) {
+            this.energy = 0;
+        }
+    }
+
+    /**
+     * Returns true if the jellyfish is dead (energy <= 0).
+     * @returns {boolean}
+     */
+    isDead() {
+        return this.energy <= 0;
+    }
 }
