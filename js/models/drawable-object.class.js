@@ -39,8 +39,10 @@ class DrawableObject {
      * @returns {void}
      */
     loadImage(path) {
-        this.img = new Image();
-        this.img.src = path;
+        if (!path) return; // guard against undefined
+        const img = new Image();
+        img.src = path;
+        this.img = img;
     };
 
     /**
@@ -49,7 +51,9 @@ class DrawableObject {
      * @returns {void}
      */
     loadImages(array) {
-        array.forEach(path => {
+        if (!Array.isArray(array)) return;
+        array.forEach((path) => {
+            if (!path) return;
             const img = new Image();
             img.src = path;
             this.imageCache[path] = img;
@@ -62,11 +66,11 @@ class DrawableObject {
      * @returns {void}
      */
     draw(ctx) {
+        if (!this.img || !this.img.complete) return;
         try {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        } catch (error) {
-            console.error('Error drawing image:', error);
-            console.warn('Could not load image:', this.img);
+        } catch (_) {
+            // silently skip drawing if the image cannot be rendered
         }
     }
 

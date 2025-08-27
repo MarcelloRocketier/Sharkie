@@ -1,13 +1,4 @@
 /**
- * Project: Sharkie 2D Game
- * File: js/models/enemies/endboss.class.js
- * Responsibility: Final boss entity – animations, AI movement, attack behavior, sounds, and safe timer handling.
- * Notes: Documentation-only changes. No logic is modified.
- * Author: <Marcel Reyes Langenhorst>
- * License: MIT (or project license)
- */
-
-/**
  * Final boss controller. Manages state machine (introduce, float, attack, hurt, dead),
  * autonomous movement, attack windows, and audio loops. Uses safe timer utilities
  * to avoid lingering intervals/timeouts across restarts.
@@ -45,7 +36,6 @@ class EndBoss extends MovableObject {
     static INTRO_TO_FLOAT_DELAY = 1490; 
     timers = { intervals: [], timeouts: [] };
     _bossLoopBound = false;
-
     /**
      * Registers an interval and tracks its id for later cleanup.
      * @param {Function} fn - Callback to execute.
@@ -57,7 +47,6 @@ class EndBoss extends MovableObject {
         this.timers.intervals.push(id);
         return id;
     }
-
     /**
      * Registers a timeout and tracks its id for later cleanup.
      * @param {Function} fn - Callback to execute.
@@ -69,7 +58,6 @@ class EndBoss extends MovableObject {
         this.timers.timeouts.push(id);
         return id;
     }
-
     /**
      * Clears all registered timers (intervals and timeouts) for this boss instance.
      * @returns {void}
@@ -80,7 +68,6 @@ class EndBoss extends MovableObject {
         this.timers = { intervals: [], timeouts: [] };
         this.bossThemeIntervalId = null;
     }
-
     /**
      * Creates an EndBoss instance and preloads animation frames.
      * @param {number} x - Initial horizontal position.
@@ -102,7 +89,6 @@ class EndBoss extends MovableObject {
         this.startX = startX;
         this.startY = startY;
     }
-
     /**
      * Starts the EndBoss animation loop; delegates updates to `updateAnimationAndAI()`.
      * @returns {void}
@@ -113,7 +99,6 @@ class EndBoss extends MovableObject {
             this.updateAnimationAndAI();
         }, 150);
     }
-
     /**
      * Updates animation/behavior according to current state (introduce, float, attack, hurt, dead).
      * @returns {void}
@@ -125,7 +110,6 @@ class EndBoss extends MovableObject {
         if (this.endBossTriggered) return this.introduceEndBoss();
         if (this.isCollidingWithCharacter) this._playAttackCycle();
     }
-
     /** Handles floating state logic. */
     _shouldFloat() {
         if (this.endBossIntroduced && !this.isHurt() && !this.isDead() && !this.isCollidingWithCharacter) {
@@ -136,7 +120,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /** Handles hurt state logic. */
     _shouldPlayHurt() {
         if (this.isHurt() && !this.isDead()) {
@@ -145,7 +128,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /** Handles death state logic. */
     _shouldDie() {
         if (this.isDead()) {
@@ -156,13 +138,11 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /** Handles attack animation when colliding with character. */
     _playAttackCycle() {
         this.attackAnimation();
         this.playAnimation(ENDBOSS_IMAGES.ATTACK, 0);
     }
-
     /**
      * Executes the autonomous multi-step movement pattern using waypoints.
      * @returns {void}
@@ -177,7 +157,6 @@ class EndBoss extends MovableObject {
         if (this.stepForward7()) return;
         this.stepBack8();
     }
-
     /**
      * Moves forward to startX - wanderDistance.
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -190,7 +169,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Moves back to startX.
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -203,7 +181,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Moves down to y = 150.
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -216,7 +193,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Moves forward again to startX - wanderDistance (faster).
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -229,7 +205,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Moves back to startX with random speed.
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -242,7 +217,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Moves up to y < 0.
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -255,7 +229,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Moves forward again to startX - wanderDistance (fastest).
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -268,7 +241,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Final step: moves back to startX and resets waypoints.
      * @returns {boolean} True if movement occurred, otherwise false.
@@ -285,7 +257,6 @@ class EndBoss extends MovableObject {
         }
         return false;
     }
-
     /**
      * Opens a brief collision window and triggers attack animation once.
      * @returns {void}
@@ -296,7 +267,6 @@ class EndBoss extends MovableObject {
         this.currentImage = 0; 
         this.beginAttackWindow();
     }
-
     /**
      * Plays the bite SFX if sound is enabled and both entities are alive.
      * @returns {void}
@@ -307,7 +277,6 @@ class EndBoss extends MovableObject {
             this.BITE_SOUND.play();
         }
     }
-
     /**
      * Starts a short interval marking the boss as colliding; auto-clears after a timeout.
      * @returns {void}
@@ -320,7 +289,6 @@ class EndBoss extends MovableObject {
         const intervalId = this.setSafeInterval(tick, 100);
         this.setSafeTimeout(() => this.endAttackWindow(intervalId), 600);
     }
-
     /**
      * Ends the collision window and clears its interval.
      * @param {number} intervalId - Interval ID created in `beginAttackWindow`.
@@ -331,7 +299,6 @@ class EndBoss extends MovableObject {
         this.checkAlreadyRunning = false;
         clearInterval(intervalId);
     }
-
     /**
      * Plays the introduce animation, triggers splash SFX, and transitions to floating state.
      * @returns {void}
@@ -346,7 +313,6 @@ class EndBoss extends MovableObject {
             this.endBossIntroduced = true;
         }, EndBoss.INTRO_TO_FLOAT_DELAY);
     }
-
     /**
      * Starts/maintains the boss theme playback loop without duplicating intervals.
      * @returns {void}
@@ -356,7 +322,6 @@ class EndBoss extends MovableObject {
         this.bossThemeIntervalId = this.setSafeInterval(() => this._bossThemeTick(), 1000 / 60);
         if (!this._bossLoopBound) this._bindBossThemeEnd();
     }
-
     /** Performs one tick of the boss theme loop. */
     _bossThemeTick() {
         if (!this.world || this.world.stopped) {
@@ -370,13 +335,11 @@ class EndBoss extends MovableObject {
             this._resetBossTheme();
         }
     }
-
     /** Resets boss theme audio to start. */
     _resetBossTheme() {
         this.BOSS_THEME_SOUND.pause();
         this.BOSS_THEME_SOUND.currentTime = 0;
     }
-
     /** Binds looping behavior for when the boss theme ends. */
     _bindBossThemeEnd() {
         this._bossLoopBound = true;
@@ -385,7 +348,6 @@ class EndBoss extends MovableObject {
             try { this.play(); } catch(e){}
         }, false);
     }
-
     /**
      * Generates a random number between min and max.
      * @param {number} min - Minimum value.
@@ -395,7 +357,6 @@ class EndBoss extends MovableObject {
     getRandomSpeedFactor(min, max) {
         return Math.random() * (max - min) + min;
     }
-
     /**
      * Resets boss flags, waypoints, sounds and timers to a fresh state for a new run.
      * @returns {void}
@@ -408,7 +369,6 @@ class EndBoss extends MovableObject {
         try { endBossKilled = false; } catch(e){}
         this.animate();
     }
-
     /** Resets boss state flags and energy. */
     _resetBossFlags() {
         this.energy = 100;
@@ -420,20 +380,17 @@ class EndBoss extends MovableObject {
         this.waypoint4 = this.waypoint5 = this.waypoint6 = false;
         this.waypoint7 = false;
     }
-
     /** Resets boss position to start coordinates if defined. */
     _resetBossPosition() {
         if (typeof this.startX === 'number') this.x = this.startX;
         if (typeof this.startY === 'number') this.y = this.startY;
     }
-
     /** Resets boss audio playback. */
     _resetBossAudio() {
         try { this.BOSS_THEME_SOUND.pause(); this.BOSS_THEME_SOUND.currentTime = 0; } catch(e){}
         try { this.SPLASH_SOUND.pause(); this.SPLASH_SOUND.currentTime = 0; } catch(e){}
         try { this.BITE_SOUND.pause(); this.BITE_SOUND.currentTime = 0; } catch(e){}
     }
-
     /**
      * Applies damage to the end boss and triggers death if energy <= 0.
      * Ignores hits while neutralized.
@@ -449,7 +406,6 @@ class EndBoss extends MovableObject {
             this.energy = 0;
         }
     }
-
     /**
      * Returns true if the end boss is dead (energy <= 0).
      * @returns {boolean}

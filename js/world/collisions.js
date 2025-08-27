@@ -30,13 +30,19 @@ function getEnemies(world) {
 
 function getJellyfish(world) {
   const enemies = getEnemies(world);
-  const fromEnemies = enemies.filter((e) =>
+  const fromEnemies = _jellyFromEnemies(enemies);
+  if (fromEnemies.length) return fromEnemies;
+  return _jellyFromLevel(world.level || {});
+}
+
+function _jellyFromEnemies(enemies) {
+  return enemies.filter((e) =>
     (typeof JellyFishRegular   !== 'undefined' && e instanceof JellyFishRegular) ||
     (typeof JellyFishDangerous !== 'undefined' && e instanceof JellyFishDangerous)
   );
-  if (fromEnemies.length) return fromEnemies;
+}
 
-  const lvl = world.level || {};
+function _jellyFromLevel(lvl) {
   const jellyDanger = getArrayByKeys(lvl, ['jelly_fish_dangerous','jellyfish_dangerous','jellyfishDangerous','jellyFishDangerous']);
   const jellyRegular = getArrayByKeys(lvl, ['jelly_fish_regular','jellyfish_regular','jellyfishRegular','jellyFishRegular']);
   return [...jellyDanger, ...jellyRegular];
@@ -58,6 +64,24 @@ function objectsCollide(a, b) {
   try { if (typeof a.isColliding === 'function' && a.isColliding(b)) return true; } catch(e){}
   try { if (typeof b.isColliding === 'function' && b.isColliding(a)) return true; } catch(e){}
   return false;
+}
+
+/** Determines if an enemy is allowed to hurt the character right now. */
+function _canEnemyHurtCharacter(char, enemy) {
+  if (!char || !enemy) return false;
+  try { if (typeof char.isInvulnerable === 'function' && char.isInvulnerable()) return false; } catch(_) {}
+  try { if (typeof char.isDead === 'function' && char.isDead()) return false; } catch(_) {}
+  try { if (typeof enemy.isDead === 'function' && enemy.isDead()) return false; } catch(_) {}
+
+  try {
+    if (char.isFinSlapping && typeof PufferFish !== 'undefined' && enemy instanceof PufferFish) return false;
+  } catch(_) {}
+ 
+  try {
+    const neutral = enemy && enemy.neutralized && (!enemy.neutralizedUntil || enemy.neutralizedUntil > Date.now());
+    if (neutral) return false;
+  } catch(_) {}
+  return true;
 }
 
 /** Try to 'kill' an enemy using whatever method it implements. */
@@ -112,9 +136,7 @@ function _checkEnemyCollisions(world, char) {
   const enemies = getEnemies(world);
   enemies.forEach((e) => {
     if (!e) return;
-    const neutralized = e && e.neutralized && (!e.neutralizedUntil || e.neutralizedUntil > Date.now());
-    if (neutralized) return;
-    if (objectsCollide(char, e) && !(typeof char.isHurt === 'function' && char.isHurt())) {
+    if (objectsCollide(char, e) && _canEnemyHurtCharacter(char, e) && !(typeof char.isHurt === 'function' && char.isHurt())) {
       _applyEnemyHit(char, e, world);
     }
   });
@@ -127,20 +149,25 @@ function _checkEnemyCollisions(world, char) {
  * @param {World} world
  */
 function _applyEnemyHit(char, enemy, world) {
+  _setHitByFlag(char, enemy);
+  try { char.hit(enemy.attack ?? 5); } catch(_) {}
+  _updateLifeBar(world, char);
+}
+
+function _setHitByFlag(char, enemy) {
   try {
     if (typeof PufferFish !== 'undefined' && enemy instanceof PufferFish) char.hitBy = 'PufferFish';
     else if ((typeof JellyFishRegular !== 'undefined' && enemy instanceof JellyFishRegular) ||
              (typeof JellyFishDangerous !== 'undefined' && enemy instanceof JellyFishDangerous)) char.hitBy = 'JellyFish';
     else if (typeof EndBoss !== 'undefined' && enemy instanceof EndBoss) char.hitBy = 'EndBoss';
     else char.hitBy = 'Enemy';
+  } catch(_) {}
+}
 
-    char.hit(enemy.attack ?? 5);
+function _updateLifeBar(world, char) {
+  try {
     if (world.statusBarLife && typeof world.statusBarLife.set === 'function') {
-      world.statusBarLife.setPercentage(
-        (char.energy / 100) * 100,
-        world.statusBarLife.type,
-        world.statusBarLife.color
-      );
+      world.statusBarLife.setPercentage((char.energy / 100) * 100, world.statusBarLife.type, world.statusBarLife.color);
     }
   } catch(_) {}
 }
@@ -152,19 +179,10 @@ function _applyEnemyHit(char, enemy, world) {
  */
 function _checkBossCollision(world, char) {
   const boss = world.level?.endBoss;
-  if (boss && objectsCollide(char, boss) && !(typeof char.isHurt === 'function' && char.isHurt())) {
-    try {
-      char.hitBy = 'EndBoss';
-      char.hit(boss.attack ?? 20);
-      if (world.statusBarLife && typeof world.statusBarLife.set === 'function') {
-        world.statusBarLife.setPercentage(
-          (char.energy / 100) * 100,
-          world.statusBarLife.type,
-          world.statusBarLife.color
-        );
-      }
-    } catch(_) {}
-  }
+  const hurt = (typeof char.isHurt === 'function' && char.isHurt());
+  if (!boss || hurt || !objectsCollide(char, boss) || (typeof char.isInvulnerable === 'function' && char.isInvulnerable())) return;
+  try { char.hitBy = 'EndBoss'; char.hit(boss.attack ?? 20); } catch(_) {}
+  _updateLifeBar(world, char);
 }
 
 /**
@@ -198,17 +216,19 @@ function _gatherBubbles(world) {
  * @returns {void}
  */
 function _applyBubbleHitsOnJelly(bubbles, jellyfishAll) {
-  bubbles.forEach((b) => {
-    if (!b) return;
-    jellyfishAll.forEach((j) => {
-      if (!j) return;
-      if (objectsCollide(b, j)) {
-        if (typeof j.hit === 'function') { try { j.hit(b.attack ?? 20); } catch(_){} } else { tryKillEnemy(j); }
-        try { j.neutralized = true; j.neutralizedUntil = Date.now() + 3000; } catch(_){ }
-        tryRemoveBubble(b);
-      }
-    });
-  });
+  bubbles.forEach((b) => _applyBubbleToAllJelly(b, jellyfishAll));
+}
+
+function _applyBubbleToAllJelly(b, jellyfishAll) {
+  if (!b) return;
+  jellyfishAll.forEach((j) => _applyBubbleToOneJelly(b, j));
+}
+
+function _applyBubbleToOneJelly(b, j) {
+  if (!j || !objectsCollide(b, j)) return;
+  if (typeof j.hit === 'function') { try { j.hit(b.attack ?? 20); } catch(_) {} } else { tryKillEnemy(j); }
+  try { j.neutralized = true; j.neutralizedUntil = Date.now() + 3000; } catch(_) {}
+  tryRemoveBubble(b);
 }
 
 /**
@@ -252,17 +272,15 @@ function _checkLifePickups(world, char) {
     if (!l || l.collected) return;
     if (objectsCollide(char, l)) {
       tryCollectItem(l, world);
-      try { if (typeof char.heal === 'function') char.heal(l.value ?? 20); } catch(_){ }
-      try {
-        world.statusBarLife.setPercentage(
-          (char.energy / 100) * 100,
-          world.statusBarLife.type,
-          world.statusBarLife.color
-        );
-      } catch(_){ }
+      _healAndUpdate(world, char, l);
       removeFromArray(world.level && world.level.life, l);
     }
   });
+}
+
+function _healAndUpdate(world, char, l) {
+  try { if (typeof char.heal === 'function') char.heal(l.value ?? 20); } catch(_) {}
+  _updateLifeBar(world, char);
 }
 
 /** Handles poison pickups. */
