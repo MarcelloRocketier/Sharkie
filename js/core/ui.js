@@ -106,3 +106,32 @@ function _ensureFullscreenWatcher() {
         if (!fsActive) fullscreen = false;
     }, 250);
 }
+
+/**
+ * Refreshes mobile controls visibility if available.
+ * @returns {void}
+ */
+function refreshTouchUI() {
+    try {
+        if (typeof setupMobileControls === 'function') {
+            setupMobileControls();
+        }
+    } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    refreshTouchUI();
+});
+
+/**
+ * Keep controls in sync on rotate/resize.
+ */
+(function () {
+    let rafId = null;
+    function onResizeOrRotate() {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(refreshTouchUI);
+    }
+    window.addEventListener('orientationchange', onResizeOrRotate);
+    window.addEventListener('resize', onResizeOrRotate);
+})();

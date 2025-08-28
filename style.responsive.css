@@ -1,5 +1,3 @@
-/* ===== RESPONSIVE ===== */
-
 @media (max-width: 992px){
   .nav { display: none; }
 
@@ -12,7 +10,6 @@
   #mobile-ctrl-left { bottom: 64px; left: 16px; position: fixed; }
   #mobile-ctrl-right { bottom: 64px; right: 16px; position: fixed; }
 
-  /* D‑Pad: Up / (Left+Right) / Down; uses existing 3 children structure */
   .mobile-controller-container-left {
     position: fixed;
     bottom: 72px;
@@ -30,24 +27,20 @@
     justify-items: center;
   }
 
-  /* First child = Up button */
   .mobile-controller-container-left > :first-child {
     grid-area: up;
   }
 
-  /* Middle child is the left+right row; flatten it so its children occupy grid cells */
   .mobile-controller-container-left > .mobile-controller-x-control {
     display: contents;
   }
   .mobile-controller-container-left > .mobile-controller-x-control > :first-child { grid-area: left; }
   .mobile-controller-container-left > .mobile-controller-x-control > :last-child  { grid-area: right; }
 
-  /* Last child = Down button */
   .mobile-controller-container-left > :last-child {
     grid-area: down;
   }
 
-  /* Comfortable thumb size */
   .mobile-controller-container-left .mobile-ctrl-btn {
     width: clamp(64px, 13vmin, 84px);
     height: clamp(64px, 13vmin, 84px);
@@ -55,7 +48,6 @@
 
   .ctrl-arrow-img { width: 28px; height: auto; opacity: .95; }
 
-  /* Right side attack buttons */
   .mobile-controller-container-right {
     position: fixed;
     bottom: 72px;
@@ -78,6 +70,31 @@
   }
 
   .ctrl-arrow-img { width: 26px; height: auto; opacity: .9; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  /* Containers */
+  #mobile-controls,
+  #mobile-ctrl-left,
+  #mobile-ctrl-right,
+  .mobile-controller-container-left,
+  .mobile-controller-container-right {
+    display: block !important; 
+    z-index: 60;
+  }
+
+  #ctrl-btn-up,
+  #ctrl-btn-right,
+  #ctrl-btn-down,
+  #ctrl-btn-left,
+  #ctrl-btn-fin-slap,
+  #ctrl-btn-bubble-trap,
+  #ctrl-btn-poison-bubble-trap {
+    display: inline-flex !important;
+  }
+
+  #mobile-ctrl-left { position: fixed; bottom: 64px; left: 16px; }
+  #mobile-ctrl-right { position: fixed; bottom: 64px; right: 16px; }
 }
 
 @media (orientation: portrait) and (max-width: 992px) {
@@ -149,4 +166,27 @@
   }
 
   .mobile-controller-x-control { gap: 24px; }
+}
+
+@media (hover: none) and (pointer: coarse) and (min-width: 820px) {
+
+  .mobile-controller-container-left .mobile-ctrl-btn,
+  .mobile-controller-container-right .mobile-ctrl-btn {
+    width: 72px;              
+    height: 72px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ctrl-arrow-img {
+    width: 30px;
+    height: 30px;          
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0);  
+  }
+
+  .mobile-controller-container-left { gap: 10px; }
+  .mobile-controller-x-control { gap: 36px; }
 }

@@ -56,27 +56,37 @@ function init() {
   _showStartScreen();
 }
 
+/** Returns the loading element (supports new and legacy ids). */
+function _getLoadingEl() {
+  return document.getElementById('loading-spinner') || document.getElementById('loading-screen');
+}
+
 /** Shows the loading overlay. */
 function _showLoadingScreen() {
   loading = true;
-  document.getElementById('loading-screen').classList.remove('d-none');
+  const el = _getLoadingEl();
+  if (el) el.classList.remove('d-none');
 }
 
 /** Hides the loading overlay after short delay. */
 function _hideLoadingScreenDelayed() {
   setTimeout(() => {
     loading = false;
-    document.getElementById('loading-screen').classList.add('d-none');
-  }, 5000);
+    const el = _getLoadingEl();
+    if (el) el.classList.add('d-none');
+  }, 500);
 }
 
 document.onreadystatechange = () => {
   if (document.readyState === 'interactive') {
-    _showLoadingScreen();
+    try { _showLoadingScreen(); } catch(e) {}
   } else if (document.readyState === 'complete') {
-    _hideLoadingScreenDelayed();
+    try { _hideLoadingScreenDelayed(); } catch(e) {}
   }
-}
+};
+
+// Fallback in case readyState listeners fire too early/late
+window.addEventListener('load', () => { try { _hideLoadingScreenDelayed(); } catch(e) {} });
 
 /**
  * Resets transient run-state flags and clears any pending timers/intervals from a previous run.

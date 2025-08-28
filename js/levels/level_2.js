@@ -108,10 +108,10 @@ const level_2 = new Level(
      * Each instance defines coordinates and type.
      */
     [
-        new BarrierRock(300, 290),
-        new BarrierWall(1380, -250),
-        new BarrierTunnelAbove(1800, 0),
-        new BarrierTunnelBelow(1800, 290)
+        new Barrier(300, 290, 'rock'),
+        new Barrier(1380, -250, 'wall'),
+        new Barrier(1800, 0, 'tunnelAbove'),
+        new Barrier(1800, 290, 'tunnelBelow')
     ],
 
     /**

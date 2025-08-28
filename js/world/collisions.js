@@ -51,9 +51,11 @@ function _jellyFromLevel(lvl) {
 function getCoins(world) {
   return getArrayByKeys(world.level || {}, ['coins','coin','Coins']);
 }
+
 function getLifes(world) {
   return getArrayByKeys(world.level || {}, ['lifes','lives','life']);
 }
+
 function getPoisons(world) {
   return getArrayByKeys(world.level || {}, ['poisons','poison','Poison']);
 }

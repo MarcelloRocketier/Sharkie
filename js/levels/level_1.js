@@ -102,7 +102,7 @@ const level_1 = new Level(
      * Each instance defines coordinates and type.
      */
     [
-        new BarrierWall(640, 120)
+        new Barrier(640, 120, 'wall')
     ],
 
     /**
