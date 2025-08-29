@@ -32,9 +32,9 @@ class World {
   /** Always create a fresh level instance (no shared singletons) */
   level = (typeof getFreshLevel === 'function') ? getFreshLevel(currentLevel) : levels[currentLevel];
 
-  statusBarLife   = new StatusBar('life',   'green', 100, 20,   0);
-  statusBarCoins  = new StatusBar('coins',  'green',   0, 20,  40);
-  statusBarPoison = new StatusBar('poison', 'green',   0, 20,  80);
+  statusBarLife   = new StatusBar('life',   'green', 100, 20,   -5);
+  statusBarCoins  = new StatusBar('coins',  'green',   0, 240, -5);
+  statusBarPoison = new StatusBar('poison', 'green',   0, 460, -5);
   statusBarEndBoss= new StatusBar('life',  'orange', 100, 460, 400);
   /**
    * Create a new World instance.

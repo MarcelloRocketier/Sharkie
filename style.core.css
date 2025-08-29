@@ -206,3 +206,22 @@ img {
 #canvas-wrapper canvas{ display: block; width: 100vw !important; height: 100vh !important; object-fit: fill; background: #000; }
 
 .canvas-frame-img { height: 646px; left: -62px; position: absolute; right: 0px; top: -88px; width: 846px; z-index: 1; }
+
+/* ===== STATUS BARS LAYOUT ===== */
+.status-bars-container {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.status-bars-container .status-bar-life,
+.status-bars-container .status-bar-coins,
+.status-bars-container .status-bar-poison,
+.status-bars-container .status-bar-endboss {
+  width: 160px;
+  height: 28px;
+}
